@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ToastTestController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -27,4 +29,12 @@ Route::prefix('toast-test')->group(function () {
     Route::post('/mark-read', [ToastTestController::class, 'markRead'])->name('toast-test.mark-read');
     Route::post('/clear', [ToastTestController::class, 'clearToasts'])->name('toast-test.clear');
     Route::post('/complex', [ToastTestController::class, 'complexExample'])->name('toast-test.complex');
+});
+
+Route::middleware('guest')->group(function () {
+    Route::get('login', [LoginController::class, 'create'])->name('login');
+    Route::post('login', [LoginController::class, 'store'])->name('login.store');
+
+    Route::get('register', [RegisterController::class, 'create'])->name('register');
+    Route::post('register', [RegisterController::class, 'store'])->name('register.store');;
 });
