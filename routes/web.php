@@ -38,3 +38,8 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [RegisterController::class, 'create'])->name('register');
     Route::post('register', [RegisterController::class, 'store'])->name('register.store');;
 });
+
+Route::middleware('auth')->as('dashboard.')->prefix('dashboard')->group(function () {
+    Route::get('/', \App\Http\Controllers\Dashboard\HomeController::class)->name('home');
+
+});

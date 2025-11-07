@@ -8,6 +8,7 @@ use App\Facades\Toast;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class RegisterController extends Controller
@@ -29,13 +30,14 @@ class RegisterController extends Controller
             );
             $user = $service->register($data);
 
-            // Auth::login($user); Fazer o login
+            Auth::login($user);
+
             Toast::create('Conta criada com sucesso')
                 ->title('Bem-vindo(a) à nossa plataforma!')
                 ->success()
                 ->flash();
 
-            return redirect()->back();
+            return redirect()->route('dashboard.home');
 
         } catch (\Exception $exception) {
             Toast::create('Error ao criar usuário')
