@@ -1,4 +1,5 @@
 import { ToastInterface } from '@/types/toast';
+import { Config as ZiggyConfig } from 'ziggy-js';
 
 export interface Auth {
     user: User;
@@ -9,6 +10,7 @@ export interface SharedData {
     quote: { message: string; author: string };
     auth: Auth;
     toasts: ToastInterface[];
+    ziggy?: ZiggyConfig;
     [key: string]: unknown;
 }
 
@@ -19,4 +21,12 @@ export interface User {
     phone: string;
     status: boolean;
     [key: string]: unknown; // This allows for additional properties...
+}
+
+declare global {
+    interface Window {
+        Ziggy?: ZiggyConfig;
+    }
+    function route(name?: undefined, params?: undefined, absolute?: boolean): Record<string, any>;
+    function route(name: string, params?: Record<string, any> | any[], absolute?: boolean): string;
 }
