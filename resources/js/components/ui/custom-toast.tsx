@@ -63,17 +63,17 @@ export default function CustomToast() {
     const getIconColor = (type: string) => {
         switch (type) {
             case 'success':
-                return 'text-green-500';
+                return 'text-green-600 dark:text-green-400';
             case 'error':
-                return 'text-red-500';
+                return 'text-red-600 dark:text-red-400';
             case 'warning':
-                return 'text-yellow-500';
+                return 'text-yellow-600 dark:text-yellow-400';
             case 'info':
-                return 'text-blue-500';
+                return 'text-blue-600 dark:text-blue-400';
             case 'loading':
-                return 'text-gray-500';
+                return 'text-muted-foreground';
             default:
-                return 'text-gray-500';
+                return 'text-muted-foreground';
         }
     };
 
@@ -101,7 +101,7 @@ export default function CustomToast() {
             {toasts.map((toast) => (
                 <div
                     key={toast.id}
-                    className="transform rounded-lg border border-gray-700 bg-gray-800 p-4 text-white shadow-lg transition-all duration-300 ease-out"
+                    className="transform rounded-lg border border-border bg-card p-4 text-card-foreground shadow-lg transition-all duration-300 ease-out"
                     style={{
                         animation: 'slideInFromRight 0.3s ease-out forwards',
                     }}
@@ -110,19 +110,19 @@ export default function CustomToast() {
                     <div className="mb-2 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <span className={getIconColor(toast.type)}>{getIcon(toast.type)}</span>
-                            <span className="text-sm font-medium text-gray-300">{toast.title || getTypeText(toast.type)}</span>
+                            <span className="text-sm font-medium text-foreground">{toast.title || getTypeText(toast.type)}</span>
                         </div>
                         {toast.dismissible && (
-                            <button onClick={() => removeToast(toast.id)} className="text-gray-400 transition-colors hover:text-gray-200">
+                            <button onClick={() => removeToast(toast.id)} className="text-muted-foreground transition-colors hover:text-foreground">
                                 <X className="h-4 w-4" />
                             </button>
                         )}
                     </div>
 
                     {/* Message */}
-                    <div className="mb-3 text-sm text-gray-200">
+                    <div className="mb-3 text-sm text-foreground">
                         {toast.text}
-                        {toast.description && <div className="mt-1 text-gray-400">{toast.description}</div>}
+                        {toast.description && <div className="mt-1 text-muted-foreground">{toast.description}</div>}
                     </div>
 
                     {/* Actions */}
@@ -132,7 +132,7 @@ export default function CustomToast() {
                                 <button
                                     key={index}
                                     onClick={() => handleAction(action)}
-                                    className="rounded bg-gray-700 px-3 py-1 text-xs text-white transition-colors hover:bg-gray-600"
+                                    className="rounded bg-secondary px-3 py-1 text-xs text-secondary-foreground transition-colors hover:bg-secondary/80"
                                 >
                                     {action.label}
                                 </button>
@@ -143,13 +143,13 @@ export default function CustomToast() {
                     {/* Progress indicator for loading */}
                     {toast.type === 'loading' && toast.data && 'progress' in toast.data && typeof toast.data.progress === 'number' && (
                         <div className="mt-3">
-                            <div className="mb-1 flex justify-between text-xs text-gray-400">
+                            <div className="mb-1 flex justify-between text-xs text-muted-foreground">
                                 <span>Progress</span>
                                 <span>{toast.data.progress as number}%</span>
                             </div>
-                            <div className="h-1 w-full rounded-full bg-gray-700">
+                            <div className="h-1 w-full rounded-full bg-secondary">
                                 <div
-                                    className="h-1 rounded-full bg-blue-500 transition-all duration-300"
+                                    className="h-1 rounded-full bg-blue-600 dark:bg-blue-400 transition-all duration-300"
                                     style={{ width: `${toast.data.progress as number}%` }}
                                 ></div>
                             </div>
@@ -159,9 +159,9 @@ export default function CustomToast() {
                     {/* Non-persistent indicator */}
                     {!toast.persistent && toast.duration > 0 && (
                         <div className="mt-2">
-                            <div className="h-0.5 overflow-hidden rounded-full bg-gray-600">
+                            <div className="h-0.5 overflow-hidden rounded-full bg-muted">
                                 <div
-                                    className="h-full animate-pulse rounded-full bg-white"
+                                    className="h-full animate-pulse rounded-full bg-primary"
                                     style={{
                                         animation: `shrink ${toast.duration}ms linear forwards`,
                                     }}
