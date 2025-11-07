@@ -2,11 +2,13 @@
 
 namespace App\Domain\Users\Services;
 
+use App\Domain\Users\DTO\LoginUserData;
 use App\Domain\Users\DTO\RegisterUserData;
 use App\Helpers\Helpers;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class UserService
 {
@@ -26,5 +28,30 @@ class UserService
                 throw $e;
             }
         });
+    }
+
+    public function loginWithEmailAndPassword(LoginUserData $data): User
+    {
+        $user = User::where('email', $data->email)->first();
+
+        if (!$user) {
+            throw ValidationException::withMessages([
+                'email' => __('auth.failed'),
+            ]);
+        }
+
+        if ($user && !$user->status) {
+            throw ValidationException::withMessages([
+                'email' => __('auth.not_activated'),
+            ]);
+        }
+
+        if ($user && !Hash::check($data->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => __('auth.failed'),
+            ]);
+        }
+
+        return $user;
     }
 }
