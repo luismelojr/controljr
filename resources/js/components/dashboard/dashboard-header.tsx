@@ -1,8 +1,18 @@
 import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { ModeToggle } from '@/components/ui/mode-toggle';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { PageProps } from '@/types';
-import { usePage } from '@inertiajs/react';
-import { Bell } from 'lucide-react';
+import { router, usePage } from '@inertiajs/react';
+import { Bell, LogOut, Settings, User } from 'lucide-react';
 
 interface DashboardHeaderProps {
     title: string;
@@ -12,6 +22,10 @@ interface DashboardHeaderProps {
 export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
     const { auth } = usePage<PageProps>().props;
     const userInitial = auth.user?.name ? auth.user.name.charAt(0).toUpperCase() : 'U';
+
+    const handleLogout = () => {
+        router.post(route('logout'));
+    };
 
     return (
         <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-background px-6">
@@ -25,22 +39,51 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
             </div>
 
             <div className="flex items-center gap-4">
+                <ModeToggle />
                 {/* Notifications */}
                 <Button variant="ghost" size="icon" className="relative">
                     <Bell className="h-5 w-5" />
                     <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive" />
                 </Button>
 
-                {/* User Profile */}
-                <div className="flex items-center gap-2">
-                    <div className="hidden flex-col items-end md:flex">
-                        <span className="text-sm font-medium">{auth.user?.name || 'User'}</span>
-                        <span className="text-xs text-muted-foreground">Admin</span>
-                    </div>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                        <span className="text-sm font-medium">{userInitial}</span>
-                    </div>
-                </div>
+                {/* User Profile Dropdown */}
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <button className="flex cursor-pointer items-center gap-2 outline-none focus:outline-none">
+                            <div className="hidden flex-col items-end md:flex">
+                                <span className="text-sm font-medium">{auth.user?.name || 'User'}</span>
+                                <span className="text-xs text-muted-foreground">Admin</span>
+                            </div>
+                            <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity hover:opacity-80">
+                                <span className="text-sm font-medium">{userInitial}</span>
+                            </div>
+                        </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                        <DropdownMenuLabel className="font-normal">
+                            <div className="flex flex-col space-y-1">
+                                <p className="text-sm leading-none font-medium">{auth.user?.name || 'User'}</p>
+                                <p className="text-xs leading-none text-muted-foreground">{auth.user?.email || 'user@example.com'}</p>
+                            </div>
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuGroup>
+                            <DropdownMenuItem className="cursor-pointer">
+                                <User className="mr-2 h-4 w-4" />
+                                <span>Editar Perfil</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer">
+                                <Settings className="mr-2 h-4 w-4" />
+                                <span>Configurações</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
+                            <LogOut className="mr-2 h-4 w-4" />
+                            <span>Sair</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
         </header>
     );
