@@ -14,6 +14,10 @@ export interface SharedData {
     [key: string]: unknown;
 }
 
+export interface PageProps extends SharedData {
+    errors: Record<string, string>;
+}
+
 export interface User {
     id: number;
     name: string;

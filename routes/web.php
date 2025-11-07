@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ToastTestController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\GoogleLoginController;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -37,9 +38,15 @@ Route::middleware('guest')->group(function () {
 
     Route::get('register', [RegisterController::class, 'create'])->name('register');
     Route::post('register', [RegisterController::class, 'store'])->name('register.store');;
+
+    Route::get('auth/google', [GoogleLoginController::class, 'redirect'])->name('auth.google.redirect');
+    Route::get('auth/google/callback', [GoogleLoginController::class, 'callback'])->name('auth.google.callback');
 });
 
-Route::middleware('auth')->as('dashboard.')->prefix('dashboard')->group(function () {
-    Route::get('/', \App\Http\Controllers\Dashboard\HomeController::class)->name('home');
+Route::middleware('auth')->group(function () {
+    Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
 
+    Route::as('dashboard.')->prefix('dashboard')->group(function () {
+        Route::get('/', \App\Http\Controllers\Dashboard\HomeController::class)->name('home');
+    });
 });

@@ -17,5 +17,6 @@ return [
     'password' => 'A senha informada está incorreta.',
     'throttle' => 'Muitas tentativas de login. Tente novamente em :seconds segundos.',
     'not_activated' => 'Sua conta não está ativada. Por favor, contate o administrador.',
+    'account_disabled' => 'Sua conta foi desativada. Por favor, contate o administrador.',
 
 ];

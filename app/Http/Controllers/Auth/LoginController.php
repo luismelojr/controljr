@@ -37,4 +37,14 @@ class LoginController extends Controller
 
         return redirect()->route('dashboard.home');
     }
+
+    public function destroy()
+    {
+        Auth::logout();
+
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
+        return redirect()->route('login');
+    }
 }
