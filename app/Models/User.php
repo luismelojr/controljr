@@ -51,4 +51,12 @@ class User extends Authenticatable
             'status' => 'boolean',
         ];
     }
+
+    /**
+     * Get the wallets for the user.
+     */
+    public function wallets()
+    {
+        return $this->hasMany(Wallet::class);
+    }
 }

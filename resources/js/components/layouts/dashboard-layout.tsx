@@ -1,8 +1,9 @@
-import { Head } from '@inertiajs/react';
-import { ReactNode } from 'react';
-import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/dashboard/app-sidebar';
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
+import CustomToast from '@/components/ui/custom-toast';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { Head } from '@inertiajs/react';
+import { ReactNode } from 'react';
 
 interface DashboardLayoutProps {
     children: ReactNode;
@@ -26,6 +27,7 @@ export default function DashboardLayout({ children, title, subtitle }: Dashboard
                     </div>
                 </div>
             </SidebarProvider>
+            <CustomToast />
         </>
     );
 }

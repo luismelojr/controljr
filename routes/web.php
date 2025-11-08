@@ -48,5 +48,8 @@ Route::middleware('auth')->group(function () {
 
     Route::as('dashboard.')->prefix('dashboard')->group(function () {
         Route::get('/', \App\Http\Controllers\Dashboard\HomeController::class)->name('home');
+
+        // Wallets routes
+        Route::resource('wallets', \App\Http\Controllers\Dashboard\WalletsController::class)->except(['show']);
     });
 });

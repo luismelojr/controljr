@@ -2,9 +2,7 @@ import { ToastInterface } from '@/types/toast';
 import { Config as ZiggyConfig } from 'ziggy-js';
 
 export interface Auth {
-    user: {
-        data: User;
-    };
+    user: User;
 }
 
 export interface SharedData {

@@ -1,0 +1,96 @@
+import { Button } from '@/components/ui/button';
+import { Building2, Edit, MoreVertical, Trash2 } from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+interface BankAccountWalletProps {
+    wallet: {
+        uuid: string;
+        name: string;
+        status: boolean;
+    };
+    onEdit?: (uuid: string) => void;
+    onDelete?: (uuid: string) => void;
+}
+
+export default function BankAccountWallet({ wallet, onEdit, onDelete }: BankAccountWalletProps) {
+    return (
+        <div className="group relative overflow-hidden rounded-xl border bg-gradient-to-br from-green-50 to-emerald-50 p-6 shadow-sm transition-all hover:shadow-md dark:from-green-950/20 dark:to-emerald-950/20">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-5">
+                <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-green-500"></div>
+                <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-emerald-500"></div>
+            </div>
+
+            {/* Content */}
+            <div className="relative z-10 flex flex-col justify-between space-y-4">
+                {/* Header */}
+                <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="rounded-lg bg-green-500 p-2.5 text-white shadow-sm">
+                            <Building2 className="h-5 w-5" />
+                        </div>
+                        <div>
+                            <p className="text-xs font-medium text-muted-foreground">Conta Bancária</p>
+                            <h3 className="text-lg font-bold text-foreground">{wallet.name}</h3>
+                        </div>
+                    </div>
+
+                    {/* Menu de Ações */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreVertical className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => onEdit?.(wallet.uuid)}>
+                                <Edit className="mr-2 h-4 w-4" />
+                                Editar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => onDelete?.(wallet.uuid)}
+                                className="text-destructive focus:text-destructive"
+                            >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Excluir
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+
+                {/* Informações da Conta */}
+                <div className="space-y-3">
+                    <div className="rounded-lg border border-green-200 bg-white/50 p-4 backdrop-blur-sm dark:border-green-800 dark:bg-green-950/20">
+                        <p className="text-xs font-medium text-muted-foreground">Saldo Disponível</p>
+                        <p className="mt-1 text-2xl font-bold text-green-600 dark:text-green-400">R$ 0,00</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div className="rounded-lg border bg-white/50 p-3 backdrop-blur-sm dark:bg-background/50">
+                            <p className="text-xs font-medium text-muted-foreground">Receitas</p>
+                            <p className="mt-1 font-semibold text-green-600">+ R$ 0,00</p>
+                        </div>
+                        <div className="rounded-lg border bg-white/50 p-3 backdrop-blur-sm dark:bg-background/50">
+                            <p className="text-xs font-medium text-muted-foreground">Despesas</p>
+                            <p className="mt-1 font-semibold text-red-600">- R$ 0,00</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Status Badge */}
+                {!wallet.status && (
+                    <div className="absolute right-4 top-4">
+                        <span className="rounded-full bg-red-500 px-2 py-1 text-xs font-semibold text-white">
+                            Inativo
+                        </span>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
