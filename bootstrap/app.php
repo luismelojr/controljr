@@ -1,6 +1,8 @@
 <?php
 
+use App\Facades\Toast;
 use App\Http\Middleware\HandleInertiaRequests;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,5 +21,18 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Handle authorization exceptions with toast notifications
+        $exceptions->render(function (AuthorizationException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Você não tem permissão para realizar esta ação.',
+                ], 403);
+            }
+
+            Toast::error('Você não tem permissão para realizar esta ação.')
+                ->title('Acesso Negado')
+                ->flash();
+
+            return redirect()->back();
+        });
     })->create();

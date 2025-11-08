@@ -26,6 +26,8 @@ class WalletsController extends Controller
      */
     public function index(): Response
     {
+        $this->authorize('viewAny', Wallet::class);
+
         $wallets = auth()->user()->wallets;
 
         return Inertia::render('dashboard/wallets/index', [
@@ -38,6 +40,8 @@ class WalletsController extends Controller
      */
     public function create(): Response
     {
+        $this->authorize('create', Wallet::class);
+
         return Inertia::render('dashboard/wallets/create');
     }
 
@@ -46,6 +50,8 @@ class WalletsController extends Controller
      */
     public function store(StoreWalletRequest $request): RedirectResponse
     {
+        $this->authorize('create', Wallet::class);
+
         $data = CreateWalletData::fromRequest($request);
 
         $this->walletService->create($data, auth()->user());
@@ -63,6 +69,8 @@ class WalletsController extends Controller
      */
     public function edit(Wallet $wallet): Response
     {
+        $this->authorize('update', $wallet);
+
         return Inertia::render('dashboard/wallets/edit', [
             'wallet' => new WalletResource($wallet),
         ]);
@@ -73,6 +81,8 @@ class WalletsController extends Controller
      */
     public function update(UpdateWalletRequest $request, Wallet $wallet): RedirectResponse
     {
+        $this->authorize('update', $wallet);
+
         $data = UpdateWalletData::fromRequest($request);
 
         $this->walletService->update($wallet, $data);
@@ -90,6 +100,8 @@ class WalletsController extends Controller
      */
     public function destroy(Wallet $wallet): RedirectResponse
     {
+        $this->authorize('delete', $wallet);
+
         $this->walletService->delete($wallet);
 
         Toast::create('Carteira excluída com sucesso!')

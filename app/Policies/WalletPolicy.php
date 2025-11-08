@@ -60,6 +60,6 @@ class WalletPolicy
      */
     public function forceDelete(User $user, Wallet $wallet): bool
     {
-        return $user->id === $wallet->user_id;
+        return false; // Never allow force delete
     }
 }

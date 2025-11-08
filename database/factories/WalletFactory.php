@@ -20,6 +20,7 @@ class WalletFactory extends Factory
         $cardLimitUsed = fake()->randomFloat(2, 0, $cardLimit * 0.8); // Até 80% do limite
 
         return [
+            'user_id' => \App\Models\User::factory(),
             'name' => fake()->randomElement(['Nubank', 'Inter', 'Itaú', 'Bradesco', 'Santander', 'C6 Bank', 'Carteira Principal']),
             'type' => fake()->randomElement(['card_credit', 'bank_account', 'other']),
             'day_close' => fake()->numberBetween(1, 28),
