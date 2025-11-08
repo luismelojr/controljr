@@ -21,7 +21,7 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
     const { auth } = usePage<PageProps>().props;
-    const userInitial = auth.user?.name ? auth.user.name.charAt(0).toUpperCase() : 'U';
+    const userInitial = auth.user?.data.name ? auth.user.data.name.charAt(0).toUpperCase() : 'U';
 
     const handleLogout = () => {
         router.post(route('logout'));
@@ -51,7 +51,7 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
                     <DropdownMenuTrigger asChild>
                         <button className="flex cursor-pointer items-center gap-2 outline-none focus:outline-none">
                             <div className="hidden flex-col items-end md:flex">
-                                <span className="text-sm font-medium">{auth.user?.name || 'User'}</span>
+                                <span className="text-sm font-medium">{auth.user?.data.name || 'User'}</span>
                                 <span className="text-xs text-muted-foreground">Admin</span>
                             </div>
                             <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity hover:opacity-80">
@@ -62,8 +62,8 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
                     <DropdownMenuContent className="w-56" align="end" forceMount>
                         <DropdownMenuLabel className="font-normal">
                             <div className="flex flex-col space-y-1">
-                                <p className="text-sm leading-none font-medium">{auth.user?.name || 'User'}</p>
-                                <p className="text-xs leading-none text-muted-foreground">{auth.user?.email || 'user@example.com'}</p>
+                                <p className="text-sm leading-none font-medium">{auth.user?.data.name || 'User'}</p>
+                                <p className="text-xs leading-none text-muted-foreground">{auth.user?.data.email || 'user@example.com'}</p>
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />

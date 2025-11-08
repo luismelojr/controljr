@@ -14,7 +14,7 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(
-            <ThemeProvider defaultTheme={'light'} storageKey={'controljr-theme'}>
+            <ThemeProvider defaultTheme={'system'} storageKey={'controljr-theme'}>
                 <App {...props} />
             </ThemeProvider>,
         );
