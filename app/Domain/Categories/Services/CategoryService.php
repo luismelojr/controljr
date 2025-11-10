@@ -7,8 +7,7 @@ use App\Domain\Categories\DTO\UpdateCategoryData;
 use App\Models\Category;
 use App\Models\User;
 use App\QueryFilters\CategoryNameFilter;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -19,7 +18,7 @@ class CategoryService
      * Get all categories for a user with filters and sorting.
      * Applies Spatie Query Builder with allowed filters and sorts.
      */
-    public function getAllForUser(User $user, int $perPage = 2): LengthAwarePaginator
+    public function getAllForUser(User $user, int $perPage = 15): LengthAwarePaginator
     {
         $baseQuery = Category::query()
             ->where(function ($query) use ($user) {

@@ -30,12 +30,12 @@ class CategoriesController extends Controller
 
         $categories = $this->categoryService->getAllForUser(
             user: auth()->user(),
-            perPage: request()->input('perPage', 10),
+            perPage: request()->integer('per_page', 15),
         );
 
         return Inertia::render('dashboard/categories/index', [
-            'categories' => CategoryResource::collection($categories)->resolve(),
-            'filters' => request()->only(['filter', 'sort']), // Send current filters to frontend
+            'categories' => CategoryResource::collection($categories),
+            'filters' => request()->only(['filter', 'sort']),
         ]);
     }
 
