@@ -3,6 +3,8 @@
 namespace App\Domain\Accounts\DTO;
 
 use App\Enums\RecurrenceTypeEnum;
+use App\Models\Category;
+use App\Models\Wallet;
 use Illuminate\Http\Request;
 
 class CreateAccountData
@@ -20,9 +22,13 @@ class CreateAccountData
 
     public static function fromRequest(Request $request): self
     {
+        // Convert UUIDs to IDs
+        $wallet = Wallet::where('uuid', $request->input('wallet_id'))->firstOrFail();
+        $category = Category::where('uuid', $request->input('category_id'))->firstOrFail();
+
         return new self(
-            wallet_id: $request->integer('wallet_id'),
-            category_id: $request->integer('category_id'),
+            wallet_id: $wallet->id,
+            category_id: $category->id,
             name: $request->input('name'),
             description: $request->input('description'),
             total_amount: (float) $request->input('total_amount'),

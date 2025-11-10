@@ -29,13 +29,13 @@ class StoreAccountRequest extends FormRequest
         return [
             'wallet_id' => [
                 'required',
-                'integer',
-                'exists:wallets,id',
+                'string',
+                'exists:wallets,uuid',
             ],
             'category_id' => [
                 'required',
-                'integer',
-                'exists:categories,id',
+                'string',
+                'exists:categories,uuid',
             ],
             'name' => [
                 'required',
@@ -104,7 +104,7 @@ class StoreAccountRequest extends FormRequest
         $validator->after(function (Validator $validator) {
             // Validate wallet ownership
             if ($this->input('wallet_id')) {
-                $wallet = Wallet::find($this->input('wallet_id'));
+                $wallet = Wallet::where('uuid', $this->input('wallet_id'))->first();
 
                 if ($wallet && $wallet->user_id !== auth()->id()) {
                     $validator->errors()->add(

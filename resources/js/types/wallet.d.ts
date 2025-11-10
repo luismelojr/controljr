@@ -12,9 +12,15 @@ export interface WalletInterface {
     uuid: string;
     name: string;
     type: 'card_credit' | 'bank_account' | 'other';
+    type_label: string;
+    is_credit_card: boolean;
     status: boolean;
     day_close?: number;
     best_shopping_day?: number;
     card_limit?: number;
     card_limit_used?: number;
+    card_limit_available?: number;
+    card_limit_percentage_used?: number;
+    created_at: string;
+    updated_at: string;
 }
