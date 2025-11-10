@@ -28,9 +28,12 @@ class CategoriesController extends Controller
     {
         $this->authorize('viewAny', Category::class);
 
-        $categories = $this->categoryService->getAllForUser(auth()->user());
+        $categories = $this->categoryService->getAllForUser(
+            user: auth()->user(),
+            perPage: request()->input('perPage', 10),
+        );
 
-        return Inertia::render('dashboard/categories', [
+        return Inertia::render('dashboard/categories/index', [
             'categories' => CategoryResource::collection($categories)->resolve(),
             'filters' => request()->only(['filter', 'sort']), // Send current filters to frontend
         ]);

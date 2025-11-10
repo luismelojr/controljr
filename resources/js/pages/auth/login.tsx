@@ -1,9 +1,9 @@
 import AuthLayout from '@/components/layouts/auth-layout';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { GoogleLoginButton } from '@/components/ui/google-login-button';
 import { Label } from '@/components/ui/label';
 import TextInput from '@/components/ui/text-input';
-import { GoogleLoginButton } from '@/components/ui/google-login-button';
 import { Link, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
@@ -81,8 +81,8 @@ export default function Login() {
                     </div>
 
                     {/* Submit Button */}
-                    <Button type="submit" className="w-full" disabled={processing}>
-                        {processing ? 'Entrando...' : 'Entrar'}
+                    <Button type="submit" className="w-full" loading={processing}>
+                        Entrar
                     </Button>
                 </form>
 

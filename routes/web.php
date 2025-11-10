@@ -52,7 +52,7 @@ Route::middleware('auth')->group(function () {
         // Wallets routes
         Route::resource('wallets', \App\Http\Controllers\Dashboard\WalletsController::class)->except(['show']);
 
-        // Categories routes
+        // Category routes
         Route::resource('categories', \App\Http\Controllers\Dashboard\CategoriesController::class)->except(['show']);
     });
 });

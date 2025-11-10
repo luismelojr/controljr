@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\User;
 use App\QueryFilters\CategoryNameFilter;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -18,7 +19,7 @@ class CategoryService
      * Get all categories for a user with filters and sorting.
      * Applies Spatie Query Builder with allowed filters and sorts.
      */
-    public function getAllForUser(User $user): Collection
+    public function getAllForUser(User $user, int $perPage = 2): LengthAwarePaginator
     {
         $baseQuery = Category::query()
             ->where(function ($query) use ($user) {
@@ -38,7 +39,8 @@ class CategoryService
                 AllowedSort::field('default', 'is_default'),
             ])
             ->defaultSort('-is_default', 'name') // Default categories first, then alphabetically
-            ->get();
+            ->paginate($perPage)
+            ->withQueryString();
     }
 
     /**
