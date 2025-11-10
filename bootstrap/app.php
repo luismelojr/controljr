@@ -1,8 +1,11 @@
 <?php
 
+use App\Domain\IncomeTransactions\Services\IncomeTransactionService;
+use App\Domain\Transactions\Services\TransactionService;
 use App\Facades\Toast;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,6 +22,17 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
+    })
+    ->withSchedule(function (Schedule $schedule): void {
+        // Mark overdue transactions (expenses) - runs daily at midnight
+        $schedule->call(function () {
+            app(TransactionService::class)->markOverdueTransactions();
+        })->daily()->name('mark-overdue-transactions');
+
+        // Mark overdue income transactions - runs daily at midnight
+        $schedule->call(function () {
+            app(IncomeTransactionService::class)->markOverdueIncomeTransactions();
+        })->daily()->name('mark-overdue-income-transactions');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Handle authorization exceptions with toast notifications

@@ -39,4 +39,14 @@ class Category extends Model
     {
         return $this->hasMany(Transaction::class);
     }
+
+    public function incomes()
+    {
+        return $this->hasMany(Income::class);
+    }
+
+    public function incomeTransactions()
+    {
+        return $this->hasMany(IncomeTransaction::class);
+    }
 }

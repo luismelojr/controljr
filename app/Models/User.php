@@ -83,4 +83,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(Transaction::class);
     }
+
+    /**
+     * Get the incomes for the user.
+     */
+    public function incomes()
+    {
+        return $this->hasMany(Income::class);
+    }
+
+    /**
+     * Get the income transactions for the user.
+     */
+    public function incomeTransactions()
+    {
+        return $this->hasMany(IncomeTransaction::class);
+    }
 }

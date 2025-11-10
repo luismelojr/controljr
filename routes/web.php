@@ -66,5 +66,16 @@ Route::middleware('auth')->group(function () {
         Route::get('transactions/{transaction}', [\App\Http\Controllers\Dashboard\TransactionsController::class, 'show'])->name('transactions.show');
         Route::patch('transactions/{transaction}/mark-as-paid', [\App\Http\Controllers\Dashboard\TransactionsController::class, 'markAsPaid'])->name('transactions.mark-as-paid');
         Route::patch('transactions/{transaction}/mark-as-unpaid', [\App\Http\Controllers\Dashboard\TransactionsController::class, 'markAsUnpaid'])->name('transactions.mark-as-unpaid');
+
+        // Income routes
+        Route::resource('incomes', \App\Http\Controllers\Dashboard\IncomesController::class);
+        Route::patch('incomes/{income}/toggle-status', [\App\Http\Controllers\Dashboard\IncomesController::class, 'updateStatus'])->name('incomes.toggle-status');
+
+        // Income Transaction routes
+        Route::get('income-transactions', [\App\Http\Controllers\Dashboard\IncomeTransactionsController::class, 'index'])->name('income-transactions.index');
+        Route::get('income-transactions/{year}/{month}', [\App\Http\Controllers\Dashboard\IncomeTransactionsController::class, 'month'])->name('income-transactions.month');
+        Route::get('income-transactions/{incomeTransaction}', [\App\Http\Controllers\Dashboard\IncomeTransactionsController::class, 'show'])->name('income-transactions.show');
+        Route::patch('income-transactions/{incomeTransaction}/mark-as-received', [\App\Http\Controllers\Dashboard\IncomeTransactionsController::class, 'markAsReceived'])->name('income-transactions.mark-as-received');
+        Route::patch('income-transactions/{incomeTransaction}/mark-as-not-received', [\App\Http\Controllers\Dashboard\IncomeTransactionsController::class, 'markAsNotReceived'])->name('income-transactions.mark-as-not-received');
     });
 });
