@@ -55,5 +55,16 @@ Route::middleware('auth')->group(function () {
         // Category routes
         Route::resource('categories', \App\Http\Controllers\Dashboard\CategoriesController::class)->except(['show']);
         Route::patch('categories/{category}/toggle-status', [\App\Http\Controllers\Dashboard\CategoriesController::class, 'updateStatus'])->name('categories.toggle-status');
+
+        // Account routes
+        Route::resource('accounts', \App\Http\Controllers\Dashboard\AccountsController::class);
+        Route::patch('accounts/{account}/toggle-status', [\App\Http\Controllers\Dashboard\AccountsController::class, 'updateStatus'])->name('accounts.toggle-status');
+
+        // Transaction routes
+        Route::get('transactions', [\App\Http\Controllers\Dashboard\TransactionsController::class, 'index'])->name('transactions.index');
+        Route::get('transactions/{year}/{month}', [\App\Http\Controllers\Dashboard\TransactionsController::class, 'month'])->name('transactions.month');
+        Route::get('transactions/{transaction}', [\App\Http\Controllers\Dashboard\TransactionsController::class, 'show'])->name('transactions.show');
+        Route::patch('transactions/{transaction}/mark-as-paid', [\App\Http\Controllers\Dashboard\TransactionsController::class, 'markAsPaid'])->name('transactions.mark-as-paid');
+        Route::patch('transactions/{transaction}/mark-as-unpaid', [\App\Http\Controllers\Dashboard\TransactionsController::class, 'markAsUnpaid'])->name('transactions.mark-as-unpaid');
     });
 });

@@ -67,4 +67,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(Category::class);
     }
+
+    /**
+     * Get the accounts for the user.
+     */
+    public function accounts()
+    {
+        return $this->hasMany(Account::class);
+    }
+
+    /**
+     * Get the transactions for the user.
+     */
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

@@ -29,4 +29,14 @@ class Category extends Model
     public function user(): BelongsTo {
         return $this->belongsTo(User::class);
     }
+
+    public function accounts()
+    {
+        return $this->hasMany(Account::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }
