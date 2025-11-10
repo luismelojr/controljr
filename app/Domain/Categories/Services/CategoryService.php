@@ -6,22 +6,38 @@ use App\Domain\Categories\DTO\CreateCategoryData;
 use App\Domain\Categories\DTO\UpdateCategoryData;
 use App\Models\Category;
 use App\Models\User;
+use App\QueryFilters\CategoryNameFilter;
 use Illuminate\Database\Eloquent\Collection;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class CategoryService
 {
     /**
-     * Get all categories for a user (user's categories + default categories).
+     * Get all categories for a user with filters and sorting.
+     * Applies Spatie Query Builder with allowed filters and sorts.
      */
     public function getAllForUser(User $user): Collection
     {
-        return Category::query()
+        $baseQuery = Category::query()
             ->where(function ($query) use ($user) {
                 $query->where('user_id', $user->id)
                     ->orWhere('is_default', true);
-            })
-            ->orderBy('is_default', 'desc') // Default categories first
-            ->orderBy('name', 'asc')
+            });
+
+        return QueryBuilder::for($baseQuery)
+            ->allowedFilters([
+                AllowedFilter::custom('name', new CategoryNameFilter()),
+                AllowedFilter::exact('is_default'),
+                AllowedFilter::exact('status'),
+            ])
+            ->allowedSorts([
+                'name',
+                'created_at',
+                AllowedSort::field('default', 'is_default'),
+            ])
+            ->defaultSort('-is_default', 'name') // Default categories first, then alphabetically
             ->get();
     }
 

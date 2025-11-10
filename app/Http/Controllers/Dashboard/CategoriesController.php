@@ -32,6 +32,7 @@ class CategoriesController extends Controller
 
         return Inertia::render('dashboard/categories', [
             'categories' => CategoryResource::collection($categories)->resolve(),
+            'filters' => request()->only(['filter', 'sort']), // Send current filters to frontend
         ]);
     }
 
