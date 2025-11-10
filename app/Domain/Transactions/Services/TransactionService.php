@@ -4,6 +4,7 @@ namespace App\Domain\Transactions\Services;
 
 use App\Enums\RecurrenceTypeEnum;
 use App\Enums\TransactionStatusEnum;
+use App\Enums\WalletTypeEnum;
 use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
@@ -60,6 +61,9 @@ class TransactionService
                 'paid_at' => $paidAt ?? now(),
             ]);
 
+            // Release credit card limit if wallet is a credit card
+            $this->releaseCreditCardLimit($transaction);
+
             // Check if account is installments and all are paid → complete account
             if ($transaction->account->recurrence_type === RecurrenceTypeEnum::INSTALLMENTS) {
                 $this->checkAndCompleteAccount($transaction->account);
@@ -79,12 +83,17 @@ class TransactionService
      */
     public function markAsUnpaid(Transaction $transaction): Transaction
     {
-        $transaction->update([
-            'status' => TransactionStatusEnum::PENDING,
-            'paid_at' => null,
-        ]);
+        return DB::transaction(function () use ($transaction) {
+            $transaction->update([
+                'status' => TransactionStatusEnum::PENDING,
+                'paid_at' => null,
+            ]);
 
-        return $transaction->fresh();
+            // Occupy credit card limit again if wallet is a credit card
+            $this->occupyCreditCardLimit($transaction);
+
+            return $transaction->fresh();
+        });
     }
 
     /**
@@ -167,5 +176,39 @@ class TransactionService
             'pending_count' => $transactions->where('status', TransactionStatusEnum::PENDING)->count(),
             'overdue_count' => $transactions->where('status', TransactionStatusEnum::OVERDUE)->count(),
         ];
+    }
+
+    /**
+     * Release credit card limit when a transaction is paid
+     */
+    protected function releaseCreditCardLimit(Transaction $transaction): void
+    {
+        $wallet = $transaction->wallet;
+
+        // Only apply to credit cards
+        if ($wallet->type !== WalletTypeEnum::CARD_CREDIT) {
+            return;
+        }
+
+        // Release the transaction amount from the used limit
+        $wallet->card_limit_used = $wallet->card_limit_used - $transaction->amount;
+        $wallet->save();
+    }
+
+    /**
+     * Occupy credit card limit when a transaction is marked as unpaid
+     */
+    protected function occupyCreditCardLimit(Transaction $transaction): void
+    {
+        $wallet = $transaction->wallet;
+
+        // Only apply to credit cards
+        if ($wallet->type !== WalletTypeEnum::CARD_CREDIT) {
+            return;
+        }
+
+        // Occupy the transaction amount in the used limit
+        $wallet->card_limit_used = $wallet->card_limit_used + $transaction->amount;
+        $wallet->save();
     }
 }

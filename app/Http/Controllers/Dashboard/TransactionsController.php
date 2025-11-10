@@ -91,6 +91,9 @@ class TransactionsController extends Controller
                 ? Carbon::parse($request->input('paid_at'))
                 : null;
 
+            // Load wallet relationship for credit card limit management
+            $transaction->load(['wallet', 'account']);
+
             $this->transactionService->markAsPaid($transaction, $paidAt);
 
             Toast::success('Transação marcada como paga!');
@@ -111,6 +114,9 @@ class TransactionsController extends Controller
         $this->authorize('update', $transaction);
 
         try {
+            // Load wallet relationship for credit card limit management
+            $transaction->load('wallet');
+
             $this->transactionService->markAsUnpaid($transaction);
 
             Toast::success('Transação marcada como não paga!');
