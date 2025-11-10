@@ -22,10 +22,14 @@ export function DataTablePagination({ meta, links }: DataTablePaginationProps) {
     const goToPage = (url: string | null) => {
         if (!url) return;
 
-        router.get(url, {}, {
-            preserveState: true,
-            preserveScroll: false, // Scroll to top on page change
-        });
+        router.get(
+            url,
+            {},
+            {
+                preserveState: true,
+                preserveScroll: false, // Scroll to top on page change
+            },
+        );
     };
 
     /**
@@ -36,23 +40,21 @@ export function DataTablePagination({ meta, links }: DataTablePaginationProps) {
         url.searchParams.set('per_page', value);
         url.searchParams.delete('page'); // Reset to first page
 
-        router.get(url.toString(), {}, {
-            preserveState: true,
-            preserveScroll: true,
-        });
+        router.get(
+            url.toString(),
+            {},
+            {
+                preserveState: true,
+                preserveScroll: true,
+            },
+        );
     };
-
-    // Don't show pagination if there's only one page
-    if (last_page <= 1) {
-        return null;
-    }
 
     return (
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             {/* Results info */}
             <div className="text-sm text-muted-foreground">
-                Mostrando <span className="font-medium text-foreground">{from}</span> até{' '}
-                <span className="font-medium text-foreground">{to}</span> de{' '}
+                Mostrando <span className="font-medium text-foreground">{from}</span> até <span className="font-medium text-foreground">{to}</span> de{' '}
                 <span className="font-medium text-foreground">{total}</span> resultados
             </div>
 
@@ -93,23 +95,11 @@ export function DataTablePagination({ meta, links }: DataTablePaginationProps) {
                         <ChevronsLeft className="h-4 w-4" />
                     </Button>
 
-                    <Button
-                        variant="outline"
-                        size="icon-sm"
-                        onClick={() => goToPage(links.prev)}
-                        disabled={!links.prev}
-                        title="Página anterior"
-                    >
+                    <Button variant="outline" size="icon-sm" onClick={() => goToPage(links.prev)} disabled={!links.prev} title="Página anterior">
                         <ChevronLeft className="h-4 w-4" />
                     </Button>
 
-                    <Button
-                        variant="outline"
-                        size="icon-sm"
-                        onClick={() => goToPage(links.next)}
-                        disabled={!links.next}
-                        title="Próxima página"
-                    >
+                    <Button variant="outline" size="icon-sm" onClick={() => goToPage(links.next)} disabled={!links.next} title="Próxima página">
                         <ChevronRight className="h-4 w-4" />
                     </Button>
 

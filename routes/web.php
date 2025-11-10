@@ -54,5 +54,6 @@ Route::middleware('auth')->group(function () {
 
         // Category routes
         Route::resource('categories', \App\Http\Controllers\Dashboard\CategoriesController::class)->except(['show']);
+        Route::patch('categories/{category}/toggle-status', [\App\Http\Controllers\Dashboard\CategoriesController::class, 'updateStatus'])->name('categories.toggle-status');
     });
 });

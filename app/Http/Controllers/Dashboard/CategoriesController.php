@@ -30,7 +30,7 @@ class CategoriesController extends Controller
 
         $categories = $this->categoryService->getAllForUser(
             user: auth()->user(),
-            perPage: request()->integer('per_page', 15),
+            perPage: request()->integer('per_page', 10),
         );
 
         return Inertia::render('dashboard/categories/index', [
@@ -110,6 +110,23 @@ class CategoriesController extends Controller
             $this->categoryService->delete($category);
 
             Toast::success('Categoria excluída com sucesso!');
+
+            return redirect()->route('dashboard.categories.index');
+        } catch (\Exception $e) {
+            Toast::error($e->getMessage());
+
+            return back();
+        }
+    }
+
+    public function updateStatus(Category $category): RedirectResponse
+    {
+        $this->authorize('update', $category);
+
+        try {
+            $this->categoryService->toggleStatus($category);
+
+            Toast::success('Status da categoria atualizado com sucesso!');
 
             return redirect()->route('dashboard.categories.index');
         } catch (\Exception $e) {

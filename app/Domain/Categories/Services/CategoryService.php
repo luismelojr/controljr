@@ -18,7 +18,7 @@ class CategoryService
      * Get all categories for a user with filters and sorting.
      * Applies Spatie Query Builder with allowed filters and sorts.
      */
-    public function getAllForUser(User $user, int $perPage = 15): LengthAwarePaginator
+    public function getAllForUser(User $user, int $perPage = 10): LengthAwarePaginator
     {
         $baseQuery = Category::query()
             ->where(function ($query) use ($user) {

@@ -6,7 +6,7 @@ import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { Category } from '@/types/category';
 import { ColumnDef, FilterConfig, PaginatedResponse } from '@/types/datatable';
 import { Head, router } from '@inertiajs/react';
-import { Edit, Plus, Trash2 } from 'lucide-react';
+import { CircleMinus, CirclePlus, Edit, Plus, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 interface CategoriesIndexProps {
@@ -19,6 +19,16 @@ interface CategoriesIndexProps {
 
 export default function CategoriesIndex({ categories, filters }: CategoriesIndexProps) {
     const [deleteDialog, setDeleteDialog] = useState<{
+        open: boolean;
+        categoryUuid: string | null;
+        categoryName: string;
+    }>({
+        open: false,
+        categoryUuid: null,
+        categoryName: '',
+    });
+
+    const [statusDialogOpen, setStatusDialogOpen] = useState<{
         open: boolean;
         categoryUuid: string | null;
         categoryName: string;
@@ -120,9 +130,23 @@ export default function CategoriesIndex({ categories, filters }: CategoriesIndex
             render: (category) => (
                 <div className="flex items-center justify-end gap-2">
                     {category.can_edit && (
-                        <Button variant="ghost" size="icon-sm" onClick={() => handleEdit(category.uuid)} title="Editar categoria">
-                            <Edit className="h-4 w-4" />
-                        </Button>
+                        <>
+                            <Button variant="ghost" size="icon-sm" onClick={() => handleEdit(category.uuid)} title="Editar categoria">
+                                <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                onClick={() => handleStatus(category.uuid, category.name)}
+                                title={`${category.status ? 'Desativar' : 'Ativar'} categoria`}
+                            >
+                                {category.status ? (
+                                    <CircleMinus className={'text-warning h-4 w-4'} />
+                                ) : (
+                                    <CirclePlus className={'text-warning h-4 w-4'} />
+                                )}
+                            </Button>
+                        </>
                     )}
                     {category.can_delete && (
                         <Button variant="ghost" size="icon-sm" onClick={() => handleDelete(category.uuid, category.name)} title="Excluir categoria">
@@ -160,6 +184,14 @@ export default function CategoriesIndex({ categories, filters }: CategoriesIndex
         });
     };
 
+    const handleStatus = (uuid: string, name: string) => {
+        setStatusDialogOpen({
+            open: true,
+            categoryUuid: uuid,
+            categoryName: name,
+        });
+    };
+
     /**
      * Confirm delete action
      */
@@ -171,6 +203,22 @@ export default function CategoriesIndex({ categories, filters }: CategoriesIndex
                     setDeleteDialog({ open: false, categoryUuid: null, categoryName: '' });
                 },
             });
+        }
+    };
+
+    const confirmStatus = () => {
+        if (statusDialogOpen.categoryUuid) {
+            router.patch(
+                route('dashboard.categories.toggle-status', { category: statusDialogOpen.categoryUuid }),
+                {
+                    preserveScroll: true,
+                },
+                {
+                    onSuccess: () => {
+                        setStatusDialogOpen({ open: false, categoryUuid: null, categoryName: '' });
+                    },
+                },
+            );
         }
     };
 
@@ -216,6 +264,18 @@ export default function CategoriesIndex({ categories, filters }: CategoriesIndex
                 description="Esta ação não pode ser desfeita. Isso irá excluir permanentemente a categoria"
                 itemName={deleteDialog.categoryName}
                 confirmText="Excluir"
+                cancelText="Cancelar"
+            />
+
+            {/* Status Confirmation Dialog */}
+            <ConfirmDeleteDialog
+                open={statusDialogOpen.open}
+                onOpenChange={(open) => setStatusDialogOpen((prev) => ({ ...prev, open }))}
+                onConfirm={confirmStatus}
+                title={`${statusDialogOpen.categoryName} categoria?`}
+                description="Esta ação irá alterar o status da categoria"
+                itemName={statusDialogOpen.categoryName}
+                confirmText="Confirmar"
                 cancelText="Cancelar"
             />
         </DashboardLayout>

@@ -11,7 +11,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { router, usePage } from '@inertiajs/react';
-import { Home, LogOut, Wallet } from 'lucide-react';
+import { Home, LogOut, Tag, Wallet } from 'lucide-react';
 
 interface MenuItemInterface {
     title: string;
@@ -29,6 +29,7 @@ const menuItems: MenuItemInterface[] = [
         items: [
             { title: 'Dashboard', icon: Home, url: route('dashboard.home') },
             { title: 'Carteiras', icon: Wallet, url: route('dashboard.wallets.index') },
+            { title: 'Categorias', icon: Tag, url: route('dashboard.categories.index') },
         ],
     },
     // {
