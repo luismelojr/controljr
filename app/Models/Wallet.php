@@ -90,4 +90,34 @@ class Wallet extends Model
     {
         return $this->hasMany(Income::class);
     }
+
+    public function incomeTransactions()
+    {
+        return $this->hasManyThrough(IncomeTransaction::class, Income::class);
+    }
+
+    /**
+     * Get the current balance of the wallet.
+     * Balance = initial_balance + received_incomes - paid_transactions
+     */
+    public function getBalanceAttribute(): float
+    {
+        // Get initial balance in cents from database
+        $initialBalanceInCents = $this->attributes['initial_balance'] ?? 0;
+
+        // Add received income transactions (sum returns value in cents from DB)
+        $receivedIncomesInCents = $this->incomeTransactions()
+            ->where('is_received', true)
+            ->sum('amount');
+
+        // Subtract paid transactions (sum returns value in cents from DB)
+        $paidTransactionsInCents = $this->transactions()
+            ->where('status', \App\Enums\TransactionStatusEnum::PAID->value)
+            ->sum('amount');
+
+        // Calculate final balance in cents, then convert to reais
+        $balanceInCents = $initialBalanceInCents + $receivedIncomesInCents - $paidTransactionsInCents;
+
+        return $balanceInCents / 100;
+    }
 }

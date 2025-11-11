@@ -159,7 +159,7 @@ class AlertService
 
     /**
      * Check bill due date alerts.
-     * NOTE: Adjust this method according to your Bill model structure.
+     * Checks pending transactions that are approaching their due date.
      */
     public function checkBillDueDateAlerts(): void
     {
@@ -175,39 +175,63 @@ class AlertService
 
     /**
      * Process a single bill alert.
+     * Checks transactions that are pending and approaching their due date.
      */
     protected function processBillAlert(Alert $alert): void
     {
-        $bill = $alert->alertable;
-
-        if (!$bill || !isset($bill->due_date)) {
-            return;
+        // Get transactions to check
+        if ($alert->alertable_type === \App\Models\Account::class && $alert->alertable_id) {
+            // Alert for a specific Account - check its transactions
+            $transactions = \App\Models\Transaction::where('account_id', $alert->alertable_id)
+                ->where('status', \App\Enums\TransactionStatusEnum::PENDING)
+                ->get();
+        } else {
+            // Alert for all user's transactions
+            $transactions = \App\Models\Transaction::where('user_id', $alert->user_id)
+                ->where('status', \App\Enums\TransactionStatusEnum::PENDING)
+                ->get();
         }
 
-        foreach ($alert->trigger_days as $days) {
-            $targetDate = now()->addDays($days)->startOfDay();
-            $billDueDate = $bill->due_date->startOfDay();
+        // Check each transaction against the alert trigger days
+        foreach ($transactions as $transaction) {
+            if (!$transaction->due_date) {
+                continue;
+            }
 
-            if ($targetDate->isSameDay($billDueDate)) {
-                // Check if already notified for this specific day threshold
-                $alreadyNotified = AlertNotification::where('alert_id', $alert->id)
-                    ->whereJsonContains('data->days_before', $days)
-                    ->whereDate('created_at', now())
-                    ->exists();
+            foreach ($alert->trigger_days as $days) {
+                $targetDate = now()->addDays($days)->startOfDay();
+                $dueDate = $transaction->due_date->startOfDay();
 
-                if (!$alreadyNotified) {
-                    $this->createNotification($alert, [
-                        'title' => 'Conta Próxima do Vencimento',
-                        'message' => sprintf(
-                            'A conta %s vence em %d dia(s).',
-                            $bill->description ?? 'sem descrição',
-                            $days
-                        ),
-                        'type' => $days <= 3 ? NotificationTypeEnum::DANGER->value : NotificationTypeEnum::WARNING->value,
-                        'days_before' => $days,
-                        'due_date' => $bill->due_date->toDateString(),
-                        'amount' => $bill->amount ?? 0,
-                    ]);
+                if ($targetDate->isSameDay($dueDate)) {
+                    // Check if already notified for this specific transaction and day threshold
+                    $alreadyNotified = AlertNotification::where('alert_id', $alert->id)
+                        ->whereJsonContains('data->transaction_id', $transaction->id)
+                        ->whereJsonContains('data->days_before', $days)
+                        ->whereDate('created_at', now())
+                        ->exists();
+
+                    if (!$alreadyNotified) {
+                        $accountName = $transaction->account->name ?? 'Sem nome';
+                        $categoryName = $transaction->category->name ?? 'Sem categoria';
+
+                        $this->createNotification($alert, [
+                            'title' => 'Conta Próxima do Vencimento',
+                            'message' => sprintf(
+                                'A conta "%s" (%s) vence em %d dia(s) no valor de R$ %.2f.',
+                                $accountName,
+                                $categoryName,
+                                $days,
+                                $transaction->amount
+                            ),
+                            'type' => $days <= 3 ? NotificationTypeEnum::DANGER->value : NotificationTypeEnum::WARNING->value,
+                            'days_before' => $days,
+                            'due_date' => $transaction->due_date->toDateString(),
+                            'amount' => $transaction->amount,
+                            'transaction_id' => $transaction->id,
+                            'account_name' => $accountName,
+                            'category_name' => $categoryName,
+                        ]);
+                    }
                 }
             }
         }
