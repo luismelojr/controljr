@@ -3,10 +3,10 @@ import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
-import { Transaction } from '@/types/transaction';
 import { Category } from '@/types/category';
-import { WalletInterface } from '@/types/wallet';
 import { ColumnDef, FilterConfig, PaginatedResponse } from '@/types/datatable';
+import { Transaction } from '@/types/transaction';
+import { WalletInterface } from '@/types/wallet';
 import { Head, router } from '@inertiajs/react';
 import { Check, Eye, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -16,12 +16,12 @@ interface TransactionsIndexProps {
     categories: Category[];
     wallets: WalletInterface[];
     filters?: {
-        filter?: Record<string, any>;
+        filter?: Record<string, never>;
         sort?: string;
     };
 }
 
-export default function TransactionsIndex({ transactions, categories, wallets, filters }: TransactionsIndexProps) {
+export default function TransactionsIndex({ transactions, categories, filters }: TransactionsIndexProps) {
     const [confirmDialog, setConfirmDialog] = useState<{
         open: boolean;
         transactionUuid: string | null;
@@ -83,7 +83,7 @@ export default function TransactionsIndex({ transactions, categories, wallets, f
             label: 'Categoria',
             type: 'select',
             options: categories.map((cat) => ({
-                value: cat.id.toString(),
+                value: cat.uuid.toString(),
                 label: cat.name,
             })),
         },
@@ -192,8 +192,7 @@ export default function TransactionsIndex({ transactions, categories, wallets, f
             key: 'status',
             label: 'Status',
             render: (transaction) => {
-                const variant =
-                    transaction.status === 'paid' ? 'default' : transaction.status === 'overdue' ? 'destructive' : 'secondary';
+                const variant = transaction.status === 'paid' ? 'default' : transaction.status === 'overdue' ? 'destructive' : 'secondary';
 
                 return <Badge variant={variant}>{transaction.status_label}</Badge>;
             },
@@ -208,12 +207,7 @@ export default function TransactionsIndex({ transactions, categories, wallets, f
                         <Eye className="h-4 w-4" />
                     </Button>
                     {transaction.is_paid ? (
-                        <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            onClick={() => handleUnpay(transaction.uuid)}
-                            title="Marcar como não paga"
-                        >
+                        <Button variant="ghost" size="icon-sm" onClick={() => handleUnpay(transaction.uuid)} title="Marcar como não paga">
                             <X className="h-4 w-4 text-destructive" />
                         </Button>
                     ) : (
@@ -263,8 +257,7 @@ export default function TransactionsIndex({ transactions, categories, wallets, f
     const confirmAction = () => {
         if (!confirmDialog.transactionUuid) return;
 
-        const routeName =
-            confirmDialog.action === 'pay' ? 'dashboard.transactions.mark-as-paid' : 'dashboard.transactions.mark-as-unpaid';
+        const routeName = confirmDialog.action === 'pay' ? 'dashboard.transactions.mark-as-paid' : 'dashboard.transactions.mark-as-unpaid';
 
         router.patch(
             route(routeName, { transaction: confirmDialog.transactionUuid }),
@@ -284,17 +277,14 @@ export default function TransactionsIndex({ transactions, categories, wallets, f
 
             <div className="space-y-6">
                 {/* Header */}
-                <DataTableHeader
-                    title="Transações"
-                    description="Visualize e gerencie todas as suas transações financeiras"
-                    actions={[]}
-                />
+                <DataTableHeader title="Transações" description="Visualize e gerencie todas as suas transações financeiras" actions={[]} />
 
                 {/* Filters and Active Filters */}
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <DataTableFilters filters={filterConfigs} activeFilters={activeFilters} currentSort={filters?.sort} />
-
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                     <FilterBadges filters={activeFilters} filterConfigs={filterConfigs} currentSort={filters?.sort} />
+                    <div className={'flex flex-1 justify-end'}>
+                        <DataTableFilters filters={filterConfigs} activeFilters={activeFilters} currentSort={filters?.sort} />
+                    </div>
                 </div>
 
                 {/* DataTable */}

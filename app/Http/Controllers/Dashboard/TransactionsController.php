@@ -34,6 +34,7 @@ class TransactionsController extends Controller
         // Get user categories for filter dropdown
         $categories = auth()->user()->categories()
             ->where('status', true)
+            ->orWhere('is_default', true)
             ->orderBy('name')
             ->get(['id', 'uuid', 'name']);
 
