@@ -349,4 +349,22 @@ class AlertService
                 'read_at' => now(),
             ]);
     }
+
+    /**
+     * Delete a notification.
+     */
+    public function deleteNotification(AlertNotification $notification): bool
+    {
+        return $notification->delete();
+    }
+
+    /**
+     * Delete all read notifications for a user.
+     */
+    public function deleteAllReadNotifications(string $userId): int
+    {
+        return AlertNotification::where('user_id', $userId)
+            ->where('is_read', true)
+            ->delete();
+    }
 }

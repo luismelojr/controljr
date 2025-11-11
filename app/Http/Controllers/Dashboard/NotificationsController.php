@@ -65,4 +65,39 @@ class NotificationsController extends Controller
 
         return redirect()->back();
     }
+
+    /**
+     * Delete a notification.
+     */
+    public function destroy(AlertNotification $notification)
+    {
+        // Ensure user owns the notification
+        if ($notification->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $this->alertService->deleteNotification($notification);
+
+        Toast::create('A notificação foi excluída.')
+            ->title('Sucesso')
+            ->success()
+            ->flash();
+
+        return redirect()->back();
+    }
+
+    /**
+     * Delete all read notifications.
+     */
+    public function deleteAllRead()
+    {
+        $deletedCount = $this->alertService->deleteAllReadNotifications(auth()->id());
+
+        Toast::create("$deletedCount notificação(ões) lida(s) foram excluídas.")
+            ->title('Sucesso')
+            ->success()
+            ->flash();
+
+        return redirect()->back();
+    }
 }

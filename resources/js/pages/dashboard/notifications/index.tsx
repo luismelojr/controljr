@@ -2,8 +2,10 @@ import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { Head, router } from '@inertiajs/react';
-import { BellIcon, CheckIcon } from 'lucide-react';
+import { BellIcon, CheckIcon, Trash2Icon } from 'lucide-react';
+import { useState } from 'react';
 
 interface Notification {
     uuid: string;
@@ -26,6 +28,10 @@ interface NotificationsProps {
 }
 
 export default function NotificationsIndex({ notifications }: NotificationsProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [deleteAllDialogOpen, setDeleteAllDialogOpen] = useState(false);
+    const [notificationToDelete, setNotificationToDelete] = useState<string | null>(null);
+
     const getVariantByType = (type: string) => {
         switch (type) {
             case 'danger':
@@ -52,7 +58,40 @@ export default function NotificationsIndex({ notifications }: NotificationsProps
         });
     };
 
+    const openDeleteDialog = (uuid: string, e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent card click
+        setNotificationToDelete(uuid);
+        setDeleteDialogOpen(true);
+    };
+
+    const confirmDelete = () => {
+        if (notificationToDelete) {
+            router.delete(route('dashboard.notifications.destroy', { notification: notificationToDelete }), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setNotificationToDelete(null);
+                },
+            });
+        }
+    };
+
+    const openDeleteAllDialog = () => {
+        const readCount = notifications.data.filter((n) => n.is_read).length;
+        if (readCount === 0) {
+            alert('Não há notificações lidas para excluir.');
+            return;
+        }
+        setDeleteAllDialogOpen(true);
+    };
+
+    const confirmDeleteAll = () => {
+        router.delete(route('dashboard.notifications.delete-all-read'), {
+            preserveScroll: true,
+        });
+    };
+
     const unreadCount = notifications.data.filter((n) => !n.is_read).length;
+    const readCount = notifications.data.filter((n) => n.is_read).length;
 
     return (
         <DashboardLayout title="Notificações">
@@ -67,12 +106,20 @@ export default function NotificationsIndex({ notifications }: NotificationsProps
                             Acompanhe seus alertas e notificações
                         </p>
                     </div>
-                    {unreadCount > 0 && (
-                        <Button onClick={markAllAsRead} variant="outline">
-                            <CheckIcon className="mr-2 h-4 w-4" />
-                            Marcar Todas como Lidas
-                        </Button>
-                    )}
+                    <div className="flex gap-2">
+                        {unreadCount > 0 && (
+                            <Button onClick={markAllAsRead} variant="outline">
+                                <CheckIcon className="mr-2 h-4 w-4" />
+                                Marcar Todas como Lidas
+                            </Button>
+                        )}
+                        {readCount > 0 && (
+                            <Button onClick={openDeleteAllDialog} variant="outline">
+                                <Trash2Icon className="mr-2 h-4 w-4" />
+                                Excluir Lidas ({readCount})
+                            </Button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Lista de Notificações */}
@@ -133,12 +180,23 @@ export default function NotificationsIndex({ notifications }: NotificationsProps
                                                 </div>
                                             )}
                                         </div>
-                                        {!notification.is_read && (
-                                            <div
-                                                className="ml-4 h-2 w-2 rounded-full bg-blue-500"
-                                                title="Não lida"
-                                            />
-                                        )}
+                                        <div className="ml-4 flex items-center gap-2">
+                                            {!notification.is_read && (
+                                                <div
+                                                    className="h-2 w-2 rounded-full bg-blue-500"
+                                                    title="Não lida"
+                                                />
+                                            )}
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                                onClick={(e) => openDeleteDialog(notification.uuid, e)}
+                                                title="Excluir notificação"
+                                            >
+                                                <Trash2Icon className="h-4 w-4" />
+                                            </Button>
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -162,6 +220,28 @@ export default function NotificationsIndex({ notifications }: NotificationsProps
                     </div>
                 )}
             </div>
+
+            {/* Confirm Delete Single Notification Dialog */}
+            <ConfirmDeleteDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                onConfirm={confirmDelete}
+                title="Excluir Notificação"
+                description="Tem certeza que deseja excluir esta notificação? Esta ação não pode ser desfeita"
+                confirmText="Excluir"
+                cancelText="Cancelar"
+            />
+
+            {/* Confirm Delete All Read Notifications Dialog */}
+            <ConfirmDeleteDialog
+                open={deleteAllDialogOpen}
+                onOpenChange={setDeleteAllDialogOpen}
+                onConfirm={confirmDeleteAll}
+                title="Excluir Notificações Lidas"
+                description={`Tem certeza que deseja excluir ${readCount} notificação(ões) lida(s)? Esta ação não pode ser desfeita`}
+                confirmText="Excluir Todas"
+                cancelText="Cancelar"
+            />
         </DashboardLayout>
     );
 }
