@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bem-vindo ao ControlJr</title>
+    <title>Bem-vindo ao MeloSys</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -46,15 +46,15 @@
 </head>
 <body>
     <div class="header">
-        <h1>Bem-vindo ao ControlJr!</h1>
+        <h1>Bem-vindo ao MeloSys!</h1>
     </div>
 
     <div class="content">
         <p>Olá, <strong>{{ $user->name }}</strong>!</p>
 
-        <p>É um prazer tê-lo conosco no <strong>ControlJr</strong>, sua nova ferramenta de controle financeiro pessoal.</p>
+        <p>É um prazer tê-lo conosco no <strong>MeloSys</strong>, sua nova ferramenta de controle financeiro pessoal.</p>
 
-        <p>Com o ControlJr, você poderá:</p>
+        <p>Com o MeloSys, você poderá:</p>
         <ul>
             <li>Gerenciar suas carteiras e contas bancárias</li>
             <li>Controlar suas despesas e receitas</li>
@@ -73,11 +73,11 @@
 
         <p>Boas-vindas e bom controle financeiro!</p>
 
-        <p>Equipe ControlJr</p>
+        <p>Equipe MeloSys</p>
     </div>
 
     <div class="footer">
-        <p>&copy; {{ date('Y') }} ControlJr. Todos os direitos reservados.</p>
+        <p>&copy; {{ date('Y') }} MeloSys. Todos os direitos reservados.</p>
         <p>Este email foi enviado para {{ $user->email }}</p>
     </div>
 </body>

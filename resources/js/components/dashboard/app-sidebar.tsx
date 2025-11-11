@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/sidebar';
 import { router, usePage } from '@inertiajs/react';
 import { ArrowLeftRightIcon, BanknoteArrowDownIcon, BanknoteArrowUpIcon, CircleAlert, Home, LogOut, Tag, Wallet } from 'lucide-react';
+import { MeloSysLogo } from '@/components/ui/melosys-logo';
 
 interface MenuItemInterface {
     title: string;
@@ -83,12 +84,7 @@ export function AppSidebar() {
     return (
         <Sidebar>
             <SidebarHeader className="border-b px-6 py-4">
-                <div className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                        <span className="text-sm font-bold">C</span>
-                    </div>
-                    <span className="text-lg font-semibold">ControlJr</span>
-                </div>
+                <MeloSysLogo showText />
             </SidebarHeader>
 
             <SidebarContent className="px-3 py-4">

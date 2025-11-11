@@ -1,4 +1,5 @@
 import CustomToast from '@/components/ui/custom-toast';
+import { MeloSysLogo } from '@/components/ui/melosys-logo';
 import { Head } from '@inertiajs/react';
 import React from 'react';
 
@@ -29,34 +30,8 @@ export default function AuthLayout({ children, title }: AuthLayoutProps) {
                     <div className="relative z-10 flex w-full flex-col justify-between">
                         {/* Logo/Brand */}
                         <div>
-                            <div className="mb-8 flex items-center space-x-2">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white">
-                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary">
-                                        <path
-                                            d="M12 2L2 7L12 12L22 7L12 2Z"
-                                            fill="currentColor"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                        <path
-                                            d="M2 17L12 22L22 17"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                        <path
-                                            d="M2 12L12 17L22 12"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                    </svg>
-                                </div>
-                                <span className="text-2xl font-bold text-white">ControlJr</span>
+                            <div className="mb-8">
+                                <MeloSysLogo className="h-10 w-10" showText />
                             </div>
                         </div>
 

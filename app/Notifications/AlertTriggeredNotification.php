@@ -46,7 +46,7 @@ class AlertTriggeredNotification extends Notification implements ShouldQueue
 
         $mailMessage
             ->action('Ver no Painel', url('/dashboard/notifications'))
-            ->line('Você recebeu este alerta porque configurou notificações automáticas no ControlJr.');
+            ->line('Você recebeu este alerta porque configurou notificações automáticas no MeloSys.');
 
         return $mailMessage;
     }
