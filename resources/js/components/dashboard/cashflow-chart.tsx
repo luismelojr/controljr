@@ -6,10 +6,22 @@ interface CashflowChartProps {
     percentageChange: number;
     expenseAmount: number;
     incomeAmount: number;
+    months?: string[];
+    expenses?: number[];
+    incomes?: number[];
     className?: string;
 }
 
-export function CashflowChart({ totalBalance, percentageChange, expenseAmount, incomeAmount, className }: CashflowChartProps) {
+export function CashflowChart({
+    totalBalance,
+    percentageChange,
+    expenseAmount,
+    incomeAmount,
+    months: propMonths,
+    expenses: propExpenses,
+    incomes: propIncomes,
+    className
+}: CashflowChartProps) {
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('pt-BR', {
             style: 'currency',
@@ -17,13 +29,12 @@ export function CashflowChart({ totalBalance, percentageChange, expenseAmount, i
         }).format(value);
     };
 
-    const months = ['Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
+    // Use real data from backend or fallback to empty arrays
+    const months = propMonths || [];
+    const expenseData = propExpenses || [];
+    const incomeData = propIncomes || [];
 
-    // Dados simulados para o gráfico (altura relativa)
-    const expenseData = [15, 20, 18, 25, 22, 30, 28, 35, 32, 38];
-    const incomeData = [25, 30, 28, 35, 32, 40, 38, 45, 42, 48];
-
-    const maxValue = Math.max(...expenseData, ...incomeData);
+    const maxValue = Math.max(...expenseData, ...incomeData, 1); // min 1 to avoid division by zero
 
     return (
         <div className={cn('rounded-lg border bg-card p-6', className)}>
@@ -62,8 +73,13 @@ export function CashflowChart({ totalBalance, percentageChange, expenseAmount, i
 
             {/* Chart Area */}
             <div className="relative h-48">
-                <div className="absolute inset-0 flex items-end justify-between gap-2">
-                    {months.map((month, index) => (
+                {months.length === 0 ? (
+                    <div className="flex h-full items-center justify-center">
+                        <p className="text-sm text-muted-foreground">Nenhum dado disponível</p>
+                    </div>
+                ) : (
+                    <div className="absolute inset-0 flex items-end justify-between gap-2">
+                        {months.map((month, index) => (
                         <div key={month} className="relative flex flex-1 flex-col items-center gap-1">
                             {/* Bars */}
                             <div className="relative w-full flex-1">
@@ -81,25 +97,14 @@ export function CashflowChart({ totalBalance, percentageChange, expenseAmount, i
                                         height: `${(expenseData[index] / maxValue) * 100}%`,
                                     }}
                                 />
-
-                                {/* Tooltip on hover for May */}
-                                {month === 'May' && (
-                                    <>
-                                        <div className="absolute -top-12 left-1/2 -translate-x-1/2 rounded bg-blue-500 px-2 py-1 text-xs text-white">
-                                            {formatCurrency(expenseAmount)}
-                                        </div>
-                                        <div className="absolute -top-24 left-1/2 -translate-x-1/2 rounded bg-yellow-500 px-2 py-1 text-xs text-white">
-                                            {formatCurrency(incomeAmount)}
-                                        </div>
-                                    </>
-                                )}
                             </div>
 
                             {/* Month Label */}
                             <span className="text-xs text-muted-foreground">{month}</span>
                         </div>
                     ))}
-                </div>
+                    </div>
+                )}
             </div>
         </div>
     );
