@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             'phone' => '62982296415'
         ]);
 
-        $categoriesDefault = ['Alimentação', 'Transporte', 'Lazer', 'Educação', 'Saúde', 'Supérfluo'];
+        $categoriesDefault = ['Alimentação', 'Transporte', 'Lazer', 'Educação', 'Saúde', 'Supérfluo', 'Salário', 'Freelancer', 'Investimentos'];
 
         foreach ($categoriesDefault as $category) {
             Category::create([

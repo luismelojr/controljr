@@ -1,23 +1,27 @@
-import { DataTable, DataTableHeader, DataTablePagination } from '@/components/datatable';
+import { DataTable, DataTableFilters, DataTableHeader, DataTablePagination, FilterBadges } from '@/components/datatable';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { Transaction } from '@/types/transaction';
-import { ColumnDef, PaginatedResponse } from '@/types/datatable';
+import { Category } from '@/types/category';
+import { WalletInterface } from '@/types/wallet';
+import { ColumnDef, FilterConfig, PaginatedResponse } from '@/types/datatable';
 import { Head, router } from '@inertiajs/react';
 import { Check, Eye, X } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 interface TransactionsIndexProps {
     transactions: PaginatedResponse<Transaction>;
+    categories: Category[];
+    wallets: WalletInterface[];
     filters?: {
         filter?: Record<string, any>;
         sort?: string;
     };
 }
 
-export default function TransactionsIndex({ transactions, filters }: TransactionsIndexProps) {
+export default function TransactionsIndex({ transactions, categories, wallets, filters }: TransactionsIndexProps) {
     const [confirmDialog, setConfirmDialog] = useState<{
         open: boolean;
         transactionUuid: string | null;
@@ -29,6 +33,95 @@ export default function TransactionsIndex({ transactions, filters }: Transaction
         action: 'pay',
         message: '',
     });
+
+    /**
+     * Parse active filters from URL params
+     */
+    const activeFilters = useMemo(() => {
+        return filters?.filter || {};
+    }, [filters]);
+
+    /**
+     * Parse active sort from URL params
+     */
+    const activeSort = useMemo(() => {
+        const sortValue = filters?.sort;
+
+        if (!sortValue || typeof sortValue !== 'string') {
+            return { key: '', direction: null as 'asc' | 'desc' | null };
+        }
+
+        const isDescending = sortValue.startsWith('-');
+        const key = isDescending ? sortValue.slice(1) : sortValue;
+        const direction = isDescending ? ('desc' as const) : ('asc' as const);
+
+        return { key, direction };
+    }, [filters]);
+
+    /**
+     * Filter configuration for Spatie Query Builder
+     */
+    const filterConfigs: FilterConfig[] = [
+        {
+            key: 'account_name',
+            label: 'Nome da Conta',
+            type: 'text',
+            placeholder: 'Buscar por nome da conta...',
+        },
+        {
+            key: 'wallet_type',
+            label: 'Tipo de Carteira',
+            type: 'select',
+            options: [
+                { value: 'card_credit', label: 'Cartão de Crédito' },
+                { value: 'bank_account', label: 'Conta Bancária' },
+                { value: 'other', label: 'Outro' },
+            ],
+        },
+        {
+            key: 'category_id',
+            label: 'Categoria',
+            type: 'select',
+            options: categories.map((cat) => ({
+                value: cat.id.toString(),
+                label: cat.name,
+            })),
+        },
+        {
+            key: 'status',
+            label: 'Status',
+            type: 'select',
+            options: [
+                { value: 'pending', label: 'Pendente' },
+                { value: 'paid', label: 'Pago' },
+                { value: 'overdue', label: 'Vencido' },
+            ],
+        },
+        {
+            key: 'due_date_from',
+            label: 'Vencimento De',
+            type: 'date',
+            placeholder: 'Data inicial...',
+        },
+        {
+            key: 'due_date_to',
+            label: 'Vencimento Até',
+            type: 'date',
+            placeholder: 'Data final...',
+        },
+        {
+            key: 'amount_from',
+            label: 'Valor Mínimo',
+            type: 'number',
+            placeholder: 'Valor mínimo...',
+        },
+        {
+            key: 'amount_to',
+            label: 'Valor Máximo',
+            type: 'number',
+            placeholder: 'Valor máximo...',
+        },
+    ];
 
     /**
      * Column definitions for DataTable
@@ -197,8 +290,15 @@ export default function TransactionsIndex({ transactions, filters }: Transaction
                     actions={[]}
                 />
 
+                {/* Filters and Active Filters */}
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <DataTableFilters filters={filterConfigs} activeFilters={activeFilters} currentSort={filters?.sort} />
+
+                    <FilterBadges filters={activeFilters} filterConfigs={filterConfigs} currentSort={filters?.sort} />
+                </div>
+
                 {/* DataTable */}
-                <DataTable data={transactions.data} columns={columns} activeSort={{ key: '', direction: null }} currentFilters={{}} />
+                <DataTable data={transactions.data} columns={columns} activeSort={activeSort} currentFilters={activeFilters} />
 
                 {/* Pagination */}
                 {transactions.meta && transactions.links && <DataTablePagination meta={transactions.meta} links={transactions.links} />}

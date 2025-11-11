@@ -10,6 +10,7 @@ export interface IncomeTransaction {
     uuid: string;
     amount: number;
     month_reference: string;
+    month_reference_formatted: string;
     expected_date: string;
     received_at?: string;
     installment_number?: number;

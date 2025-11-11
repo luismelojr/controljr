@@ -13,6 +13,7 @@ class UpdateWalletData
         public ?int $day_close = null,
         public ?int $best_shopping_day = null,
         public ?float $card_limit = null,
+        public ?float $initial_balance = null,
         public ?bool $status = null,
     ) {}
 
@@ -24,6 +25,7 @@ class UpdateWalletData
             day_close: $request->input('day_close'),
             best_shopping_day: $request->input('best_shopping_day'),
             card_limit: $request->input('card_limit'),
+            initial_balance: $request->input('initial_balance'),
             status: $request->input('status'),
         );
     }
@@ -36,6 +38,7 @@ class UpdateWalletData
             'day_close' => $this->day_close,
             'best_shopping_day' => $this->best_shopping_day,
             'card_limit' => $this->card_limit,
+            'initial_balance' => $this->initial_balance,
         ];
 
         if ($this->status !== null) {

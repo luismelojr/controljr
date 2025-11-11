@@ -31,8 +31,22 @@ class TransactionsController extends Controller
             perPage: request()->integer('per_page', 15),
         );
 
+        // Get user categories for filter dropdown
+        $categories = auth()->user()->categories()
+            ->where('status', true)
+            ->orderBy('name')
+            ->get(['id', 'uuid', 'name']);
+
+        // Get user wallets for filter dropdown
+        $wallets = auth()->user()->wallets()
+            ->where('status', true)
+            ->orderBy('name')
+            ->get(['id', 'uuid', 'name', 'type']);
+
         return Inertia::render('dashboard/transactions/index', [
             'transactions' => TransactionResource::collection($transactions),
+            'categories' => $categories,
+            'wallets' => $wallets,
             'filters' => request()->only(['filter', 'sort']),
         ]);
     }

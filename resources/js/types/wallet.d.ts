@@ -21,6 +21,11 @@ export interface WalletInterface {
     card_limit_used?: number;
     card_limit_available?: number;
     card_limit_percentage_used?: number;
+    initial_balance: number;
+    balance_incomes?: number;
+    balance_expenses?: number;
+    balance_available?: number;
+    balance_percentage_used?: number;
     created_at: string;
     updated_at: string;
 }

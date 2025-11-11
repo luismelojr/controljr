@@ -3,7 +3,9 @@
 namespace App\Http\Requests\Income;
 
 use App\Enums\IncomeRecurrenceTypeEnum;
+use App\Enums\WalletTypeEnum;
 use App\Models\Category;
+use App\Models\Wallet;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -26,6 +28,11 @@ class StoreIncomeRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'wallet_id' => [
+                'nullable',
+                'string',
+                'exists:wallets,uuid',
+            ],
             'category_id' => [
                 'required',
                 'string',
@@ -70,6 +77,7 @@ class StoreIncomeRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'wallet_id.exists' => 'A carteira selecionada não existe.',
             'category_id.required' => 'A categoria é obrigatória.',
             'category_id.exists' => 'A categoria selecionada não existe.',
             'name.required' => 'O nome da receita é obrigatório.',
@@ -94,6 +102,29 @@ class StoreIncomeRequest extends FormRequest
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $validator) {
+            // Validate wallet ownership and type
+            if ($this->input('wallet_id')) {
+                $wallet = Wallet::where('uuid', $this->input('wallet_id'))->first();
+
+                if ($wallet) {
+                    // Check ownership
+                    if ($wallet->user_id !== auth()->id()) {
+                        $validator->errors()->add(
+                            'wallet_id',
+                            'A carteira selecionada não pertence a você.'
+                        );
+                    }
+
+                    // Check wallet type (only bank_account or other allowed)
+                    if (!in_array($wallet->type->value, [WalletTypeEnum::BANK_ACCOUNT->value, WalletTypeEnum::OTHER->value])) {
+                        $validator->errors()->add(
+                            'wallet_id',
+                            'Apenas carteiras do tipo Conta Bancária ou Outro podem receber receitas.'
+                        );
+                    }
+                }
+            }
+
             // Validate category ownership
             if ($this->input('category_id')) {
                 $category = Category::where('uuid', $this->input('category_id'))->first();

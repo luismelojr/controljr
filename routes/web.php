@@ -77,5 +77,17 @@ Route::middleware('auth')->group(function () {
         Route::get('income-transactions/{incomeTransaction}', [\App\Http\Controllers\Dashboard\IncomeTransactionsController::class, 'show'])->name('income-transactions.show');
         Route::patch('income-transactions/{incomeTransaction}/mark-as-received', [\App\Http\Controllers\Dashboard\IncomeTransactionsController::class, 'markAsReceived'])->name('income-transactions.mark-as-received');
         Route::patch('income-transactions/{incomeTransaction}/mark-as-not-received', [\App\Http\Controllers\Dashboard\IncomeTransactionsController::class, 'markAsNotReceived'])->name('income-transactions.mark-as-not-received');
+
+        // Alert routes
+        Route::get('alerts', [\App\Http\Controllers\Dashboard\AlertsController::class, 'index'])->name('alerts.index');
+        Route::post('alerts', [\App\Http\Controllers\Dashboard\AlertsController::class, 'store'])->name('alerts.store');
+        Route::patch('alerts/{alert}', [\App\Http\Controllers\Dashboard\AlertsController::class, 'update'])->name('alerts.update');
+        Route::delete('alerts/{alert}', [\App\Http\Controllers\Dashboard\AlertsController::class, 'destroy'])->name('alerts.destroy');
+        Route::patch('alerts/{alert}/toggle-status', [\App\Http\Controllers\Dashboard\AlertsController::class, 'toggleStatus'])->name('alerts.toggle-status');
+
+        // Notification routes
+        Route::get('notifications', [\App\Http\Controllers\Dashboard\NotificationsController::class, 'index'])->name('notifications.index');
+        Route::post('notifications/{notification}/read', [\App\Http\Controllers\Dashboard\NotificationsController::class, 'markAsRead'])->name('notifications.read');
+        Route::post('notifications/read-all', [\App\Http\Controllers\Dashboard\NotificationsController::class, 'markAllAsRead'])->name('notifications.read-all');
     });
 });

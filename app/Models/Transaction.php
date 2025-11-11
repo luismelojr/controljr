@@ -85,4 +85,40 @@ class Transaction extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    /**
+     * Scope to filter by due date range
+     */
+    public function scopeDueDateFrom($query, $date)
+    {
+        return $query->where('due_date', '>=', $date);
+    }
+
+    /**
+     * Scope to filter by due date range
+     */
+    public function scopeDueDateTo($query, $date)
+    {
+        return $query->where('due_date', '<=', $date);
+    }
+
+    /**
+     * Scope to filter by amount range
+     */
+    public function scopeAmountFrom($query, $amount)
+    {
+        // Convert to cents for comparison
+        $amountInCents = $amount * 100;
+        return $query->whereRaw('amount >= ?', [$amountInCents]);
+    }
+
+    /**
+     * Scope to filter by amount range
+     */
+    public function scopeAmountTo($query, $amount)
+    {
+        // Convert to cents for comparison
+        $amountInCents = $amount * 100;
+        return $query->whereRaw('amount <= ?', [$amountInCents]);
+    }
 }

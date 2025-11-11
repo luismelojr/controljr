@@ -24,6 +24,7 @@ export default function EditWallet({ wallet }: EditWalletProps) {
         day_close: wallet.day_close?.toString() || '',
         best_shopping_day: wallet.best_shopping_day?.toString() || '',
         card_limit: wallet.card_limit || 0,
+        initial_balance: wallet.initial_balance || 0,
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -32,6 +33,7 @@ export default function EditWallet({ wallet }: EditWalletProps) {
     };
 
     const isCreditCard = data.type === 'card_credit';
+    const isBankAccountOrOther = data.type === 'bank_account' || data.type === 'other';
 
     return (
         <DashboardLayout title="Editar Carteira">
@@ -129,6 +131,27 @@ export default function EditWallet({ wallet }: EditWalletProps) {
                                     O dia de fechamento é quando a fatura fecha. O melhor dia de compra é um dia após o fechamento para aproveitar o
                                     ciclo completo.
                                 </p>
+                            </div>
+                        )}
+
+                        {/* Campo de Saldo Inicial para Conta Bancária e Outros */}
+                        {isBankAccountOrOther && (
+                            <div className="space-y-4">
+                                <h2 className="text-lg font-semibold">Saldo Inicial</h2>
+                                <div className="grid gap-4 md:grid-cols-2">
+                                    <TextMoney
+                                        label="Saldo Inicial"
+                                        id="initial_balance"
+                                        name="initial_balance"
+                                        placeholder="0,00"
+                                        value={data.initial_balance}
+                                        onChange={(value) => setData('initial_balance', value)}
+                                        error={errors.initial_balance}
+                                    />
+                                    <div className="flex items-center text-sm text-muted-foreground">
+                                        Informe o saldo atual desta conta
+                                    </div>
+                                </div>
                             </div>
                         )}
 

@@ -99,4 +99,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(IncomeTransaction::class);
     }
+
+    /**
+     * Get the alerts for the user.
+     */
+    public function alerts()
+    {
+        return $this->hasMany(Alert::class);
+    }
+
+    /**
+     * Get the alert notifications for the user.
+     */
+    public function alertNotifications()
+    {
+        return $this->hasMany(AlertNotification::class);
+    }
 }

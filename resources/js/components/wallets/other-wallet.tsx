@@ -12,6 +12,10 @@ interface OtherWalletProps {
         uuid: string;
         name: string;
         status: boolean;
+        initial_balance: number;
+        balance_incomes?: number;
+        balance_expenses?: number;
+        balance_available?: number;
     };
     onEdit?: (uuid: string) => void;
     onDelete?: (uuid: string) => void;
@@ -66,15 +70,34 @@ export default function OtherWallet({ wallet, onEdit, onDelete }: OtherWalletPro
                 {/* Informações da Carteira */}
                 <div className="space-y-3">
                     <div className="rounded-lg border border-purple-200 bg-white/50 p-4 backdrop-blur-sm dark:border-purple-800 dark:bg-purple-950/20">
-                        <p className="text-xs font-medium text-muted-foreground">Saldo Atual</p>
-                        <p className="mt-1 text-2xl font-bold text-purple-600 dark:text-purple-400">R$ 0,00</p>
+                        <p className="text-xs font-medium text-muted-foreground">Saldo Disponível</p>
+                        <p className="mt-1 text-2xl font-bold text-purple-600 dark:text-purple-400">
+                            {new Intl.NumberFormat('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL',
+                            }).format(wallet.balance_available ?? 0)}
+                        </p>
                     </div>
 
-                    <div className="rounded-lg border bg-white/50 p-3 backdrop-blur-sm dark:bg-background/50">
-                        <p className="text-xs font-medium text-muted-foreground">Descrição</p>
-                        <p className="mt-1 text-sm text-foreground">
-                            Carteira para transações gerais e outras movimentações financeiras.
-                        </p>
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div className="rounded-lg border bg-white/50 p-3 backdrop-blur-sm dark:bg-background/50">
+                            <p className="text-xs font-medium text-muted-foreground">Receitas</p>
+                            <p className="mt-1 font-semibold text-green-600">
+                                + {new Intl.NumberFormat('pt-BR', {
+                                    style: 'currency',
+                                    currency: 'BRL',
+                                }).format(wallet.balance_incomes ?? 0)}
+                            </p>
+                        </div>
+                        <div className="rounded-lg border bg-white/50 p-3 backdrop-blur-sm dark:bg-background/50">
+                            <p className="text-xs font-medium text-muted-foreground">Despesas</p>
+                            <p className="mt-1 font-semibold text-red-600">
+                                - {new Intl.NumberFormat('pt-BR', {
+                                    style: 'currency',
+                                    currency: 'BRL',
+                                }).format(wallet.balance_expenses ?? 0)}
+                            </p>
+                        </div>
                     </div>
                 </div>
 

@@ -1,5 +1,6 @@
 import { Category } from './category';
 import { IncomeTransaction } from './income-transaction';
+import { WalletInterface } from './wallet';
 
 export type IncomeRecurrenceType = 'one_time' | 'installments' | 'recurring';
 export type IncomeStatus = 'active' | 'completed' | 'cancelled';
@@ -18,7 +19,9 @@ export interface Income {
     start_date: string;
     status: IncomeStatus;
     status_label: string;
+    wallet_id?: number;
     category?: Category;
+    wallet?: WalletInterface;
     incomeTransactions?: IncomeTransaction[];
     transactions_count?: number;
     received_transactions_count?: number;
@@ -30,6 +33,7 @@ export interface Income {
  * Form data for creating an income
  */
 export interface IncomeFormData {
+    wallet_id: string;
     category_id: string;
     name: string;
     notes: string;

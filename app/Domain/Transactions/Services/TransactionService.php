@@ -7,9 +7,12 @@ use App\Enums\TransactionStatusEnum;
 use App\Enums\WalletTypeEnum;
 use App\Models\Transaction;
 use App\Models\User;
+use App\QueryFilters\AccountNameFilter;
+use App\QueryFilters\WalletTypeFilter;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class TransactionService
@@ -25,13 +28,31 @@ class TransactionService
 
         return QueryBuilder::for($baseQuery)
             ->allowedFilters([
+                // Exact filters
                 AllowedFilter::exact('status'),
-                AllowedFilter::exact('wallet_id'),
                 AllowedFilter::exact('category_id'),
-                AllowedFilter::scope('month'), // will need to add this scope to Transaction model
+
+                // Custom filters
+                AllowedFilter::custom('account_name', new AccountNameFilter()),
+                AllowedFilter::custom('wallet_type', new WalletTypeFilter()),
+
+                // Scope filters for date range
+                AllowedFilter::scope('due_date_from'),
+                AllowedFilter::scope('due_date_to'),
+
+                // Scope filters for amount range
+                AllowedFilter::scope('amount_from'),
+                AllowedFilter::scope('amount_to'),
             ])
-            ->allowedSorts(['due_date', 'amount', 'created_at'])
-            ->defaultSort('due_date')
+            ->allowedSorts([
+                'due_date',
+                'amount',
+                'created_at',
+                AllowedSort::field('account', 'account_id'),
+                AllowedSort::field('wallet', 'wallet_id'),
+                AllowedSort::field('category', 'category_id'),
+            ])
+            ->defaultSort('-due_date')
             ->paginate($perPage)
             ->withQueryString();
     }

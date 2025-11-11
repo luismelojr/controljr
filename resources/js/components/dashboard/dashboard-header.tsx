@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -20,11 +21,15 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
-    const { auth } = usePage<PageProps>().props;
+    const { auth, unreadNotificationsCount } = usePage<PageProps>().props;
     const userInitial = auth.user?.name ? auth.user.name.charAt(0).toUpperCase() : 'U';
 
     const handleLogout = () => {
         router.post(route('logout'));
+    };
+
+    const handleNotificationsClick = () => {
+        router.get(route('dashboard.notifications.index'));
     };
 
     return (
@@ -41,9 +46,21 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
             <div className="flex items-center gap-4">
                 <ModeToggle />
                 {/* Notifications */}
-                <Button variant="ghost" size="icon" className="relative">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative"
+                    onClick={handleNotificationsClick}
+                >
                     <Bell className="h-5 w-5" />
-                    <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive" />
+                    {unreadNotificationsCount > 0 && (
+                        <Badge
+                            variant="destructive"
+                            className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs"
+                        >
+                            {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                        </Badge>
+                    )}
                 </Button>
 
                 {/* User Profile Dropdown */}

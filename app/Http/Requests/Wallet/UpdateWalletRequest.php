@@ -29,6 +29,7 @@ class UpdateWalletRequest extends FormRequest
             'day_close' => ['nullable', 'required_if:type,card_credit', 'integer', 'min:1', 'max:31'],
             'best_shopping_day' => ['nullable', 'required_if:type,card_credit', 'integer', 'min:1', 'max:31'],
             'card_limit' => ['nullable', 'required_if:type,card_credit', 'numeric', 'min:0'],
+            'initial_balance' => ['nullable', 'numeric', 'min:0'],
             'status' => ['sometimes', 'boolean'],
         ];
     }
@@ -46,6 +47,7 @@ class UpdateWalletRequest extends FormRequest
             'day_close' => 'dia de fechamento',
             'best_shopping_day' => 'melhor dia de compra',
             'card_limit' => 'limite do cartão',
+            'initial_balance' => 'saldo inicial',
             'status' => 'status',
         ];
     }

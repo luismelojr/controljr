@@ -11,8 +11,10 @@ use App\Http\Requests\Income\StoreIncomeRequest;
 use App\Http\Requests\Income\UpdateIncomeRequest;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\IncomeResource;
+use App\Http\Resources\WalletResource;
 use App\Models\Category;
 use App\Models\Income;
+use App\Models\Wallet;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -59,8 +61,17 @@ class IncomesController extends Controller
             ->orderBy('name')
             ->get();
 
+        // Get user's wallets (bank accounts and other types)
+        $wallets = Wallet::query()
+            ->where('user_id', auth()->id())
+            ->where('status', true)
+            ->whereIn('type', ['bank_account', 'other'])
+            ->orderBy('name')
+            ->get();
+
         return Inertia::render('dashboard/incomes/create', [
             'categories' => CategoryResource::collection($categories),
+            'wallets' => WalletResource::collection($wallets),
         ]);
     }
 

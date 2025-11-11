@@ -18,6 +18,7 @@ class Income extends Model
     protected $fillable = [
         'uuid',
         'user_id',
+        'wallet_id',
         'category_id',
         'name',
         'notes',
@@ -68,6 +69,14 @@ class Income extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Wallet relationship
+     */
+    public function wallet(): BelongsTo
+    {
+        return $this->belongsTo(Wallet::class);
     }
 
     /**

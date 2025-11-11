@@ -18,6 +18,7 @@ class IncomeTransactionResource extends JsonResource
             'uuid' => $this->uuid,
             'amount' => $this->amount,
             'month_reference' => $this->month_reference,
+            'month_reference_formatted' => $this->getMonthReferenceFormatted(),
             'expected_date' => $this->expected_date?->format('Y-m-d'),
             'received_at' => $this->received_at?->format('Y-m-d'),
             'installment_number' => $this->installment_number,
@@ -44,6 +45,39 @@ class IncomeTransactionResource extends JsonResource
         }
 
         return null;
+    }
+
+    /**
+     * Get month reference formatted (e.g., "Janeiro/2025")
+     */
+    protected function getMonthReferenceFormatted(): string
+    {
+        // month_reference format is "YYYY-MM" (e.g., "2025-01")
+        $parts = explode('-', $this->month_reference);
+
+        if (count($parts) !== 2) {
+            return $this->month_reference;
+        }
+
+        $year = $parts[0];
+        $month = (int) $parts[1];
+
+        $monthNames = [
+            1 => 'Janeiro',
+            2 => 'Fevereiro',
+            3 => 'Março',
+            4 => 'Abril',
+            5 => 'Maio',
+            6 => 'Junho',
+            7 => 'Julho',
+            8 => 'Agosto',
+            9 => 'Setembro',
+            10 => 'Outubro',
+            11 => 'Novembro',
+            12 => 'Dezembro',
+        ];
+
+        return ($monthNames[$month] ?? $month) . '/' . $year;
     }
 
     /**

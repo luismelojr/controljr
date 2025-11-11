@@ -9,16 +9,19 @@ import TextMoney from '@/components/ui/text-money';
 import TextSelect from '@/components/ui/text-select';
 import { IncomeFormData } from '@/types/income';
 import { Category } from '@/types/category';
+import { WalletInterface } from '@/types/wallet';
 import { Head, router, useForm } from '@inertiajs/react';
 import { Info } from 'lucide-react';
 import { useMemo } from 'react';
 
 interface CreateIncomeProps {
     categories: Category[];
+    wallets: WalletInterface[];
 }
 
-export default function CreateIncome({ categories }: CreateIncomeProps) {
+export default function CreateIncome({ categories, wallets }: CreateIncomeProps) {
     const { data, setData, post, processing, errors } = useForm<IncomeFormData>({
+        wallet_id: '',
         category_id: '',
         name: '',
         notes: '',
@@ -35,6 +38,16 @@ export default function CreateIncome({ categories }: CreateIncomeProps) {
             label: category.name,
         }));
     }, [categories]);
+
+    // Opções de carteiras (apenas bank_account e other)
+    const walletOptions = useMemo(() => {
+        return wallets
+            .filter((wallet) => wallet.type === 'bank_account' || wallet.type === 'other')
+            .map((wallet) => ({
+                value: wallet.uuid,
+                label: `${wallet.name} (${wallet.type_label})`,
+            }));
+    }, [wallets]);
 
     // Opções de tipo de recorrência
     const recurrenceOptions = [
@@ -96,6 +109,17 @@ export default function CreateIncome({ categories }: CreateIncomeProps) {
                             onValueChange={(value) => setData('category_id', value)}
                             error={errors.category_id}
                             required
+                        />
+
+                        {/* Carteira */}
+                        <TextSelect
+                            label="Carteira de Destino (opcional)"
+                            id="wallet_id"
+                            placeholder="Selecione uma carteira"
+                            options={walletOptions}
+                            value={data.wallet_id}
+                            onValueChange={(value) => setData('wallet_id', value)}
+                            error={errors.wallet_id}
                         />
 
                         {/* Tipo de Recorrência */}

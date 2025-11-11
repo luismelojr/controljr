@@ -26,6 +26,8 @@ class IncomeResource extends JsonResource
             'status' => $this->status->value,
             'status_label' => $this->getStatusLabel(),
             'category' => new CategoryResource($this->whenLoaded('category')),
+            'wallet' => new WalletResource($this->whenLoaded('wallet')),
+            'wallet_id' => $this->wallet_id,
             'incomeTransactions' => IncomeTransactionResource::collection($this->whenLoaded('incomeTransactions')),
             'transactions_count' => $this->when(
                 $this->relationLoaded('incomeTransactions'),

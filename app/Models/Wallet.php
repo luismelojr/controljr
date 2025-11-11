@@ -21,6 +21,7 @@ class Wallet extends Model
       'best_shopping_day',
       'card_limit',
       'card_limit_used',
+      'initial_balance',
       'status'
     ];
 
@@ -60,6 +61,16 @@ class Wallet extends Model
         return $value / 100;
     }
 
+    public function setInitialBalanceAttribute($value): void
+    {
+        $this->attributes['initial_balance'] = $value * 100;
+    }
+
+    public function getInitialBalanceAttribute($value): float|int
+    {
+        return $value / 100;
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -73,5 +84,10 @@ class Wallet extends Model
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function incomes()
+    {
+        return $this->hasMany(Income::class);
     }
 }

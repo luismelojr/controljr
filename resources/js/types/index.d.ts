@@ -10,6 +10,7 @@ export interface SharedData {
     quote: { message: string; author: string };
     auth: Auth;
     toasts: ToastInterface[];
+    unreadNotificationsCount: number;
     ziggy?: ZiggyConfig;
     [key: string]: unknown;
 }

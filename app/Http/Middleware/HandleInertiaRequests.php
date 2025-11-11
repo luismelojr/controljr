@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Facades\Toast;
 use App\Http\Resources\UserResource;
+use App\Models\AlertNotification;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -47,7 +48,12 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user() ? new UserResource($request->user()) : null,
             ],
-            'toasts' => Toast::all()
+            'toasts' => Toast::all(),
+            'unreadNotificationsCount' => fn () => $request->user()
+                ? AlertNotification::where('user_id', $request->user()->id)
+                    ->where('is_read', false)
+                    ->count()
+                : 0,
         ];
     }
 }

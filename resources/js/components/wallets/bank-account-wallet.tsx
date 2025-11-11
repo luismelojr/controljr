@@ -12,6 +12,10 @@ interface BankAccountWalletProps {
         uuid: string;
         name: string;
         status: boolean;
+        initial_balance: number;
+        balance_incomes?: number;
+        balance_expenses?: number;
+        balance_available?: number;
     };
     onEdit?: (uuid: string) => void;
     onDelete?: (uuid: string) => void;
@@ -67,17 +71,32 @@ export default function BankAccountWallet({ wallet, onEdit, onDelete }: BankAcco
                 <div className="space-y-3">
                     <div className="rounded-lg border border-green-200 bg-white/50 p-4 backdrop-blur-sm dark:border-green-800 dark:bg-green-950/20">
                         <p className="text-xs font-medium text-muted-foreground">Saldo Disponível</p>
-                        <p className="mt-1 text-2xl font-bold text-green-600 dark:text-green-400">R$ 0,00</p>
+                        <p className="mt-1 text-2xl font-bold text-green-600 dark:text-green-400">
+                            {new Intl.NumberFormat('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL',
+                            }).format(wallet.balance_available ?? 0)}
+                        </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 text-sm">
                         <div className="rounded-lg border bg-white/50 p-3 backdrop-blur-sm dark:bg-background/50">
                             <p className="text-xs font-medium text-muted-foreground">Receitas</p>
-                            <p className="mt-1 font-semibold text-green-600">+ R$ 0,00</p>
+                            <p className="mt-1 font-semibold text-green-600">
+                                + {new Intl.NumberFormat('pt-BR', {
+                                    style: 'currency',
+                                    currency: 'BRL',
+                                }).format(wallet.balance_incomes ?? 0)}
+                            </p>
                         </div>
                         <div className="rounded-lg border bg-white/50 p-3 backdrop-blur-sm dark:bg-background/50">
                             <p className="text-xs font-medium text-muted-foreground">Despesas</p>
-                            <p className="mt-1 font-semibold text-red-600">- R$ 0,00</p>
+                            <p className="mt-1 font-semibold text-red-600">
+                                - {new Intl.NumberFormat('pt-BR', {
+                                    style: 'currency',
+                                    currency: 'BRL',
+                                }).format(wallet.balance_expenses ?? 0)}
+                            </p>
                         </div>
                     </div>
                 </div>

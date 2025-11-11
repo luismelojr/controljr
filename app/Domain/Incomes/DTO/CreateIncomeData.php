@@ -4,11 +4,13 @@ namespace App\Domain\Incomes\DTO;
 
 use App\Enums\IncomeRecurrenceTypeEnum;
 use App\Models\Category;
+use App\Models\Wallet;
 use Illuminate\Http\Request;
 
 class CreateIncomeData
 {
     public function __construct(
+        public readonly ?int $wallet_id,
         public readonly int $category_id,
         public readonly string $name,
         public readonly ?string $notes,
@@ -20,10 +22,14 @@ class CreateIncomeData
 
     public static function fromRequest(Request $request): self
     {
-        // Convert UUID to ID
+        // Convert UUIDs to IDs
         $category = Category::where('uuid', $request->input('category_id'))->firstOrFail();
+        $wallet = $request->input('wallet_id')
+            ? Wallet::where('uuid', $request->input('wallet_id'))->firstOrFail()
+            : null;
 
         return new self(
+            wallet_id: $wallet?->id,
             category_id: $category->id,
             name: $request->input('name'),
             notes: $request->input('notes'),
@@ -37,6 +43,7 @@ class CreateIncomeData
     public function toArray(): array
     {
         return [
+            'wallet_id' => $this->wallet_id,
             'category_id' => $this->category_id,
             'name' => $this->name,
             'notes' => $this->notes,
