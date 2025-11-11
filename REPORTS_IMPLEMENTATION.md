@@ -1589,10 +1589,11 @@ npm install lucide-react
 
 #### Passo 2: Criar Migration SavedReport
 ```bash
-- [ ] Executar: php artisan make:migration create_saved_reports_table
-- [ ] Definir campos:
-      - id (uuid, primary)
-      - user_id (uuid, foreign)
+- [x] Executar: php artisan make:migration create_saved_reports_table
+- [x] Definir campos:
+      - id (bigint, primary)
+      - uuid (uuid, unique)
+      - user_id (foreignId)
       - name (string)
       - description (text, nullable)
       - report_type (string)
@@ -1603,18 +1604,20 @@ npm install lucide-react
       - last_run_at (timestamp, nullable)
       - run_count (integer, default 0)
       - timestamps
-- [ ] Adicionar índices: user_id, report_type, is_favorite
-- [ ] Executar: php artisan migrate
+- [x] Adicionar índices: user_id, report_type, is_favorite
+- [x] Executar: php artisan migrate
 ```
 
 #### Passo 3: Criar Model SavedReport
 ```bash
-- [ ] Executar: php artisan make:model SavedReport
-- [ ] Adicionar trait HasUuidCustom
-- [ ] Definir $fillable
-- [ ] Definir casts (filters: array, visualization: array, is_template: boolean)
-- [ ] Adicionar relationship: belongsTo(User::class)
-- [ ] Criar scopes: scopeFavorites(), scopeUserReports(), scopeTemplates()
+- [x] Executar: php artisan make:model SavedReport
+- [x] Adicionar trait HasUuidCustom
+- [x] Definir $fillable
+- [x] Definir casts (filters: array, visualization: array, is_template: boolean)
+- [x] Adicionar relationship: belongsTo(User::class)
+- [x] Criar scopes: scopeFavorites(), scopeUserReports(), scopeTemplates()
+- [x] Adicionar método incrementRunCount()
+- [x] Adicionar relacionamento no User model
 ```
 
 ---
@@ -1623,26 +1626,29 @@ npm install lucide-react
 
 #### Passo 4: Criar ReportTypeEnum
 ```bash
-- [ ] Criar arquivo: app/Enums/ReportTypeEnum.php
-- [ ] Definir cases (8 tipos de relatórios)
-- [ ] Criar método label(): string
-- [ ] Criar método description(): string
-- [ ] Criar método icon(): string
+- [x] Criar arquivo: app/Enums/ReportTypeEnum.php
+- [x] Definir cases (8 tipos de relatórios)
+- [x] Criar método label(): string
+- [x] Criar método description(): string
+- [x] Criar método icon(): string
 ```
 
 #### Passo 5: Criar VisualizationTypeEnum
 ```bash
-- [ ] Criar arquivo: app/Enums/VisualizationTypeEnum.php
-- [ ] Definir cases: TABLE, PIE_CHART, BAR_CHART, LINE_CHART, KPI_CARDS
-- [ ] Criar método label(): string
+- [x] Criar arquivo: app/Enums/VisualizationTypeEnum.php
+- [x] Definir cases: TABLE, PIE_CHART, BAR_CHART, LINE_CHART, KPI_CARDS
+- [x] Criar método label(): string
+- [x] Criar método icon(): string
 ```
 
 #### Passo 6: Criar ExportFormatEnum
 ```bash
-- [ ] Criar arquivo: app/Enums/ExportFormatEnum.php
-- [ ] Definir cases: PDF, EXCEL, CSV
-- [ ] Criar método mimeType(): string
-- [ ] Criar método extension(): string
+- [x] Criar arquivo: app/Enums/ExportFormatEnum.php
+- [x] Definir cases: PDF, EXCEL, CSV
+- [x] Criar método label(): string
+- [x] Criar método mimeType(): string
+- [x] Criar método extension(): string
+- [x] Criar método icon(): string
 ```
 
 ---
@@ -1651,65 +1657,68 @@ npm install lucide-react
 
 #### Passo 7: Criar ReportFiltersData
 ```bash
-- [ ] Criar arquivo: app/Domain/Reports/DTO/ReportFiltersData.php
-- [ ] Definir propriedades (startDate, endDate, periodType, categoryIds, etc.)
-- [ ] Criar método: fromRequest(Request): self
-- [ ] Criar método: fromArray(array): self
-- [ ] Criar método: toArray(): array
+- [x] Criar arquivo: app/Domain/Reports/DTO/ReportFiltersData.php
+- [x] Definir propriedades (startDate, endDate, periodType, categoryIds, etc.)
+- [x] Criar método: fromRequest(Request): self
+- [x] Criar método: fromArray(array): self
+- [x] Criar método: toArray(): array
 ```
 
 #### Passo 8: Criar GenerateReportData
 ```bash
-- [ ] Criar arquivo: app/Domain/Reports/DTO/GenerateReportData.php
-- [ ] Definir propriedades (reportType, filters, visualizationType, etc.)
-- [ ] Criar método: fromRequest(Request): self
-- [ ] Criar método: fromSavedReport(SavedReport): self
+- [x] Criar arquivo: app/Domain/Reports/DTO/GenerateReportData.php
+- [x] Definir propriedades (reportType, filters, visualizationType, userId)
+- [x] Criar método: fromRequest(Request, userId): self
+- [x] Criar método: fromSavedReport(SavedReport): self
+- [x] Criar método: toArray(): array
 ```
 
 #### Passo 9: Criar SaveReportConfigData
 ```bash
-- [ ] Criar arquivo: app/Domain/Reports/DTO/SaveReportConfigData.php
-- [ ] Definir propriedades (name, description, reportConfig, isFavorite)
-- [ ] Criar método: fromRequest(Request): self
+- [x] Criar arquivo: app/Domain/Reports/DTO/SaveReportConfigData.php
+- [x] Definir propriedades (name, description, reportConfig, isFavorite, isTemplate)
+- [x] Criar método: fromRequest(Request, userId): self
+- [x] Criar método: toArray(): array
 ```
 
 ---
 
-### 🔍 FASE 5: QUERY CLASSES (Começar com 1 para testar)
+### 🔍 FASE 5: QUERY CLASSES
 
 #### Passo 10: Criar BaseReportQuery
 ```bash
-- [ ] Criar arquivo: app/Domain/Reports/Queries/BaseReportQuery.php
-- [ ] Definir como abstract class
-- [ ] Criar método abstrato: execute(string $userId, ReportFiltersData $filters): array
-- [ ] Criar métodos helper:
-      - applyPeriodFilter($query, $filters)
+- [x] Criar arquivo: app/Domain/Reports/Queries/BaseReportQuery.php
+- [x] Definir como abstract class
+- [x] Criar método abstrato: execute(string $userId, ReportFiltersData $filters): array
+- [x] Criar métodos helper:
+      - applyPeriodFilter($query, $filters, $dateColumn)
       - applyCategoryFilter($query, $filters)
       - applyWalletFilter($query, $filters)
-      - applyStatusFilter($query, $filters)
-      - applyAmountRangeFilter($query, $filters)
+      - applyStatusFilter($query, $filters, $statusColumn)
+      - applyAmountRangeFilter($query, $filters, $amountColumn)
+      - centsToReais($cents)
+      - formatNumber($number)
 ```
 
-#### Passo 11: Criar ExpensesByCategoryQuery (PRIMEIRA QUERY - TESTE)
+#### Passo 11: Criar ExpensesByCategoryQuery
 ```bash
-- [ ] Criar arquivo: app/Domain/Reports/Queries/ExpensesByCategoryQuery.php
-- [ ] Estender BaseReportQuery
-- [ ] Implementar método execute()
-- [ ] Agrupar transações por categoria
-- [ ] Calcular: total, count, average, percentage
-- [ ] Retornar array com 'data' e 'summary'
-- [ ] TESTAR esta query antes de criar as outras
+- [x] Criar arquivo: app/Domain/Reports/Queries/ExpensesByCategoryQuery.php
+- [x] Estender BaseReportQuery
+- [x] Implementar método execute()
+- [x] Agrupar transações por categoria
+- [x] Calcular: total, count, average, percentage
+- [x] Retornar array com 'data' e 'summary'
 ```
 
-#### Passo 12: Criar demais Query Classes (APÓS TESTAR A PRIMEIRA)
+#### Passo 12: Criar demais Query Classes
 ```bash
-- [ ] ExpensesByWalletQuery
-- [ ] ExpensesEvolutionQuery
-- [ ] TopExpensesQuery
-- [ ] IncomesByCategoryQuery
-- [ ] CashflowMonthlyQuery
-- [ ] WalletPerformanceQuery
-- [ ] PeriodComparisonQuery
+- [x] ExpensesByWalletQuery
+- [x] ExpensesEvolutionQuery
+- [x] TopExpensesQuery
+- [x] CashflowQuery
+- [ ] IncomesByCategoryQuery (opcional - pode ser adicionada depois)
+- [ ] IncomesByWalletQuery (opcional - pode ser adicionada depois)
+- [ ] IncomesEvolutionQuery (opcional - pode ser adicionada depois)
 ```
 
 ---
@@ -1718,44 +1727,53 @@ npm install lucide-react
 
 #### Passo 13: Criar ReportCacheService
 ```bash
-- [ ] Criar arquivo: app/Domain/Reports/Services/ReportCacheService.php
-- [ ] Criar método: getCacheKey(GenerateReportData, string $userId): string
-- [ ] Criar método: clearUserCache(string $userId): void
-- [ ] Criar método: clearAllReportsCache(): void
+- [x] Criar arquivo: app/Domain/Reports/Services/ReportCacheService.php
+- [x] Criar método: getCacheKey(GenerateReportData, string $userId): string
+- [x] Criar métodos: get(), put(), has(), forget()
+- [x] Criar método: clearUserCache(string $userId): void
+- [x] Criar método: clearAllReportsCache(): void
+- [x] Criar método: getCacheTtl(): int
 ```
 
 #### Passo 14: Criar ReportBuilderService
 ```bash
-- [ ] Criar arquivo: app/Domain/Reports/Services/ReportBuilderService.php
-- [ ] Criar array $queryMap mapeando tipos → classes
-- [ ] Criar método: executeQuery(ReportTypeEnum, string $userId, ReportFiltersData): array
-- [ ] Implementar lógica de resolução dinâmica de queries
+- [x] Criar arquivo: app/Domain/Reports/Services/ReportBuilderService.php
+- [x] Criar array $queryMap mapeando tipos → classes
+- [x] Criar método: executeQuery(ReportTypeEnum, string $userId, ReportFiltersData): array
+- [x] Implementar lógica de resolução dinâmica de queries
+- [x] Criar método: isSupported(ReportTypeEnum): bool
+- [x] Criar método: getSupportedReportTypes(): array
+- [x] Criar método: getAvailableVisualizations(ReportTypeEnum): array
 ```
 
 #### Passo 15: Criar ReportExportService
 ```bash
-- [ ] Criar arquivo: app/Domain/Reports/Services/ReportExportService.php
-- [ ] Criar método: exportPDF(array $data, SavedReport $report) usando Spatie PDF
-- [ ] Criar método: exportExcel(array $data, SavedReport $report) usando Laravel Excel
-- [ ] Criar método: exportCSV(array $data, SavedReport $report) usando Laravel Excel
-- [ ] Criar classe ReportExport implements FromCollection
+- [x] Criar arquivo: app/Domain/Reports/Services/ReportExportService.php
+- [x] Criar método: export() com match para diferentes formatos
+- [x] Criar método: exportToPdf() usando Spatie PDF
+- [x] Criar método: exportToExcel() usando Laravel Excel
+- [x] Criar método: exportToCsv() usando Laravel Excel
+- [x] Criar método: generateFilename()
+- [x] Criar método: getDownloadUrl(string $path): string
+- [x] Criar método: deleteExport(string $path): bool
+- [x] Criar método: cleanOldExports(): int
 ```
 
 #### Passo 16: Criar ReportService (ORQUESTRADOR PRINCIPAL)
 ```bash
-- [ ] Criar arquivo: app/Domain/Reports/Services/ReportService.php
-- [ ] Injetar dependências: ReportBuilderService, ReportCacheService
-- [ ] Criar método: generate(GenerateReportData, string $userId): array
+- [x] Criar arquivo: app/Domain/Reports/Services/ReportService.php
+- [x] Injetar dependências: ReportCacheService, ReportBuilderService, ReportExportService
+- [x] Criar método: generateReport(GenerateReportData): array
       - Implementar lógica de cache (10 min)
       - Executar query via ReportBuilderService
-      - Formatar dados para visualização
-- [ ] Criar método: saveConfig(SaveReportConfigData, string $userId): SavedReport
-- [ ] Criar método: runSavedReport(SavedReport): array
-- [ ] Criar métodos helper:
-      - formatChartData(Collection, VisualizationTypeEnum): array
-      - formatPieChartData(Collection): array
-      - formatBarChartData(Collection): array
-      - formatLineChartData(Collection): array
+      - Adicionar metadata
+- [x] Criar método: saveReportConfig(SaveReportConfigData): SavedReport
+- [x] Criar método: runSavedReport(SavedReport): array
+- [x] Criar método: exportReport(): string
+- [x] Criar métodos auxiliares:
+      - getUserReports(), getUserFavorites(), getTemplates()
+      - updateSavedReport(), deleteSavedReport(), toggleFavorite()
+      - clearUserCache(), isReportTypeSupported(), getAvailableVisualizations()
 ```
 
 ---
@@ -1764,22 +1782,44 @@ npm install lucide-react
 
 #### Passo 17: Criar FormRequests
 ```bash
-- [ ] Executar: php artisan make:request Reports/GenerateReportRequest
-      - Validar: report_type, filters (array), visualization_type
-- [ ] Executar: php artisan make:request Reports/SaveReportRequest
-      - Validar: name (required, max:255), description, is_favorite
+- [x] Executar: php artisan make:request Reports/GenerateReportRequest
+      - Validar: report_type (required, enum)
+      - Validar: visualization_type (nullable, enum)
+      - Validar: filters (start_date, end_date, period_type, category_ids, wallet_ids, min_amount, max_amount, status, limit)
+      - Validar: Lógica de datas (start <= end)
+      - Validar: Existência de IDs (categories, wallets)
+      - Mensagens customizadas em português
+- [x] Executar: php artisan make:request Reports/SaveReportRequest
+      - Herda de GenerateReportRequest
+      - Validar: name (required, max:255)
+      - Validar: description (nullable, max:1000)
+      - Validar: is_favorite, is_template (boolean)
 ```
 
 #### Passo 18: Criar Resources
 ```bash
-- [ ] Executar: php artisan make:resource SavedReportResource
+- [x] Executar: php artisan make:resource SavedReportResource
       - Mapear campos do model para frontend
-      - Incluir run_count, last_run_at formatados
-- [ ] Executar: php artisan make:resource ReportResource
-      - Formatar dados do relatório gerado
+      - Incluir: uuid, name, description, report_type
+      - Incluir: report_type_label, report_type_description, report_type_icon
+      - Incluir: filters, visualization (type, label, icon)
+      - Incluir: is_template, is_favorite, run_count
+      - Incluir: last_run_at (ISO + human readable)
+      - Incluir: created_at, updated_at (ISO)
 ```
 
-#### Passo 19: Criar Policy
+#### Passo 19: Criar ReportExport Class
+```bash
+- [x] Criar: app/Exports/ReportExport.php
+- [x] Implementar: FromCollection, WithHeadings, WithMapping, WithTitle, WithStyles
+- [x] Criar método: collection() - Retorna dados para exportação
+- [x] Criar método: headings() - Define cabeçalhos baseado no tipo
+- [x] Criar método: map() - Mapeia linhas baseado no tipo
+- [x] Criar método: title() - Define nome da planilha
+- [x] Criar método: styles() - Aplica estilização (header em negrito)
+```
+
+#### Passo 20: Criar Policy (opcional - pode ser feito depois)
 ```bash
 - [ ] Executar: php artisan make:policy SavedReportPolicy --model=SavedReport
 - [ ] Implementar: viewAny, view, create, update, delete
@@ -1792,35 +1832,39 @@ npm install lucide-react
 
 #### Passo 20: Criar ReportsController
 ```bash
-- [ ] Executar: php artisan make:controller Dashboard/ReportsController
-- [ ] Injetar: ReportService, ReportExportService
-- [ ] Implementar método: index() - Lista relatórios salvos + templates
-- [ ] Implementar método: builder() - Wizard de criação
-- [ ] Implementar método: generate(GenerateReportRequest) - Gera relatório
-- [ ] Implementar método: save(SaveReportRequest) - Salva configuração
-- [ ] Implementar método: run(SavedReport) - Executa relatório salvo
-- [ ] Implementar método: exportPDF(SavedReport) - Download PDF
-- [ ] Implementar método: exportExcel(SavedReport) - Download Excel
-- [ ] Implementar método: exportCSV(SavedReport) - Download CSV
-- [ ] Implementar método: destroy(SavedReport) - Deleta relatório
-- [ ] Criar métodos helper: getReportTypes(), getVisualizationTypes()
+- [x] Executar: php artisan make:controller Dashboard/ReportsController
+- [x] Injetar: ReportService (via constructor injection)
+- [x] Implementar método: index() - Lista relatórios salvos + favoritos + templates
+- [x] Implementar método: builder() - Wizard de criação (com categories e wallets)
+- [x] Implementar método: generate(GenerateReportRequest) - Gera relatório (retorna JSON)
+- [x] Implementar método: store(SaveReportRequest) - Salva configuração
+- [x] Implementar método: show(SavedReport) - Mostra relatório salvo
+- [x] Implementar método: run(SavedReport) - Executa relatório salvo (retorna JSON)
+- [x] Implementar método: update(Request, SavedReport) - Atualiza relatório
+- [x] Implementar método: destroy(SavedReport) - Deleta relatório
+- [x] Implementar método: toggleFavorite(SavedReport) - Marca/desmarca favorito
+- [x] Implementar método: export(SavedReport) - Exporta em PDF/Excel/CSV (único método)
+- [x] Criar métodos helper: getReportTypes(), getVisualizationTypes()
+- [x] Adicionar verificações de ownership (403 se não for dono)
+- [x] Adicionar tratamento de exceções com Toast
 ```
 
 #### Passo 21: Adicionar Routes
 ```bash
-- [ ] Editar: routes/web.php
-- [ ] Criar grupo: /dashboard/reports
-- [ ] Adicionar rotas Inertia:
-      - GET  /                  → index
-      - GET  /builder           → builder
-      - POST /generate          → generate
-      - POST /save              → save
-      - GET  /{report}/run      → run
-      - DELETE /{report}        → destroy
-- [ ] Adicionar rotas de download (NÃO Inertia):
-      - GET /{report}/export/pdf    → exportPDF
-      - GET /{report}/export/excel  → exportExcel
-      - GET /{report}/export/csv    → exportCSV
+- [x] Editar: routes/web.php
+- [x] Criar grupo: /dashboard/reports com prefix e name
+- [x] Adicionar rotas:
+      - GET    /                      → index (lista relatórios)
+      - GET    /builder               → builder (wizard)
+      - POST   /generate              → generate (preview)
+      - POST   /save                  → store (salvar config)
+      - GET    /{report:uuid}         → show (visualizar salvo)
+      - POST   /{report:uuid}/run     → run (executar salvo)
+      - PATCH  /{report:uuid}         → update (atualizar)
+      - DELETE /{report:uuid}         → destroy (deletar)
+      - POST   /{report:uuid}/favorite → toggleFavorite (favoritar)
+      - GET    /{report:uuid}/export  → export (download com ?format=pdf|excel|csv)
+- [x] Usar route model binding com uuid
 ```
 
 ---
