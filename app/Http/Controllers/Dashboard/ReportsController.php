@@ -35,7 +35,7 @@ class ReportsController extends Controller
         $templates = $this->reportService->getTemplates();
 
         return Inertia::render('dashboard/reports/index', [
-            'user_reports' => SavedReportResource::collection($userReports),
+            'savedReports' => SavedReportResource::collection($userReports),
             'favorites' => SavedReportResource::collection($favorites),
             'templates' => SavedReportResource::collection($templates),
         ]);
@@ -46,7 +46,7 @@ class ReportsController extends Controller
      */
     public function builder(Request $request)
     {
-        $categories = $request->user()->categories()->where('status', true)->get();
+        $categories = $request->user()->categories()->where('status', true)->orWhere('is_default', true)->get();
         $wallets = $request->user()->wallets()->where('status', true)->get();
 
         return Inertia::render('dashboard/reports/builder', [
@@ -68,18 +68,26 @@ class ReportsController extends Controller
         try {
             $result = $this->reportService->generateReport($reportData);
 
-            return response()->json([
-                'success' => true,
-                'data' => $result['data'],
-                'summary' => $result['summary'],
-                'metadata' => $result['metadata'],
-                'from_cache' => $result['from_cache'],
+            // Render the view page with the generated report
+            return Inertia::render('dashboard/reports/view', [
+                'report' => [
+                    'report_type' => $reportData->reportType->value,
+                    'filters' => $reportData->filters,
+                    'data' => $result['data'],
+                    'summary' => $result['summary'],
+                    'generated_at' => now()->toISOString(),
+                ],
+                'config' => [
+                    'report_type' => $reportData->reportType->value,
+                    'visualization_type' => $reportData->visualizationType->value,
+                    'filters' => $reportData->filters,
+                ],
+                'reportTypes' => $this->getReportTypes(),
+                'visualizationTypes' => $this->getVisualizationTypes(),
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erro ao gerar relatório: ' . $e->getMessage(),
-            ], 500);
+            Toast::error('Erro ao gerar relatório: ' . $e->getMessage());
+            return redirect()->back();
         }
     }
 
@@ -131,18 +139,25 @@ class ReportsController extends Controller
         try {
             $result = $this->reportService->runSavedReport($report);
 
-            return response()->json([
-                'success' => true,
-                'data' => $result['data'],
-                'summary' => $result['summary'],
-                'metadata' => $result['metadata'],
-                'from_cache' => $result['from_cache'],
+            // Render the view page with the generated report
+            return Inertia::render('dashboard/reports/view', [
+                'report' => [
+                    'report_type' => $report->report_type,
+                    'filters' => $report->filters,
+                    'data' => $result['data'],
+                    'summary' => $result['summary'],
+                    'generated_at' => $result['metadata']['generated_at'],
+                ],
+                'config' => [
+                    'report_type' => $report->report_type,
+                    'visualization_type' => $report->visualization['type'],
+                    'filters' => $report->filters,
+                ],
+                'savedReport' => new SavedReportResource($report),
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erro ao executar relatório: ' . $e->getMessage(),
-            ], 500);
+            Toast::error('Erro ao executar relatório: ' . $e->getMessage());
+            return redirect()->back();
         }
     }
 

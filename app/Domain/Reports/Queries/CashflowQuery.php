@@ -27,13 +27,16 @@ class CashflowQuery extends BaseReportQuery
         };
 
         // Get expenses grouped by period
-        $expenses = Transaction::query()
+        $expensesQuery = Transaction::query()
             ->where('user_id', $userId)
-            ->where('status', TransactionStatusEnum::PAID)
-            ->when($filters->startDate, fn($q) => $q->whereDate('paid_at', '>=', $filters->startDate))
-            ->when($filters->endDate, fn($q) => $q->whereDate('paid_at', '<=', $filters->endDate))
-            ->when($filters->categoryIds, fn($q) => $q->whereIn('category_id', $filters->categoryIds))
-            ->when($filters->walletIds, fn($q) => $q->whereIn('wallet_id', $filters->walletIds))
+            ->where('status', TransactionStatusEnum::PAID);
+
+        // Apply filters using helper methods
+        $this->applyPeriodFilter($expensesQuery, $filters, 'paid_at');
+        $this->applyCategoryFilter($expensesQuery, $filters);
+        $this->applyWalletFilter($expensesQuery, $filters);
+
+        $expenses = $expensesQuery
             ->select(
                 DB::raw("DATE_FORMAT(paid_at, '{$dateFormat}') as period"),
                 DB::raw('SUM(amount) as total_amount')
@@ -44,16 +47,32 @@ class CashflowQuery extends BaseReportQuery
             ->keyBy('period');
 
         // Get incomes grouped by period
-        $incomes = IncomeTransaction::query()
+        $incomesQuery = IncomeTransaction::query()
             ->where('user_id', $userId)
-            ->where('is_received', true)
-            ->when($filters->startDate, fn($q) => $q->whereDate('received_at', '>=', $filters->startDate))
-            ->when($filters->endDate, fn($q) => $q->whereDate('received_at', '<=', $filters->endDate))
-            ->when($filters->walletIds, function($q) use ($filters) {
-                $q->whereHas('income', function($query) use ($filters) {
-                    $query->whereIn('wallet_id', $filters->walletIds);
+            ->where('is_received', true);
+
+        // Apply date filters
+        if ($filters->startDate) {
+            $incomesQuery->whereDate('received_at', '>=', $filters->startDate);
+        }
+        if ($filters->endDate) {
+            $incomesQuery->whereDate('received_at', '<=', $filters->endDate);
+        }
+
+        // Apply wallet filter (convert UUIDs to IDs)
+        if ($filters->walletIds && count($filters->walletIds) > 0) {
+            $walletIds = \App\Models\Wallet::whereIn('uuid', $filters->walletIds)
+                ->pluck('id')
+                ->toArray();
+
+            if (count($walletIds) > 0) {
+                $incomesQuery->whereHas('income', function($query) use ($walletIds) {
+                    $query->whereIn('wallet_id', $walletIds);
                 });
-            })
+            }
+        }
+
+        $incomes = $incomesQuery
             ->select(
                 DB::raw("DATE_FORMAT(received_at, '{$dateFormat}') as period"),
                 DB::raw('SUM(amount) as total_amount')

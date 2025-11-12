@@ -1873,14 +1873,14 @@ npm install lucide-react
 
 #### Passo 22: Criar Types TypeScript
 ```bash
-- [ ] Criar arquivo: resources/js/types/reports.d.ts
-- [ ] Definir type: ReportType (union de strings)
-- [ ] Definir type: VisualizationType
-- [ ] Definir interface: ReportFilters
-- [ ] Definir interface: ReportConfig
-- [ ] Definir interface: ReportData
-- [ ] Definir interface: SavedReport
-- [ ] Definir interface: ChartData
+- [x] Criar arquivo: resources/js/types/reports.d.ts
+- [x] Definir type: ReportType (union de strings)
+- [x] Definir type: VisualizationType
+- [x] Definir interface: ReportFilters
+- [x] Definir interface: ReportConfig
+- [x] Definir interface: ReportData
+- [x] Definir interface: SavedReport
+- [x] Definir interface: ChartData
 ```
 
 ---
@@ -1889,34 +1889,34 @@ npm install lucide-react
 
 #### Passo 23: Criar Página de Listagem
 ```bash
-- [ ] Criar arquivo: resources/js/pages/dashboard/reports/index.tsx
-- [ ] Receber props: savedReports, templates
-- [ ] Criar seção: Templates pré-configurados
-- [ ] Criar seção: Meus Relatórios Salvos
-- [ ] Adicionar botão: "Criar Novo Relatório" → builder
-- [ ] Implementar grid responsivo (3 colunas)
+- [x] Criar arquivo: resources/js/pages/dashboard/reports/index.tsx
+- [x] Receber props: savedReports, templates
+- [x] Criar seção: Templates pré-configurados
+- [x] Criar seção: Meus Relatórios Salvos
+- [x] Adicionar botão: "Criar Novo Relatório" → builder
+- [x] Implementar grid responsivo (3 colunas)
 ```
 
 #### Passo 24: Criar Página Builder (Wizard)
 ```bash
-- [ ] Criar arquivo: resources/js/pages/dashboard/reports/builder.tsx
-- [ ] Receber props: categories, wallets, reportTypes, visualizationTypes
-- [ ] Implementar state: currentStep (1-4)
-- [ ] Implementar state: config (ReportConfig)
-- [ ] Criar navegação entre steps (next, prev)
-- [ ] Implementar função: handleGenerate() via router.post
-- [ ] Renderizar componente Step1/2/3/4 condicionalmente
+- [x] Criar arquivo: resources/js/pages/dashboard/reports/builder.tsx
+- [x] Receber props: categories, wallets, reportTypes, visualizationTypes
+- [x] Implementar state: currentStep (1-4)
+- [x] Implementar state: config (ReportConfig)
+- [x] Criar navegação entre steps (next, prev)
+- [x] Implementar função: handleGenerate() via router.post
+- [x] Renderizar componente Step1/2/3/4 condicionalmente
 ```
 
 #### Passo 25: Criar Página de Visualização
 ```bash
-- [ ] Criar arquivo: resources/js/pages/dashboard/reports/view.tsx
-- [ ] Receber props: report (ReportData), config, savedReport?
-- [ ] Criar header com título e informações
-- [ ] Criar cards de summary (total, count, average)
-- [ ] Renderizar gráfico condicionalmente (se config.include_chart)
-- [ ] Renderizar tabela condicionalmente (se config.include_table)
-- [ ] Adicionar botões de exportação
+- [x] Criar arquivo: resources/js/pages/dashboard/reports/view.tsx
+- [x] Receber props: report (ReportData), config, savedReport?
+- [x] Criar header com título e informações
+- [x] Criar cards de summary (total, count, average)
+- [x] Renderizar gráfico condicionalmente (se config.include_chart)
+- [x] Renderizar tabela condicionalmente (se config.include_table)
+- [x] Adicionar botões de exportação
 ```
 
 ---

@@ -26,15 +26,17 @@ class ExpensesEvolutionQuery extends BaseReportQuery
         };
 
         // Group by period
-        $results = Transaction::query()
+        $query = Transaction::query()
             ->where('user_id', $userId)
-            ->where('status', TransactionStatusEnum::PAID)
-            ->when($filters->startDate, fn($q) => $q->whereDate('paid_at', '>=', $filters->startDate))
-            ->when($filters->endDate, fn($q) => $q->whereDate('paid_at', '<=', $filters->endDate))
-            ->when($filters->categoryIds, fn($q) => $q->whereIn('category_id', $filters->categoryIds))
-            ->when($filters->walletIds, fn($q) => $q->whereIn('wallet_id', $filters->walletIds))
-            ->when($filters->minAmount, fn($q) => $q->where('amount', '>=', (int) ($filters->minAmount * 100)))
-            ->when($filters->maxAmount, fn($q) => $q->where('amount', '<=', (int) ($filters->maxAmount * 100)))
+            ->where('status', TransactionStatusEnum::PAID);
+
+        // Apply filters using helper methods
+        $this->applyPeriodFilter($query, $filters, 'paid_at');
+        $this->applyCategoryFilter($query, $filters);
+        $this->applyWalletFilter($query, $filters);
+        $this->applyAmountRangeFilter($query, $filters);
+
+        $results = $query
             ->select(
                 DB::raw("DATE_FORMAT(paid_at, '{$dateFormat}') as period"),
                 DB::raw('SUM(amount) as total_amount'),
@@ -44,41 +46,41 @@ class ExpensesEvolutionQuery extends BaseReportQuery
             ->orderBy('period', 'asc')
             ->get();
 
-        // Calculate variation percentage
+        // Calculate variation percentage (convert to reais)
         $data = [];
         $previousAmount = null;
 
         foreach ($results as $item) {
-            $totalReais = $this->centsToReais($item->total_amount);
+            $amountInReais = $this->centsToReais($item->total_amount);
             $variation = null;
 
             if ($previousAmount !== null && $previousAmount > 0) {
-                $variation = (($totalReais - $previousAmount) / $previousAmount) * 100;
+                $variation = (($amountInReais - $previousAmount) / $previousAmount) * 100;
             }
 
             $data[] = [
                 'period' => $this->formatPeriodLabel($item->period, $periodType),
                 'period_raw' => $item->period,
-                'total' => $this->formatNumber($totalReais),
+                'value' => $this->formatNumber($amountInReais),
                 'count' => $item->transaction_count,
                 'variation_percentage' => $variation !== null ? $this->formatNumber($variation) : null,
             ];
 
-            $previousAmount = $totalReais;
+            $previousAmount = $amountInReais;
         }
 
         // Calculate summary
-        $totalAmount = array_sum(array_column($data, 'total'));
+        $totalAmount = array_sum(array_column($data, 'value'));
         $totalTransactions = array_sum(array_column($data, 'count'));
-        $averagePerPeriod = count($data) > 0 ? $totalAmount / count($data) : 0;
+        $averagePerPeriod = count($data) > 0 ? $this->formatNumber($totalAmount / count($data)) : 0;
 
         return [
             'data' => $data,
             'summary' => [
-                'total_amount' => $this->formatNumber($totalAmount),
-                'total_transactions' => $totalTransactions,
+                'total' => $this->formatNumber($totalAmount),
+                'count' => $totalTransactions,
                 'periods_count' => count($data),
-                'average_per_period' => $this->formatNumber($averagePerPeriod),
+                'average' => $averagePerPeriod,
                 'period_type' => $periodType,
             ],
         ];

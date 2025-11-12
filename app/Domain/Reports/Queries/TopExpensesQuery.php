@@ -36,13 +36,14 @@ class TopExpensesQuery extends BaseReportQuery
 
         // Format results
         $data = $results->map(function ($transaction) {
+            // Note: $transaction->amount uses accessor, so it's already in reais (divided by 100)
             return [
                 'id' => $transaction->uuid,
                 'name' => $transaction->account->name ?? 'Sem nome',
                 'description' => $transaction->account->description ?? null,
                 'category' => $transaction->category->name ?? 'Sem Categoria',
                 'wallet' => $transaction->wallet->name ?? 'Sem Carteira',
-                'amount' => $this->formatNumber($this->centsToReais($transaction->amount)),
+                'value' => $this->formatNumber($transaction->amount), // Already in reais via accessor
                 'paid_at' => $transaction->paid_at->format('d/m/Y'),
                 'installment_info' => $transaction->total_installments > 1
                     ? "{$transaction->installment_number}/{$transaction->total_installments}"
@@ -50,16 +51,16 @@ class TopExpensesQuery extends BaseReportQuery
             ];
         })->toArray();
 
-        // Calculate summary
+        // Calculate summary (sum uses accessor, returns reais)
         $totalAmount = $results->sum('amount');
         $averageAmount = $results->count() > 0 ? $totalAmount / $results->count() : 0;
 
         return [
             'data' => $data,
             'summary' => [
-                'total_amount' => $this->formatNumber($this->centsToReais($totalAmount)),
-                'expenses_count' => count($data),
-                'average_amount' => $this->formatNumber($this->centsToReais((int) $averageAmount)),
+                'total' => $this->formatNumber($totalAmount),
+                'count' => count($data),
+                'average' => $this->formatNumber($averageAmount),
                 'limit' => $limit,
             ],
         ];

@@ -35,7 +35,14 @@ abstract class BaseReportQuery
     protected function applyCategoryFilter(Builder $query, ReportFiltersData $filters): Builder
     {
         if ($filters->categoryIds && count($filters->categoryIds) > 0) {
-            $query->whereIn('category_id', $filters->categoryIds);
+            // Convert UUIDs to IDs
+            $categoryIds = \App\Models\Category::whereIn('uuid', $filters->categoryIds)
+                ->pluck('id')
+                ->toArray();
+
+            if (count($categoryIds) > 0) {
+                $query->whereIn('category_id', $categoryIds);
+            }
         }
 
         return $query;
@@ -47,7 +54,14 @@ abstract class BaseReportQuery
     protected function applyWalletFilter(Builder $query, ReportFiltersData $filters): Builder
     {
         if ($filters->walletIds && count($filters->walletIds) > 0) {
-            $query->whereIn('wallet_id', $filters->walletIds);
+            // Convert UUIDs to IDs
+            $walletIds = \App\Models\Wallet::whereIn('uuid', $filters->walletIds)
+                ->pluck('id')
+                ->toArray();
+
+            if (count($walletIds) > 0) {
+                $query->whereIn('wallet_id', $walletIds);
+            }
         }
 
         return $query;
