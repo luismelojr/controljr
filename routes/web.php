@@ -9,9 +9,9 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('welcome');
-})->name('home');
+use App\Http\Controllers\LandingPageController;
+
+Route::get('/', LandingPageController::class)->name('home');
 
 Route::prefix('toast-test')->group(function () {
     Route::get('/', [ToastTestController::class, 'index'])->name('toast-test.index');

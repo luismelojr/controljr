@@ -1,3 +1,4 @@
+import { MeloSysLogo } from '@/components/ui/melosys-logo';
 import {
     Sidebar,
     SidebarContent,
@@ -12,7 +13,6 @@ import {
 } from '@/components/ui/sidebar';
 import { router, usePage } from '@inertiajs/react';
 import { ArrowLeftRightIcon, BanknoteArrowDownIcon, BanknoteArrowUpIcon, BarChart3, CircleAlert, Home, LogOut, Tag, Wallet } from 'lucide-react';
-import { MeloSysLogo } from '@/components/ui/melosys-logo';
 
 interface MenuItemInterface {
     title: string;
@@ -37,6 +37,7 @@ const menuItems: MenuItemInterface[] = [
             { title: 'Transações Contas', icon: ArrowLeftRightIcon, url: route('dashboard.transactions.index') },
             { title: 'Transações Receitas', icon: ArrowLeftRightIcon, url: route('dashboard.income-transactions.index') },
             { title: 'Alertas', icon: CircleAlert, url: route('dashboard.alerts.index') },
+            { title: 'Relatorios', icon: BarChart3, url: route('dashboard.reports.index') },
         ],
     },
     // {

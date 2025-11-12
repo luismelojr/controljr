@@ -15,6 +15,9 @@ import { ptBR } from 'date-fns/locale';
 import { ArrowLeft, Download, FileSpreadsheet, FileText, Save, Table as TableIcon } from 'lucide-react';
 import { useState } from 'react';
 import { SaveReportDialog } from '@/components/reports/save-report-dialog';
+import { PieChartView } from '@/components/reports/pie-chart-view';
+import { BarChartView } from '@/components/reports/bar-chart-view';
+import { LineChartView } from '@/components/reports/line-chart-view';
 
 export default function ReportView({ report, config, savedReport }: ReportViewProps) {
     const [isSaving, setIsSaving] = useState(false);
@@ -187,16 +190,22 @@ export default function ReportView({ report, config, savedReport }: ReportViewPr
                     )}
                 </div>
 
-                {/* Chart Placeholder */}
+                {/* Chart Visualization */}
                 <Card>
                     <CardHeader>
                         <CardTitle>Visualização</CardTitle>
-                        <CardDescription>Gráfico dos dados (será implementado na próxima fase com Recharts)</CardDescription>
+                        <CardDescription>Representação gráfica dos dados do relatório</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex h-64 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50">
-                            <p className="text-sm text-muted-foreground">Gráfico será implementado na Fase 13</p>
-                        </div>
+                        {config.visualization_type === 'pie' && <PieChartView data={report.data} />}
+                        {config.visualization_type === 'bar' && <BarChartView data={report.data} orientation="vertical" />}
+                        {config.visualization_type === 'horizontal_bar' && <BarChartView data={report.data} orientation="horizontal" />}
+                        {config.visualization_type === 'line' && <LineChartView data={report.data} />}
+                        {config.visualization_type === 'table' && (
+                            <div className="flex h-64 items-center justify-center">
+                                <p className="text-sm text-muted-foreground">Visualização em tabela (veja abaixo)</p>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
 

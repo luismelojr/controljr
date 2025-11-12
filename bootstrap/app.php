@@ -22,6 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
+
+        // Configure redirect for authenticated users
+        $middleware->redirectGuestsTo('/login');
+        $middleware->redirectUsersTo('/dashboard');
     })
     ->withSchedule(function (Schedule $schedule): void {
         // Mark overdue transactions (expenses) - runs daily at midnight
