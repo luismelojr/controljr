@@ -242,10 +242,11 @@ export default function CategoriesIndex({ categories, filters }: CategoriesIndex
                 />
 
                 {/* Filters and Active Filters */}
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <DataTableFilters filters={filterConfigs} activeFilters={activeFilters} currentSort={filters?.sort} />
-
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                     <FilterBadges filters={activeFilters} filterConfigs={filterConfigs} currentSort={filters?.sort} />
+                    <div className={'flex flex-1 justify-end'}>
+                        <DataTableFilters filters={filterConfigs} activeFilters={activeFilters} currentSort={filters?.sort} />
+                    </div>
                 </div>
 
                 {/* DataTable */}

@@ -16,6 +16,10 @@ This is a Laravel 12 application with React/Inertia.js frontend, using TypeScrip
 - Pest for testing
 - SQLite database (default)
 - Queue system with database driver
+- Maatwebsite Excel for spreadsheet exports
+- Spatie Laravel PDF for PDF generation
+- Spatie Query Builder for advanced filtering
+- Resend for transactional emails
 
 **Frontend:**
 - React 19 with TypeScript
@@ -24,6 +28,9 @@ This is a Laravel 12 application with React/Inertia.js frontend, using TypeScrip
 - Vite for bundling
 - Laravel Wayfinder for type-safe routing
 - Radix UI primitives
+- Recharts for data visualization
+- date-fns for date manipulation
+- react-imask for input masking
 
 ## Development Commands
 
@@ -85,6 +92,11 @@ php artisan queue:listen        # Listen for jobs with auto-reload
 php artisan pail                # Tail application logs in real-time
 ```
 
+### Wayfinder
+```bash
+php artisan wayfinder:generate  # Generate type-safe route definitions for frontend
+```
+
 ## Architecture
 
 ### Domain-Driven Design Pattern
@@ -99,15 +111,68 @@ The backend uses a Domain-Driven approach with the following structure:
 - **Resources** (`app/Http/Resources/`): API resource transformations
 - **Requests** (`app/Http/Requests/`): Form request validation
 
-Example domain structure for Users:
+Example domain structure:
 ```
-app/Domain/Users/
-├── DTO/
-│   ├── RegisterUserData.php
-│   ├── LoginUserData.php
-│   └── SocialLoginData.php
-└── Services/
-    └── UserService.php
+app/Domain/
+├── Users/
+│   ├── DTO/
+│   │   ├── RegisterUserData.php
+│   │   ├── LoginUserData.php
+│   │   └── SocialLoginData.php
+│   └── Services/
+│       └── UserService.php
+├── Auth/
+│   ├── DTO/
+│   │   ├── ForgotPasswordData.php
+│   │   └── ResetPasswordData.php
+│   └── Services/
+│       └── PasswordResetService.php
+├── Wallets/
+│   ├── DTO/
+│   └── Services/
+│       └── WalletService.php
+├── Accounts/
+│   ├── DTO/
+│   └── Services/
+│       └── AccountService.php
+├── Categories/
+│   ├── DTO/
+│   └── Services/
+│       └── CategoryService.php
+├── Transactions/
+│   └── Services/
+│       └── TransactionService.php
+├── Incomes/
+│   ├── DTO/
+│   └── Services/
+│       └── IncomeService.php
+├── IncomeTransactions/
+│   └── Services/
+│       └── IncomeTransactionService.php
+├── Alerts/
+│   ├── DTO/
+│   └── Services/
+│       └── AlertService.php
+├── Dashboard/
+│   └── Services/
+│       └── DashboardService.php
+└── Reports/
+    ├── DTO/
+    │   ├── GenerateReportData.php
+    │   ├── SaveReportConfigData.php
+    │   └── ReportFiltersData.php
+    ├── Queries/
+    │   ├── BaseReportQuery.php
+    │   ├── CashflowQuery.php
+    │   ├── ExpensesByCategoryQuery.php
+    │   ├── ExpensesByWalletQuery.php
+    │   ├── ExpensesEvolutionQuery.php
+    │   └── TopExpensesQuery.php
+    └── Services/
+        ├── ReportService.php
+        ├── ReportBuilderService.php
+        ├── ReportExportService.php
+        └── ReportCacheService.php
 ```
 
 ### Frontend Architecture
@@ -191,6 +256,98 @@ All Inertia pages receive these props automatically (`HandleInertiaRequests.php`
 - `quote`: Random inspiring quote (message + author)
 - `auth.user`: Authenticated user resource (or null)
 - `toasts`: Array of toast notifications to display
+
+### Reports System
+
+The application includes a comprehensive reports module built with a domain-driven architecture:
+
+**Backend Architecture** (`app/Domain/Reports/`):**
+
+**Query Pattern:**
+- `BaseReportQuery` - Abstract base class for all report queries
+- `CashflowQuery` - Income vs expenses comparison
+- `ExpensesByCategoryQuery` - Expenses grouped by category
+- `ExpensesByWalletQuery` - Expenses grouped by wallet
+- `ExpensesEvolutionQuery` - Expense trends over time
+- `TopExpensesQuery` - Highest expense transactions
+
+**Services:**
+- `ReportService` - Main service for report generation
+- `ReportBuilderService` - Dynamic report creation with filters
+- `ReportExportService` - PDF/Excel/CSV exports (Spatie PDF, Maatwebsite Excel)
+- `ReportCacheService` - Report caching with configurable TTL
+
+**DTOs:**
+- `GenerateReportData` - Report generation parameters
+- `SaveReportConfigData` - Saved report configuration
+- `ReportFiltersData` - Filter parameters (dates, categories, wallets, etc.)
+
+**Available Report Types:**
+1. **Cashflow** - Income vs Expenses analysis
+2. **Expenses by Category** - Category breakdown with percentages
+3. **Expenses by Wallet** - Wallet breakdown with percentages
+4. **Expenses Evolution** - Time-series expense trends
+5. **Top Expenses** - Ranking of highest transactions
+6. **Income by Category** - Income category breakdown
+7. **Income by Wallet** - Income wallet breakdown
+8. **Income Evolution** - Time-series income trends
+
+**Frontend Components** (`resources/js/components/reports/`):**
+
+**Pages:**
+- `index.tsx` - List saved reports, templates, and favorites
+- `builder.tsx` - 4-step wizard for creating reports
+- `view.tsx` - Display generated report with visualizations
+- `show.tsx` - View saved report details
+
+**Wizard Steps:**
+- `step-1-report-type.tsx` - Select report type
+- `step-2-filters.tsx` - Configure filters (dynamic based on report type)
+- `step-3-visualization.tsx` - Choose visualization (pie, bar, line, table)
+- `step-4-actions.tsx` - Review and save/generate
+
+**Visualizations** (Recharts):
+- `pie-chart-view.tsx` - Pie chart with percentages
+- `bar-chart-view.tsx` - Horizontal/vertical bar charts
+- `line-chart-view.tsx` - Multi-line time-series charts
+- `report-table.tsx` - Sortable data table with summary cards
+
+**Auxiliary Components:**
+- `report-header.tsx` - Report metadata and actions
+- `export-buttons.tsx` - Dropdown menu for PDF/Excel/CSV export
+- `saved-report-card.tsx` - Card for saved reports
+- `template-card.tsx` - Card for report templates
+
+**Report Features:**
+- **Wizard-based creation** - 4-step guided process
+- **Dynamic filters** - Filters change based on report type
+- **Saved configurations** - Save reports for reuse
+- **Favorites** - Mark frequently used reports
+- **Templates** - Pre-configured report templates
+- **Multiple visualizations** - Pie, bar, line charts, and tables
+- **Export formats** - PDF, Excel, CSV
+- **Caching** - Configurable TTL for performance
+- **Responsive design** - Mobile-friendly interface
+
+**Available Filters:**
+- Date ranges (preset periods or custom dates)
+- Categories (multi-select)
+- Wallets (multi-select)
+- Transaction status (paid, pending, all)
+- Amount range (min/max)
+- Top N limit (for ranking reports)
+
+**Usage Example:**
+```typescript
+// Navigate to report builder
+router.get(route('dashboard.reports.builder'));
+
+// Run a saved report
+router.post(route('dashboard.reports.run', reportId));
+
+// Export a report
+router.get(route('dashboard.reports.export', reportId));
+```
 
 ## File Organization
 
@@ -285,9 +442,22 @@ Uses Pest PHP testing framework with Laravel plugin:
 
 Default configuration uses SQLite (`database/database.sqlite`). Standard Laravel migrations in `database/migrations/`:
 - Users table with UUID primary key
-- Cache table
-- Jobs table for queue system
-- Session storage in database
+- Wallets table (user's payment methods)
+- Accounts table (expense accounts with recurring support)
+- Categories table (expense categories)
+- Transactions table (expense records)
+- Incomes table (recurring income sources)
+- Income transactions table (income records)
+- Alerts table (user alerts and notifications)
+- Alert notifications table (triggered alert instances)
+- Saved reports table (user-saved report configurations)
+- Cache, Jobs, and Session tables for system operations
+
+**Key Models:**
+- All primary models use UUID as primary key via `HasUuidCustom` trait
+- Most models have a `status` field (active/inactive)
+- Transactions and Incomes support recurring patterns
+- Models include soft deletes where appropriate
 
 ## Important Patterns
 
@@ -297,3 +467,7 @@ Default configuration uses SQLite (`database/database.sqlite`). Standard Laravel
 4. **Follow domain separation**: Controllers → DTOs → Services → Models
 5. **Use Form Requests** for validation logic instead of controller validation
 6. **Inertia pages** should be lightweight; business logic stays in backend services
+7. **UUID Primary Keys**: All user-created models use UUIDs via `HasUuidCustom` trait
+8. **Status Fields**: Most models include status management (active/inactive) with dedicated toggle methods
+9. **Report Queries**: New report types should extend `BaseReportQuery` and implement the query pattern
+10. **Recurring Patterns**: Accounts and Incomes support recurring transactions with automatic generation

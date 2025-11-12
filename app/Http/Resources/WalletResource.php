@@ -17,8 +17,9 @@ class WalletResource extends JsonResource
         $isCreditCard = $this->type->value === 'card_credit';
         $isBankAccountOrOther = in_array($this->type->value, ['bank_account', 'other']);
 
-        // Calculate total expenses (all transactions) for this wallet
+        // Calculate total expenses (only PAID transactions) for this wallet
         $totalExpenses = $this->transactions()
+            ->where('status', \App\Enums\TransactionStatusEnum::PAID)
             ->sum('amount');
 
         // Calculate total incomes received for this wallet

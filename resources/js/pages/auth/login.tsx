@@ -75,7 +75,7 @@ export default function Login() {
                                 Lembrar-me
                             </Label>
                         </div>
-                        <Link href={route('login')} className="text-sm font-medium text-primary hover:text-primary/80">
+                        <Link href={route('password.request')} className="text-sm font-medium text-primary hover:text-primary/80">
                             Esqueceu a senha?
                         </Link>
                     </div>

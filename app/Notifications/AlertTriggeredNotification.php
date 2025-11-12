@@ -34,21 +34,12 @@ class AlertTriggeredNotification extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $mailMessage = (new MailMessage)
-            ->subject($this->alertNotification->title)
-            ->greeting('Olá, ' . $notifiable->name . '!')
-            ->line($this->alertNotification->message);
-
-        // Add additional lines based on notification type
-        if ($this->alertNotification->type === 'danger') {
-            $mailMessage->error();
-        }
-
-        $mailMessage
-            ->action('Ver no Painel', url('/dashboard/notifications'))
-            ->line('Você recebeu este alerta porque configurou notificações automáticas no MeloSys.');
-
-        return $mailMessage;
+        return (new MailMessage)
+            ->subject($this->alertNotification->title . ' - ' . config('app.name'))
+            ->view('emails.alert', [
+                'user' => $notifiable,
+                'alertNotification' => $this->alertNotification,
+            ]);
     }
 
     /**

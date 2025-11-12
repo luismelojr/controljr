@@ -1,12 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ActiveFilters, FilterConfig } from '@/types/datatable';
 import { router } from '@inertiajs/react';
 import { Filter } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface DataTableFiltersProps {
     filters: FilterConfig[];
@@ -27,6 +27,14 @@ export function DataTableFilters({ filters, activeFilters, currentSort }: DataTa
     const safeActiveFilters = activeFilters && typeof activeFilters === 'object' && !Array.isArray(activeFilters) ? activeFilters : {};
 
     const [localFilters, setLocalFilters] = useState<ActiveFilters>(safeActiveFilters);
+
+    /**
+     * Sync local filters with active filters when they change
+     * This ensures the drawer shows the correct values when reopened
+     */
+    useEffect(() => {
+        setLocalFilters(safeActiveFilters);
+    }, [JSON.stringify(safeActiveFilters)]);
 
     // Safe active filters count
     const activeFiltersCount = (() => {
@@ -181,8 +189,8 @@ export function DataTableFilters({ filters, activeFilters, currentSort }: DataTa
     };
 
     return (
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
+        <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
                 <Button variant="outline" className="gap-2">
                     <Filter className="h-4 w-4" />
                     Filtros
@@ -192,28 +200,18 @@ export function DataTableFilters({ filters, activeFilters, currentSort }: DataTa
                         </span>
                     )}
                 </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80" align="end">
-                <div className="space-y-4">
-                    {/* Header */}
-                    <div className="flex items-center justify-between">
-                        <h4 className="font-semibold">Filtros</h4>
-                        {hasActiveFilters && (
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={clearFilters}
-                                className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
-                            >
-                                Limpar todos
-                            </Button>
-                        )}
-                    </div>
+            </SheetTrigger>
+            <SheetContent className="flex w-full flex-col sm:max-w-md">
+                <SheetHeader className="px-6 pt-6">
+                    <SheetTitle>Filtros</SheetTitle>
+                    <SheetDescription>Configure os filtros para refinar sua busca</SheetDescription>
+                </SheetHeader>
 
-                    {/* Filter inputs */}
-                    <div className="space-y-3">
+                {/* Filter inputs */}
+                <div className="flex-1 overflow-y-auto px-6 py-6">
+                    <div className="space-y-5">
                         {safeFilters.map((filter) => (
-                            <div key={filter.key} className="space-y-1.5">
+                            <div key={filter.key} className="space-y-2">
                                 <Label htmlFor={filter.key} className="text-sm font-medium">
                                     {filter.label}
                                 </Label>
@@ -221,18 +219,23 @@ export function DataTableFilters({ filters, activeFilters, currentSort }: DataTa
                             </div>
                         ))}
                     </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-2 pt-2">
-                        <Button onClick={applyFilters} className="flex-1">
-                            Aplicar
-                        </Button>
-                        <Button variant="outline" onClick={() => setOpen(false)} className="flex-1">
-                            Cancelar
-                        </Button>
-                    </div>
                 </div>
-            </PopoverContent>
-        </Popover>
+
+                {/* Actions */}
+                <SheetFooter className="mt-auto flex-col gap-3 border-t px-6 py-6 sm:flex-col">
+                    <Button onClick={applyFilters} className="w-full" size="lg">
+                        Aplicar Filtros
+                    </Button>
+                    {hasActiveFilters && (
+                        <Button variant="outline" onClick={clearFilters} className="w-full" size="lg">
+                            Limpar Filtros
+                        </Button>
+                    )}
+                    <Button variant="ghost" onClick={() => setOpen(false)} className="w-full">
+                        Cancelar
+                    </Button>
+                </SheetFooter>
+            </SheetContent>
+        </Sheet>
     );
 }
