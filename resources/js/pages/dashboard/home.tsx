@@ -2,7 +2,7 @@ import DashboardLayout from '@/components/layouts/dashboard-layout';
 import CustomToast from '@/components/ui/custom-toast';
 import { BalanceCard } from '@/components/dashboard/balance-card';
 import { StatsCard } from '@/components/dashboard/stats-card';
-import { CashflowChart } from '@/components/dashboard/cashflow-chart';
+import { AccountsEnding } from '@/components/dashboard/accounts-ending';
 import { RecentlyActivity } from '@/components/dashboard/recently-activity';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -52,6 +52,16 @@ interface DashboardData {
         card_limit_used?: number;
         usage_percentage?: number;
     }>;
+    accounts_ending_this_month: Array<{
+        uuid: string;
+        name: string;
+        category: string;
+        wallet: string;
+        total_amount: number;
+        installments: number;
+        installment_info: string;
+        due_date: string;
+    }>;
     unread_notifications_count: number;
     unread_notifications: Array<{
         id: string;
@@ -96,28 +106,6 @@ export default function Home() {
     return (
         <DashboardLayout title={`Bem-vindo, ${firstName}`} subtitle="👋">
             <div className="space-y-6">
-                {/* Cache Info Alert */}
-                <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-200">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="h-5 w-5 flex-shrink-0"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
-                        />
-                    </svg>
-                    <span>
-                        Os dados são atualizados a cada <strong>10 minutos</strong> para melhor performance. Para ver
-                        mudanças recentes, recarregue a página após realizar alguma operação.
-                    </span>
-                </div>
-
                 {/* Top Stats Row */}
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     <BalanceCard
@@ -142,25 +130,20 @@ export default function Home() {
                 </div>
 
                 {/* Main Content Grid */}
-                <div className="grid gap-6 md:grid-cols-12">
-                    {/* Left Column - 8 cols */}
-                    <div className="space-y-6 md:col-span-8">
-                        {/* Cashflow Chart */}
-                        <CashflowChart
-                            totalBalance={dashboardData.total_balance}
-                            percentageChange={dashboardData.balance_percentage_change}
-                            expenseAmount={dashboardData.monthly_expenses}
-                            incomeAmount={dashboardData.monthly_income}
-                            months={dashboardData.cashflow_data.months}
-                            expenses={dashboardData.cashflow_data.expenses}
-                            incomes={dashboardData.cashflow_data.incomes}
-                        />
+                <div className="grid gap-6 lg:grid-cols-3">
+                    {/* Left Column - 2 cols */}
+                    <div className="space-y-6 lg:col-span-2">
+                        {/* Accounts Ending This Month */}
+                        <AccountsEnding accounts={dashboardData.accounts_ending_this_month} />
 
                         {/* Upcoming Transactions */}
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center justify-between">
-                                    <span>Próximas Contas</span>
+                                    <span className="flex items-center gap-2">
+                                        <Clock className="h-5 w-5 text-orange-600" />
+                                        Próximas Contas
+                                    </span>
                                     <Badge variant="secondary">{dashboardData.upcoming_transactions.length}</Badge>
                                 </CardTitle>
                             </CardHeader>
@@ -172,12 +155,12 @@ export default function Home() {
                                                 key={transaction.id}
                                                 className="flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-muted/50"
                                             >
-                                                <div className="flex items-center gap-3">
-                                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-950">
+                                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-950 shrink-0">
                                                         <Clock className="h-5 w-5 text-orange-600" />
                                                     </div>
-                                                    <div>
-                                                        <p className="font-medium">{transaction.name}</p>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="font-medium truncate">{transaction.name}</p>
                                                         <p className="text-sm text-muted-foreground">
                                                             {transaction.category} • Vence em {transaction.due_date}
                                                             {transaction.installment_info && (
@@ -186,7 +169,7 @@ export default function Home() {
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-3">
+                                                <div className="flex items-center gap-3 shrink-0">
                                                     <span className="font-semibold text-red-600">
                                                         {formatCurrency(transaction.amount)}
                                                     </span>
@@ -203,7 +186,13 @@ export default function Home() {
                                         ))}
                                     </div>
                                 ) : (
-                                    <p className="text-center text-muted-foreground">Nenhuma conta próxima do vencimento</p>
+                                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                                        <Clock className="h-12 w-12 text-muted-foreground/50 mb-3" />
+                                        <p className="text-muted-foreground font-medium">Nenhuma conta próxima do vencimento</p>
+                                        <p className="text-sm text-muted-foreground mt-1">
+                                            Suas próximas contas aparecerão aqui
+                                        </p>
+                                    </div>
                                 )}
                             </CardContent>
                         </Card>
@@ -214,8 +203,8 @@ export default function Home() {
                         )}
                     </div>
 
-                    {/* Right Column - 4 cols */}
-                    <div className="space-y-6 md:col-span-4">
+                    {/* Right Column - 1 col */}
+                    <div className="space-y-6 lg:col-span-1">
                         {/* Notifications */}
                         {dashboardData.unread_notifications_count > 0 && (
                             <Card>

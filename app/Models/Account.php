@@ -25,6 +25,7 @@ class Account extends Model
         'total_amount',
         'recurrence_type',
         'installments',
+        'paid_installments',
         'start_date',
         'status',
     ];
@@ -36,6 +37,7 @@ class Account extends Model
             'status' => AccountStatusEnum::class,
             'start_date' => 'date',
             'installments' => 'integer',
+            'paid_installments' => 'integer',
         ];
     }
 

@@ -17,6 +17,7 @@ class CreateAccountData
         public readonly float $total_amount,
         public readonly RecurrenceTypeEnum $recurrence_type,
         public readonly ?int $installments,
+        public readonly int $paid_installments,
         public readonly string $start_date,
     ) {}
 
@@ -34,6 +35,7 @@ class CreateAccountData
             total_amount: (float) $request->input('total_amount'),
             recurrence_type: RecurrenceTypeEnum::from($request->input('recurrence_type')),
             installments: $request->integer('installments') ?: null,
+            paid_installments: $request->integer('paid_installments') ?? 0,
             start_date: $request->input('start_date'),
         );
     }
@@ -48,6 +50,7 @@ class CreateAccountData
             'total_amount' => $this->total_amount,
             'recurrence_type' => $this->recurrence_type,
             'installments' => $this->installments,
+            'paid_installments' => $this->paid_installments,
             'start_date' => $this->start_date,
         ];
     }

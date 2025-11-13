@@ -16,6 +16,7 @@ export interface Account {
     recurrence_type: RecurrenceType;
     recurrence_type_label: string;
     installments?: number;
+    paid_installments: number;
     start_date: string;
     status: AccountStatus;
     status_label: string;
@@ -39,5 +40,7 @@ export interface AccountFormData {
     total_amount: number | '';
     recurrence_type: RecurrenceType | '';
     installments: number | '';
+    paid_installments: number | '';
     start_date: string;
+    [key: string]: any;
 }

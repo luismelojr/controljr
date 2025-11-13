@@ -28,6 +28,7 @@ export default function CreateAccount({ wallets, categories }: CreateAccountProp
         total_amount: '',
         recurrence_type: '',
         installments: '',
+        paid_installments: '0',
         start_date: new Date().toISOString().split('T')[0],
     });
 
@@ -189,37 +190,56 @@ export default function CreateAccount({ wallets, categories }: CreateAccountProp
 
                         {/* Parcelas (condicional) */}
                         {showInstallments && (
-                            <TextInput
-                                label="Número de Parcelas"
-                                type="number"
-                                id="installments"
-                                placeholder="Ex: 10"
-                                value={data.installments.toString()}
-                                onChange={(e) => setData('installments', e.target.value as any)}
-                                error={errors.installments}
-                                required
-                                min="2"
-                                max="120"
-                            />
+                            <>
+                                <TextInput
+                                    label="Número de Parcelas"
+                                    type="number"
+                                    id="installments"
+                                    placeholder="Ex: 10"
+                                    value={data.installments.toString()}
+                                    onChange={(e) => setData('installments', e.target.value as any)}
+                                    error={errors.installments}
+                                    required
+                                    min="2"
+                                    max="120"
+                                />
+
+                                <TextInput
+                                    label="Parcelas Já Pagas"
+                                    type="number"
+                                    id="paid_installments"
+                                    placeholder="0"
+                                    value={data.paid_installments.toString()}
+                                    onChange={(e) => setData('paid_installments', e.target.value as any)}
+                                    error={errors.paid_installments}
+                                    min="0"
+                                    max={data.installments ? (parseInt(data.installments.toString()) - 1).toString() : '0'}
+                                    helperText="Quantas parcelas já foram pagas? Apenas as parcelas restantes serão lançadas."
+                                />
+                            </>
                         )}
 
                         {/* Data de Início */}
                         <TextInput
-                            label="Data de Início"
+                            label={showInstallments && data.paid_installments && parseInt(data.paid_installments.toString()) > 0 ? "Data de Vencimento da Próxima Parcela" : "Data de Início"}
                             type="date"
                             id="start_date"
                             value={data.start_date}
                             onChange={(e) => setData('start_date', e.target.value)}
                             error={errors.start_date}
                             required
+                            helperText={showInstallments && data.paid_installments && parseInt(data.paid_installments.toString()) > 0 ? "Data em que a próxima parcela vence. As demais parcelas vencerão nos meses seguintes." : undefined}
                         />
 
                         {/* Info sobre geração automática */}
                         <Alert>
                             <Info className="h-4 w-4" />
                             <AlertDescription>
-                                As transações serão geradas automaticamente com base no tipo de recorrência selecionado. Para contas
-                                recorrentes, sempre manteremos 12 meses futuros.
+                                As transações serão geradas automaticamente com base no tipo de recorrência selecionado.
+                                {showInstallments && data.paid_installments && parseInt(data.paid_installments.toString()) > 0 && (
+                                    <> Você informou que {data.paid_installments} parcela(s) já foi(ram) paga(s). As {data.installments ? parseInt(data.installments.toString()) - parseInt(data.paid_installments.toString()) : 0} parcela(s) restante(s) serão lançadas a partir da data informada, vencendo mês a mês.</>
+                                )}
+                                {!showInstallments && <> Para contas recorrentes, sempre manteremos 12 meses futuros.</>}
                             </AlertDescription>
                         </Alert>
 

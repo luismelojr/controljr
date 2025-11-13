@@ -51,16 +51,6 @@ class Wallet extends Model
         return $value / 100;
     }
 
-    public function setCardLimitUsedAttribute($value): void
-    {
-        $this->attributes['card_limit_used'] = $value * 100;
-    }
-
-    public function getCardLimitUsedAttribute($value): float|int
-    {
-        return $value / 100;
-    }
-
     public function setInitialBalanceAttribute($value): void
     {
         $this->attributes['initial_balance'] = $value * 100;

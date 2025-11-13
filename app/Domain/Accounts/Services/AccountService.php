@@ -29,7 +29,12 @@ class AccountService
             // Update wallet limit_used if credit card
             $wallet = Wallet::findOrFail($data->wallet_id);
             if ($wallet->type === WalletTypeEnum::CARD_CREDIT) {
-                $wallet->increment('card_limit_used', $data->total_amount * 100); // in cents
+                $amountToConsume = $this->calculateAmountToConsume($account);
+
+                // Ensure card_limit_used never goes negative
+                // Note: Wallet model has a mutator that converts reais to cents automatically
+                $newLimitUsed = max(0, $wallet->card_limit_used + $amountToConsume);
+                $wallet->update(['card_limit_used' => $newLimitUsed]);
             }
 
             // Generate transactions based on recurrence type
@@ -37,6 +42,23 @@ class AccountService
 
             return $account->load(['wallet', 'category', 'transactions']);
         });
+    }
+
+    /**
+     * Calculate the amount that will be consumed from the wallet limit
+     * For installments, only considers the remaining installments
+     */
+    protected function calculateAmountToConsume(Account $account): float
+    {
+        // For installments, calculate only remaining installments
+        if ($account->recurrence_type === RecurrenceTypeEnum::INSTALLMENTS && $account->installments > 0) {
+            $installmentAmount = $account->total_amount / $account->installments;
+            $remainingInstallments = $account->installments - $account->paid_installments;
+            return $installmentAmount * $remainingInstallments;
+        }
+
+        // For one-time and recurring, use the total amount
+        return $account->total_amount;
     }
 
     /**
@@ -73,13 +95,22 @@ class AccountService
 
     /**
      * Generate transactions for installment purchases
+     *
+     * If paid_installments > 0, the remaining installments will be generated
+     * starting from the start_date provided (usually the current month).
+     * This allows users to register accounts that already have paid installments
+     * and continue from where they left off.
      */
     protected function generateInstallmentTransactions(Account $account, Wallet $wallet, Carbon $startDate): void
     {
         $installmentAmount = $account->total_amount / $account->installments;
         $dueDate = $this->calculateDueDate($wallet, $startDate);
 
-        for ($i = 1; $i <= $account->installments; $i++) {
+        // Calculate which installment number to start from
+        $startInstallment = $account->paid_installments + 1;
+
+        // Generate only the remaining installments starting from start_date
+        for ($i = $startInstallment; $i <= $account->installments; $i++) {
             Transaction::create([
                 'account_id' => $account->id,
                 'user_id' => $account->user_id,
@@ -167,9 +198,17 @@ class AccountService
         return DB::transaction(function () use ($account) {
             $wallet = $account->wallet;
 
-            // Refund wallet limit_used if credit card
+            // Refund wallet limit_used if credit card (only the amount that was consumed)
             if ($wallet->type === WalletTypeEnum::CARD_CREDIT) {
-                $wallet->decrement('card_limit_used', $account->total_amount * 100); // in cents
+                $amountToRefund = $this->calculateAmountToConsume($account);
+
+                // Calculate new limit_used ensuring it never goes below zero
+                // Note: Wallet model has a mutator that converts reais to cents automatically
+                $currentLimitUsed = $wallet->card_limit_used;
+                $newLimitUsed = max(0, $currentLimitUsed - $amountToRefund);
+
+                // Update the wallet with the safe value
+                $wallet->update(['card_limit_used' => $newLimitUsed]);
             }
 
             // Delete transactions (cascade will handle this, but explicit for clarity)

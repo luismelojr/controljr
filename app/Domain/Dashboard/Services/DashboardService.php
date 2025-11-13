@@ -38,6 +38,8 @@ class DashboardService
 
                 'wallets_summary' => $this->getWalletsSummary($userId),
 
+                'accounts_ending_this_month' => $this->getAccountsEndingThisMonth($userId),
+
                 'unread_notifications_count' => $this->getUnreadNotificationsCount($userId),
                 'unread_notifications' => $this->getUnreadNotifications($userId),
             ];
@@ -334,6 +336,49 @@ class DashboardService
                     'message' => $notification->message,
                     'type' => $notification->type,
                     'created_at' => $notification->created_at->diffForHumans(),
+                ];
+            })
+            ->toArray();
+    }
+
+    /**
+     * Get accounts that end in the current month (last installment)
+     */
+    protected function getAccountsEndingThisMonth(string $userId): array
+    {
+        return DB::table('accounts')
+            ->join('transactions', 'accounts.id', '=', 'transactions.account_id')
+            ->join('categories', 'accounts.category_id', '=', 'categories.id')
+            ->join('wallets', 'accounts.wallet_id', '=', 'wallets.id')
+            ->where('accounts.user_id', $userId)
+            ->where('accounts.recurrence_type', 'installments')
+            ->where('accounts.status', 'active')
+            ->whereYear('transactions.due_date', now()->year)
+            ->whereMonth('transactions.due_date', now()->month)
+            ->whereRaw('transactions.installment_number = transactions.total_installments')
+            ->select(
+                'accounts.uuid',
+                'accounts.name',
+                'accounts.total_amount',
+                'accounts.installments',
+                'categories.name as category_name',
+                'wallets.name as wallet_name',
+                'transactions.due_date',
+                'transactions.installment_number',
+                'transactions.total_installments'
+            )
+            ->orderBy('transactions.due_date', 'asc')
+            ->get()
+            ->map(function ($account) {
+                return [
+                    'uuid' => $account->uuid,
+                    'name' => $account->name,
+                    'category' => $account->category_name,
+                    'wallet' => $account->wallet_name,
+                    'total_amount' => $account->total_amount / 100, // Convert cents to reais
+                    'installments' => $account->installments,
+                    'installment_info' => "{$account->installment_number}/{$account->total_installments}",
+                    'due_date' => Carbon::parse($account->due_date)->format('d/m/Y'),
                 ];
             })
             ->toArray();

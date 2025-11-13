@@ -7,6 +7,7 @@ import React from 'react';
 interface TextInputProps extends Omit<React.ComponentProps<'input'>, 'type'> {
     label: string;
     error?: string;
+    helperText?: string;
     type: string;
     id: string;
 }
@@ -41,6 +42,7 @@ export default function TextInput(props: TextInputProps) {
                 )}
             </div>
             {props.error && <p className={'text-xs text-red-500'}>{props.error}</p>}
+            {props.helperText && !props.error && <p className={'text-xs text-muted-foreground'}>{props.helperText}</p>}
         </div>
     );
 }
