@@ -18,7 +18,6 @@ class HomeController extends Controller
         $userId = $request->user()->id;
 
         $dashboardData = $this->dashboardService->getDashboardData($userId);
-        dd($dashboardData);
 
         return Inertia::render('dashboard/home', $dashboardData);
     }

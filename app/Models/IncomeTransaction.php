@@ -41,19 +41,21 @@ class IncomeTransaction extends Model
     }
 
     /**
-     * Set amount in cents
+     * Set amount - converts reais to cents for storage
      */
     public function setAmountAttribute($value): void
     {
-        $this->attributes['amount'] = $value * 100;
+        // Convert reais to cents (145.25 -> 14525)
+        $this->attributes['amount'] = (int) round($value * 100);
     }
 
     /**
-     * Get amount in reais
+     * Get amount - converts cents to reais for display
      */
-    public function getAmountAttribute($value): float|int
+    public function getAmountAttribute($value): float
     {
-        return $value / 100;
+        // Convert cents to reais (14525 -> 145.25)
+        return round($value / 100, 2);
     }
 
     /**

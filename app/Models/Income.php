@@ -40,19 +40,21 @@ class Income extends Model
     }
 
     /**
-     * Set total amount in cents
+     * Set total amount - converts reais to cents for storage
      */
     public function setTotalAmountAttribute($value): void
     {
-        $this->attributes['total_amount'] = $value * 100;
+        // Convert reais to cents (145.25 -> 14525)
+        $this->attributes['total_amount'] = (int) round($value * 100);
     }
 
     /**
-     * Get total amount in reais
+     * Get total amount - converts cents to reais for display
      */
-    public function getTotalAmountAttribute($value): float|int
+    public function getTotalAmountAttribute($value): float
     {
-        return $value / 100;
+        // Convert cents to reais (14525 -> 145.25)
+        return round($value / 100, 2);
     }
 
     /**
