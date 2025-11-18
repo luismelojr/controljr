@@ -3,7 +3,6 @@ import CustomToast from '@/components/ui/custom-toast';
 import { BalanceCard } from '@/components/dashboard/balance-card';
 import { StatsCard } from '@/components/dashboard/stats-card';
 import { AccountsEnding } from '@/components/dashboard/accounts-ending';
-import { RecentlyActivity } from '@/components/dashboard/recently-activity';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -19,11 +18,6 @@ interface DashboardData {
     expenses_percentage_change: number;
     monthly_income: number;
     income_percentage_change: number;
-    cashflow_data: {
-        months: string[];
-        expenses: number[];
-        incomes: number[];
-    };
     upcoming_transactions: Array<{
         id: string;
         name: string;
@@ -33,15 +27,6 @@ interface DashboardData {
         amount: number;
         status: string;
         installment_info: string | null;
-    }>;
-    recent_activities: Array<{
-        id: number;
-        name: string;
-        accountNumber: string;
-        date: string;
-        amount: number;
-        type: 'income' | 'expense';
-        icon: string;
     }>;
     wallets_summary: Array<{
         id: string;
@@ -196,11 +181,6 @@ export default function Home() {
                                 )}
                             </CardContent>
                         </Card>
-
-                        {/* Recent Activities */}
-                        {dashboardData.recent_activities.length > 0 && (
-                            <RecentlyActivity activities={dashboardData.recent_activities} />
-                        )}
                     </div>
 
                     {/* Right Column - 1 col */}

@@ -7,52 +7,37 @@ use App\Models\Transaction;
 use App\Models\IncomeTransaction;
 use App\Models\Wallet;
 use App\Models\AlertNotification;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class DashboardService
 {
     /**
-     * Get all dashboard data with caching
+     * Get all dashboard data (real-time, no cache)
      */
     public function getDashboardData(string $userId): array
     {
-        // Cache for 10 minutes (600 seconds)
-        return Cache::remember("dashboard_user_{$userId}", 600, function () use ($userId) {
-            return [
-                'total_balance' => $this->getTotalBalance($userId),
-                'balance_percentage_change' => $this->getBalancePercentageChange($userId),
+        return [
+            'total_balance' => $this->getTotalBalance($userId),
+            'balance_percentage_change' => $this->getBalancePercentageChange($userId),
 
-                'monthly_expenses' => $this->getMonthlyExpenses($userId),
-                'expenses_percentage_change' => $this->getExpensesPercentageChange($userId),
+            'monthly_expenses' => $this->getMonthlyExpenses($userId),
+            'expenses_percentage_change' => $this->getExpensesPercentageChange($userId),
 
-                'monthly_income' => $this->getMonthlyIncome($userId),
-                'income_percentage_change' => $this->getIncomePercentageChange($userId),
+            'monthly_income' => $this->getMonthlyIncome($userId),
+            'income_percentage_change' => $this->getIncomePercentageChange($userId),
 
-                'cashflow_data' => $this->getCashflowData($userId),
+            'upcoming_transactions' => $this->getUpcomingTransactions($userId),
 
-                'upcoming_transactions' => $this->getUpcomingTransactions($userId),
+            'wallets_summary' => $this->getWalletsSummary($userId),
 
-                'recent_activities' => $this->getRecentActivities($userId),
+            'accounts_ending_this_month' => $this->getAccountsEndingThisMonth($userId),
 
-                'wallets_summary' => $this->getWalletsSummary($userId),
-
-                'accounts_ending_this_month' => $this->getAccountsEndingThisMonth($userId),
-
-                'unread_notifications_count' => $this->getUnreadNotificationsCount($userId),
-                'unread_notifications' => $this->getUnreadNotifications($userId),
-            ];
-        });
+            'unread_notifications_count' => $this->getUnreadNotificationsCount($userId),
+            'unread_notifications' => $this->getUnreadNotifications($userId),
+        ];
     }
 
-    /**
-     * Clear dashboard cache for user
-     */
-    public function clearCache(string $userId): void
-    {
-        Cache::forget("dashboard_user_{$userId}");
-    }
 
     /**
      * Get total balance from all wallets
@@ -343,6 +328,7 @@ class DashboardService
 
     /**
      * Get accounts that end in the current month (last installment)
+     * Shows accounts where the last installment is due this month and still pending
      */
     protected function getAccountsEndingThisMonth(string $userId): array
     {
@@ -352,7 +338,8 @@ class DashboardService
             ->join('wallets', 'accounts.wallet_id', '=', 'wallets.id')
             ->where('accounts.user_id', $userId)
             ->where('accounts.recurrence_type', 'installments')
-            ->where('accounts.status', 'active')
+            ->whereIn('accounts.status', ['active', 'completed']) // Include both active and completed
+            ->where('transactions.status', 'pending') // Only pending transactions
             ->whereYear('transactions.due_date', now()->year)
             ->whereMonth('transactions.due_date', now()->month)
             ->whereRaw('transactions.installment_number = transactions.total_installments')
