@@ -365,6 +365,7 @@ class DashboardService
                 'categories.name as category_name',
                 'wallets.name as wallet_name',
                 'transactions.due_date',
+                'transactions.amount as installment_amount',
                 'transactions.installment_number',
                 'transactions.total_installments'
             )
@@ -377,6 +378,7 @@ class DashboardService
                     'category' => $account->category_name,
                     'wallet' => $account->wallet_name,
                     'total_amount' => $account->total_amount / 100, // Convert cents to reais
+                    'installment_amount' => $account->installment_amount / 100, // Convert cents to reais
                     'installments' => $account->installments,
                     'installment_info' => "{$account->installment_number}/{$account->total_installments}",
                     'due_date' => Carbon::parse($account->due_date)->format('d/m/Y'),

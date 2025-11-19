@@ -9,6 +9,7 @@ interface AccountEndingProps {
         category: string;
         wallet: string;
         total_amount: number;
+        installment_amount: number;
         installments: number;
         installment_info: string;
         due_date: string;
@@ -70,12 +71,17 @@ export function AccountsEnding({ accounts }: AccountEndingProps) {
                                         <Calendar className="h-4 w-4" />
                                         <span>Vence: {account.due_date}</span>
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-xs text-muted-foreground font-medium">
-                                            {account.installment_info}
-                                        </span>
-                                        <span className="font-bold text-base text-green-600">
-                                            {formatCurrency(account.total_amount)}
+                                    <div className="flex flex-col items-end gap-1">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs text-muted-foreground font-medium">
+                                                {account.installment_info}
+                                            </span>
+                                            <span className="font-bold text-base text-green-600">
+                                                {formatCurrency(account.installment_amount)}
+                                            </span>
+                                        </div>
+                                        <span className="text-xs text-muted-foreground">
+                                            Total: {formatCurrency(account.total_amount)}
                                         </span>
                                     </div>
                                 </div>
