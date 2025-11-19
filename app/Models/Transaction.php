@@ -25,6 +25,8 @@ class Transaction extends Model
         'installment_number',
         'total_installments',
         'status',
+        'is_reconciled',
+        'external_id',
     ];
 
     protected function casts(): array

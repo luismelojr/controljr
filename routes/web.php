@@ -70,6 +70,7 @@ Route::middleware('auth')->group(function () {
 
         // Transaction routes
         Route::get('transactions', [\App\Http\Controllers\Dashboard\TransactionsController::class, 'index'])->name('transactions.index');
+        Route::post('transactions', [\App\Http\Controllers\Dashboard\TransactionsController::class, 'store'])->name('transactions.store');
         Route::get('transactions/{year}/{month}', [\App\Http\Controllers\Dashboard\TransactionsController::class, 'month'])->name('transactions.month');
         Route::get('transactions/{transaction}', [\App\Http\Controllers\Dashboard\TransactionsController::class, 'show'])->name('transactions.show');
         Route::patch('transactions/{transaction}/mark-as-paid', [\App\Http\Controllers\Dashboard\TransactionsController::class, 'markAsPaid'])->name('transactions.mark-as-paid');
@@ -92,6 +93,11 @@ Route::middleware('auth')->group(function () {
         Route::patch('alerts/{alert}', [\App\Http\Controllers\Dashboard\AlertsController::class, 'update'])->name('alerts.update');
         Route::delete('alerts/{alert}', [\App\Http\Controllers\Dashboard\AlertsController::class, 'destroy'])->name('alerts.destroy');
         Route::patch('alerts/{alert}/toggle-status', [\App\Http\Controllers\Dashboard\AlertsController::class, 'toggleStatus'])->name('alerts.toggle-status');
+
+        // Reconciliation routes
+        Route::get('reconciliation', [\App\Http\Controllers\Dashboard\ReconciliationController::class, 'index'])->name('reconciliation.index');
+        Route::post('reconciliation/upload', [\App\Http\Controllers\Dashboard\ReconciliationController::class, 'upload'])->name('reconciliation.upload');
+        Route::post('reconciliation/{transaction}/reconcile', [\App\Http\Controllers\Dashboard\ReconciliationController::class, 'reconcile'])->name('reconciliation.reconcile');
 
         // Notification routes
         Route::get('notifications', [\App\Http\Controllers\Dashboard\NotificationsController::class, 'index'])->name('notifications.index');
