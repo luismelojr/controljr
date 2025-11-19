@@ -115,12 +115,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(AlertNotification::class);
     }
-
-    /**
-     * Get the saved reports for the user.
-     */
-    public function savedReports()
-    {
-        return $this->hasMany(SavedReport::class);
-    }
 }

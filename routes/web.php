@@ -99,19 +99,5 @@ Route::middleware('auth')->group(function () {
         Route::post('notifications/read-all', [\App\Http\Controllers\Dashboard\NotificationsController::class, 'markAllAsRead'])->name('notifications.read-all');
         Route::delete('notifications/{notification}', [\App\Http\Controllers\Dashboard\NotificationsController::class, 'destroy'])->name('notifications.destroy');
         Route::delete('notifications', [\App\Http\Controllers\Dashboard\NotificationsController::class, 'deleteAllRead'])->name('notifications.delete-all-read');
-
-        // Reports routes
-        Route::prefix('reports')->as('reports.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Dashboard\ReportsController::class, 'index'])->name('index');
-            Route::get('/builder', [\App\Http\Controllers\Dashboard\ReportsController::class, 'builder'])->name('builder');
-            Route::post('/generate', [\App\Http\Controllers\Dashboard\ReportsController::class, 'generate'])->name('generate');
-            Route::post('/save', [\App\Http\Controllers\Dashboard\ReportsController::class, 'store'])->name('store');
-            Route::get('/{report:uuid}', [\App\Http\Controllers\Dashboard\ReportsController::class, 'show'])->name('show');
-            Route::post('/{report:uuid}/run', [\App\Http\Controllers\Dashboard\ReportsController::class, 'run'])->name('run');
-            Route::patch('/{report:uuid}', [\App\Http\Controllers\Dashboard\ReportsController::class, 'update'])->name('update');
-            Route::delete('/{report:uuid}', [\App\Http\Controllers\Dashboard\ReportsController::class, 'destroy'])->name('destroy');
-            Route::post('/{report:uuid}/favorite', [\App\Http\Controllers\Dashboard\ReportsController::class, 'toggleFavorite'])->name('favorite');
-            Route::get('/{report:uuid}/export', [\App\Http\Controllers\Dashboard\ReportsController::class, 'export'])->name('export');
-        });
     });
 });
