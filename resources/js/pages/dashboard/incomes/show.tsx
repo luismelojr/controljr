@@ -1,10 +1,11 @@
 import AppHeader from '@/components/dashboard/app-header';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Income } from '@/types/income';
 import { Head, router } from '@inertiajs/react';
-import { Calendar, Edit, FolderOpen, Repeat, TrendingUp } from 'lucide-react';
+import { Calendar, CheckCircle2, Edit, FolderOpen, Repeat, TrendingUp, XCircle } from 'lucide-react';
 
 interface ShowIncomeProps {
     income: Income;
@@ -13,6 +14,26 @@ interface ShowIncomeProps {
 export default function ShowIncome({ income }: ShowIncomeProps) {
     const handleEdit = () => {
         router.get(route('dashboard.incomes.edit', { income: income.uuid }));
+    };
+
+    const handleMarkAsReceived = (transactionId: string) => {
+        router.patch(
+            route('dashboard.income-transactions.mark-as-received', { incomeTransaction: transactionId }),
+            {},
+            {
+                preserveScroll: true,
+            }
+        );
+    };
+
+    const handleMarkAsNotReceived = (transactionId: string) => {
+        router.patch(
+            route('dashboard.income-transactions.mark-as-not-received', { incomeTransaction: transactionId }),
+            {},
+            {
+                preserveScroll: true,
+            }
+        );
     };
 
     const statusVariant = income.status === 'active' ? 'default' : income.status === 'completed' ? 'secondary' : 'destructive';
@@ -172,7 +193,7 @@ export default function ShowIncome({ income }: ShowIncomeProps) {
                                             )}
                                         </div>
 
-                                        <div className="flex items-center gap-4">
+                                        <div className="flex items-center gap-3">
                                             <p className="text-lg font-semibold text-green-600">
                                                 {new Intl.NumberFormat('pt-BR', {
                                                     style: 'currency',
@@ -190,6 +211,29 @@ export default function ShowIncome({ income }: ShowIncomeProps) {
                                             >
                                                 {transaction.status_label}
                                             </Badge>
+
+                                            {/* Action Buttons */}
+                                            {transaction.status !== 'received' && !transaction.is_received ? (
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="gap-2 border-green-600 text-green-600 hover:bg-green-50 dark:hover:bg-green-950"
+                                                    onClick={() => handleMarkAsReceived(transaction.uuid)}
+                                                >
+                                                    <CheckCircle2 className="h-4 w-4" />
+                                                    Receber
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="gap-2"
+                                                    onClick={() => handleMarkAsNotReceived(transaction.uuid)}
+                                                >
+                                                    <XCircle className="h-4 w-4" />
+                                                    Desfazer
+                                                </Button>
+                                            )}
                                         </div>
                                     </div>
                                 ))}

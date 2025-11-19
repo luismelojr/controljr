@@ -41,14 +41,28 @@ class DashboardService
 
     /**
      * Get total balance from all wallets
+     * Balance = sum of all wallet initial balances + all received incomes - all paid transactions
      */
     protected function getTotalBalance(string $userId): float
     {
-        $wallets = Wallet::where('user_id', $userId)->get();
+        // Get sum of all initial balances from wallets (in cents)
+        $initialBalancesInCents = Wallet::where('user_id', $userId)
+            ->sum('initial_balance');
 
-        return $wallets->sum(function ($wallet) {
-            return $wallet->balance;
-        });
+        // Get all received income transactions for this user (in cents)
+        $receivedIncomesInCents = IncomeTransaction::where('user_id', $userId)
+            ->where('is_received', true)
+            ->sum('amount');
+
+        // Get all paid transactions for this user (in cents)
+        $paidTransactionsInCents = Transaction::where('user_id', $userId)
+            ->where('status', TransactionStatusEnum::PAID)
+            ->sum('amount');
+
+        // Calculate final balance in cents, then convert to reais
+        $balanceInCents = $initialBalancesInCents + $receivedIncomesInCents - $paidTransactionsInCents;
+
+        return $balanceInCents / 100;
     }
 
     /**

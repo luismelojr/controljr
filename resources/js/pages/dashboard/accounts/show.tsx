@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Account } from '@/types/account';
 import { Head, router } from '@inertiajs/react';
-import { Calendar, CreditCard, Edit, FolderOpen, Repeat, TrendingUp } from 'lucide-react';
+import { Calendar, CheckCircle2, CreditCard, Edit, FolderOpen, Repeat, TrendingUp, XCircle } from 'lucide-react';
 
 interface ShowAccountProps {
     account: Account;
@@ -14,6 +14,26 @@ interface ShowAccountProps {
 export default function ShowAccount({ account }: ShowAccountProps) {
     const handleEdit = () => {
         router.get(route('dashboard.accounts.edit', { account: account.uuid }));
+    };
+
+    const handleMarkAsPaid = (transactionId: string) => {
+        router.patch(
+            route('dashboard.transactions.mark-as-paid', { transaction: transactionId }),
+            {},
+            {
+                preserveScroll: true,
+            }
+        );
+    };
+
+    const handleMarkAsUnpaid = (transactionId: string) => {
+        router.patch(
+            route('dashboard.transactions.mark-as-unpaid', { transaction: transactionId }),
+            {},
+            {
+                preserveScroll: true,
+            }
+        );
     };
 
     const statusVariant = account.status === 'active' ? 'default' : account.status === 'completed' ? 'secondary' : 'destructive';
@@ -185,7 +205,7 @@ export default function ShowAccount({ account }: ShowAccountProps) {
                                             )}
                                         </div>
 
-                                        <div className="flex items-center gap-4">
+                                        <div className="flex items-center gap-3">
                                             <p className="text-lg font-semibold">
                                                 {new Intl.NumberFormat('pt-BR', {
                                                     style: 'currency',
@@ -203,6 +223,29 @@ export default function ShowAccount({ account }: ShowAccountProps) {
                                             >
                                                 {transaction.status_label}
                                             </Badge>
+
+                                            {/* Action Buttons */}
+                                            {transaction.status !== 'paid' ? (
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="gap-2"
+                                                    onClick={() => handleMarkAsPaid(transaction.uuid)}
+                                                >
+                                                    <CheckCircle2 className="h-4 w-4" />
+                                                    Pagar
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="gap-2"
+                                                    onClick={() => handleMarkAsUnpaid(transaction.uuid)}
+                                                >
+                                                    <XCircle className="h-4 w-4" />
+                                                    Desfazer
+                                                </Button>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
