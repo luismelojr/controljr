@@ -1,70 +1,143 @@
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
-import CurrencyInput from 'react-currency-input-field';
+import React from 'react';
 
 interface TextMoneyProps {
     label: string;
     error?: string;
+    helperText?: string;
     id: string;
     className?: string;
     onChange?: (value: number) => void;
     value?: number | string;
     placeholder?: string;
     name?: string;
-    autoComplete?: string;
     required?: boolean;
     disabled?: boolean;
+    showPrefix?: boolean; // Mostrar R$ ou não
 }
 
 export default function TextMoney(props: TextMoneyProps) {
-    const handleValueChange = (value: string | undefined, name?: string, values?: any) => {
-        if (!value || value === '') {
-            props.onChange?.(0);
+    const {
+        label,
+        error,
+        helperText,
+        id,
+        className,
+        onChange,
+        value,
+        placeholder = 'R$ 0,00',
+        name,
+        required,
+        disabled,
+        showPrefix = true,
+    } = props;
+
+    /**
+     * Formata um número para o formato BRL
+     * Ex: 1234.56 → "R$ 1.234,56"
+     */
+    const formatToBRL = (num: number): string => {
+        const formatted = new Intl.NumberFormat('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(num);
+
+        return showPrefix ? `R$ ${formatted}` : formatted;
+    };
+
+    /**
+     * Converte string formatada para número
+     * Ex: "R$ 1.234,56" → 1234.56
+     */
+    const parseFromBRL = (str: string): number => {
+        // Remove tudo exceto números e vírgula
+        const cleanedStr = str.replace(/[^\d,]/g, '');
+        // Substitui vírgula por ponto
+        const numberStr = cleanedStr.replace(',', '.');
+        const parsed = parseFloat(numberStr);
+        return isNaN(parsed) ? 0 : parsed;
+    };
+
+    /**
+     * Gera o valor formatado inicial
+     */
+    const getInitialFormattedValue = (): string => {
+        if (value === undefined || value === null || value === '') {
+            return '';
+        }
+
+        const numValue = typeof value === 'string' ? parseFromBRL(value) : value;
+        return formatToBRL(numValue);
+    };
+
+    const [displayValue, setDisplayValue] = React.useState(getInitialFormattedValue());
+
+    // Atualiza o display quando o value prop mudar
+    React.useEffect(() => {
+        setDisplayValue(getInitialFormattedValue());
+    }, [value]);
+
+    /**
+     * Manipula mudanças no input
+     */
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+
+        // Remove tudo exceto dígitos
+        const digitsOnly = inputValue.replace(/\D/g, '');
+
+        if (digitsOnly === '') {
+            setDisplayValue('');
+            onChange?.(0);
             return;
         }
 
-        // O valor vem como string com ponto decimal (ex: "145.25")
-        const numericValue = parseFloat(value);
+        // Converte para número dividindo por 100 (para centavos)
+        const numValue = parseInt(digitsOnly, 10) / 100;
 
-        if (isNaN(numericValue)) {
-            props.onChange?.(0);
+        // Formata para BRL
+        const formattedValue = formatToBRL(numValue);
+
+        setDisplayValue(formattedValue);
+        onChange?.(numValue);
+    };
+
+    /**
+     * Quando o input perde o foco, garante formatação completa
+     */
+    const handleBlur = () => {
+        if (displayValue === '') {
             return;
         }
 
-        // Envia o valor numérico com precisão
-        props.onChange?.(numericValue);
+        const numValue = parseFromBRL(displayValue);
+        setDisplayValue(formatToBRL(numValue));
     };
 
     return (
-        <div className={`grid w-full items-center gap-2 ${props.className}`}>
-            <Label htmlFor={props.id}>
-                {props.label}
-                {props.required && <span className="ml-1 text-red-500">*</span>}
+        <div className={`grid w-full items-center gap-2 ${className || ''}`}>
+            <Label htmlFor={id}>
+                {label}
+                {required && <span className="text-red-500 ml-1">*</span>}
             </Label>
             <div className={'relative'}>
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">R$</span>
-                <CurrencyInput
-                    id={props.id}
-                    name={props.name}
-                    placeholder={props.placeholder || '0,00'}
-                    defaultValue={props.value}
-                    decimalsLimit={2}
-                    decimalSeparator=","
-                    groupSeparator="."
-                    onValueChange={handleValueChange}
-                    autoComplete={props.autoComplete}
-                    required={props.required}
-                    disabled={props.disabled}
-                    allowNegativeValue={false}
-                    className={cn(
-                        'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent py-1 pl-10 pr-3 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-                        'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
-                        'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
-                        props.error && '!border-red-500'
-                    )}
+                <Input
+                    id={id}
+                    name={name}
+                    type="text"
+                    value={displayValue}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder={placeholder}
+                    disabled={disabled}
+                    required={required}
+                    className={`${error && '!border-red-500'} w-full outline-none`}
+                    autoComplete="off"
                 />
             </div>
-            {props.error && <p className={'text-xs text-red-500'}>{props.error}</p>}
+            {error && <p className={'text-xs text-red-500'}>{error}</p>}
+            {helperText && !error && <p className={'text-xs text-muted-foreground'}>{helperText}</p>}
         </div>
     );
 }

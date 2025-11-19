@@ -120,11 +120,12 @@ export default function EditWallet({ wallet }: EditWalletProps) {
                                         label="Limite Total"
                                         id="card_limit"
                                         name="card_limit"
-                                        placeholder="0,00"
+                                        placeholder="R$ 0,00"
                                         value={data.card_limit}
                                         onChange={(value) => setData('card_limit', value)}
                                         error={errors.card_limit}
                                         required={isCreditCard}
+                                        helperText="Limite total do cartão"
                                     />
                                 </div>
                                 <p className="text-xs text-muted-foreground">
@@ -143,10 +144,11 @@ export default function EditWallet({ wallet }: EditWalletProps) {
                                         label="Saldo Inicial"
                                         id="initial_balance"
                                         name="initial_balance"
-                                        placeholder="0,00"
+                                        placeholder="R$ 0,00"
                                         value={data.initial_balance}
                                         onChange={(value) => setData('initial_balance', value)}
                                         error={errors.initial_balance}
+                                        helperText="Informe o saldo atual desta conta"
                                     />
                                     <div className="flex items-center text-sm text-muted-foreground">
                                         Informe o saldo atual desta conta

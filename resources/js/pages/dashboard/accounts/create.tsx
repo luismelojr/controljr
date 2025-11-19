@@ -181,11 +181,13 @@ export default function CreateAccount({ wallets, categories }: CreateAccountProp
                         <TextMoney
                             label="Valor Total"
                             id="total_amount"
-                            placeholder="0,00"
+                            name="total_amount"
+                            placeholder="R$ 0,00"
                             value={data.total_amount}
                             onChange={(value) => setData('total_amount', value)}
                             error={errors.total_amount}
                             required
+                            helperText="Digite o valor total da conta"
                         />
 
                         {/* Parcelas (condicional) */}
