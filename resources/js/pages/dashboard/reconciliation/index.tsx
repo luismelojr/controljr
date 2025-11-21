@@ -1,6 +1,5 @@
-import { Head, usePage } from '@inertiajs/react';
-import { useState } from 'react';
-import axios from 'axios';
+import { Head, usePage, useForm } from '@inertiajs/react';
+import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,10 +29,18 @@ export default function ReconciliationIndex() {
     const categories = (props as any).categories || [];
     const wallets = (props as any).wallets || [];
     
-    const [file, setFile] = useState<File | null>(null);
-    const [transactions, setTransactions] = useState<BankTransaction[]>([]);
-    const [loading, setLoading] = useState(false);
+    const { data, setData, post, processing, errors } = useForm({
+        file: null as File | null,
+    });
+
+    // Update local state when props change (after upload)
+    const [localTransactions, setLocalTransactions] = useState<BankTransaction[]>([]);
     
+    // If transactions come from props (after upload), use them
+    if ((props as any).transactions && localTransactions.length === 0 && (props as any).transactions.length > 0) {
+         setLocalTransactions((props as any).transactions);
+    }
+
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState<{
         amount: number;
@@ -45,38 +52,24 @@ export default function ReconciliationIndex() {
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            setFile(e.target.files[0]);
+            setData('file', e.target.files[0]);
         }
     };
 
-    const handleUpload = async () => {
-        if (!file) return;
+    const handleUpload = () => {
+        if (!data.file) return;
 
-        const formData = new FormData();
-        formData.append('file', file);
-
-        setLoading(true);
-        
-        // We use router.post instead of axios to leverage Inertia's native toast handling (if configured for manual visits)
-        // However, for file upload that returns JSON data without page reload, axios is better.
-        // We will use axios but we can't use the native toast easily here unless we dispatch a custom event or have a global toaster store.
-        // Since the user has a CustomToast that listens to page.props, let's stick to axios for data fetching
-        // and we can rely on the UI state for feedback (showing the table is feedback enough).
-        
-        try {
-            const response = await axios.post(route('dashboard.reconciliation.upload'), formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            setTransactions(response.data);
-        } catch (error: any) {
-            console.error(error);
-            const errorMessage = error.response?.data?.error || "Erro desconhecido ao processar arquivo.";
-            alert(`Erro: ${errorMessage}`);
-        } finally {
-            setLoading(false);
-        }
+        post(route('dashboard.reconciliation.upload'), {
+            forceFormData: true,
+            onSuccess: (page) => {
+                // The page will reload with new props.transactions
+                // We can also set local state if we want to manipulate it client-side
+                const newTransactions = (page.props as any).transactions;
+                if (newTransactions) {
+                    setLocalTransactions(newTransactions);
+                }
+            },
+        });
     };
 
     const handleReconcile = (transaction: BankTransaction, index: number) => {
@@ -87,9 +80,9 @@ export default function ReconciliationIndex() {
         }, {
             preserveScroll: true,
             onSuccess: () => {
-                const newTransactions = [...transactions];
+                const newTransactions = [...localTransactions];
                 newTransactions[index].status = 'reconciled';
-                setTransactions(newTransactions);
+                setLocalTransactions(newTransactions);
                 // Success toast will be shown automatically by CustomToast via Inertia flash messages
             }
         });
@@ -108,9 +101,9 @@ export default function ReconciliationIndex() {
 
     const handleCreateSuccess = () => {
         if (selectedTransaction) {
-            const newTransactions = [...transactions];
+            const newTransactions = [...localTransactions];
             newTransactions[selectedTransaction.index].status = 'reconciled';
-            setTransactions(newTransactions);
+            setLocalTransactions(newTransactions);
         }
     };
 
@@ -147,14 +140,14 @@ export default function ReconciliationIndex() {
                                 hover:file:bg-violet-100
                             "
                         />
-                        <Button onClick={handleUpload} disabled={!file || loading}>
-                            {loading ? <Upload className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                        <Button onClick={handleUpload} disabled={!data.file || processing}>
+                            {processing ? <Upload className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
                             Importar
                         </Button>
                     </CardContent>
                 </Card>
 
-                {transactions.length > 0 && (
+                {localTransactions.length > 0 && (
                     <Card>
                         <CardHeader>
                             <CardTitle>Resultado da Análise</CardTitle>
@@ -171,7 +164,7 @@ export default function ReconciliationIndex() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {transactions.map((tx, index) => (
+                                    {localTransactions.map((tx, index) => (
                                         <TableRow key={index} className={tx.status === 'reconciled' ? 'bg-green-50/50 opacity-60' : ''}>
                                             <TableCell>{formatDate(tx.bank_date)}</TableCell>
                                             <TableCell className="font-medium">{tx.bank_description}</TableCell>

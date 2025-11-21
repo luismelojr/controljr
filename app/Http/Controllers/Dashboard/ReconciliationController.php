@@ -8,6 +8,7 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+
 class ReconciliationController extends Controller
 {
     public function __construct(
@@ -43,10 +44,15 @@ class ReconciliationController extends Controller
 
         try {
             $results = $this->reconciliationService->processFile($request->user(), $request->file('file'));
-            return response()->json($results);
+            
+            return Inertia::render('Dashboard/Reconciliation/Index', [
+                'transactions' => $results,
+                'categories' => \App\Models\Category::all(), // Re-passing props might be needed or handled by share
+                'wallets' => \App\Models\Wallet::all(),
+            ]);
         } catch (\Exception $e) {
             \Log::error('OFX Import Error: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to process file: ' . $e->getMessage()], 422);
+            return redirect()->back()->withErrors(['file' => 'Failed to process file: ' . $e->getMessage()]);
         }
     }
 

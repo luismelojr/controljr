@@ -105,5 +105,8 @@ Route::middleware('auth')->group(function () {
         Route::post('notifications/read-all', [\App\Http\Controllers\Dashboard\NotificationsController::class, 'markAllAsRead'])->name('notifications.read-all');
         Route::delete('notifications/{notification}', [\App\Http\Controllers\Dashboard\NotificationsController::class, 'destroy'])->name('notifications.destroy');
         Route::delete('notifications', [\App\Http\Controllers\Dashboard\NotificationsController::class, 'deleteAllRead'])->name('notifications.delete-all-read');
+
+        // Budget routes
+        Route::resource('budgets', \App\Http\Controllers\Dashboard\BudgetController::class)->except(['create', 'edit', 'show']);
     });
 });

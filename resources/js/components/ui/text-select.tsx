@@ -17,6 +17,7 @@ interface TextSelectProps {
     error?: string;
     className?: string;
     required?: boolean;
+    disabled?: boolean;
 }
 
 export default function TextSelect({
@@ -28,7 +29,8 @@ export default function TextSelect({
     onValueChange,
     error,
     className,
-    required = false
+    required = false,
+    disabled = false
 }: TextSelectProps) {
     return (
         <div className={`grid w-full items-center gap-2 ${className}`}>
@@ -37,7 +39,7 @@ export default function TextSelect({
                 {required && <span className="text-red-500 ml-1">*</span>}
             </Label>
             <div className="relative">
-                <Select value={value} onValueChange={onValueChange}>
+                <Select value={value} onValueChange={onValueChange} disabled={disabled}>
                     <SelectTrigger
                         id={id}
                         className={`w-full outline-none ${error ? '!border-red-500' : ''}`}
