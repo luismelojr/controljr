@@ -2,6 +2,7 @@ import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { BudgetCard } from '@/components/budgets/budget-card';
 import { BudgetForm } from '@/components/budgets/budget-form';
 import { Button } from '@/components/ui/button';
+import ExportButton from '@/components/ui/export-button';
 import { Budget } from '@/types/budget';
 import { Head, router } from '@inertiajs/react';
 import { Plus, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -72,10 +73,13 @@ export default function BudgetsIndex({ budgets, categories, currentDate }: Props
                             </Button>
                         </div>
                     </div>
-                    <Button onClick={handleCreate}>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Novo Orçamento
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <ExportButton entity="budgets" />
+                        <Button onClick={handleCreate}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Novo Orçamento
+                        </Button>
+                    </div>
                 </div>
 
                 {budgets.length === 0 ? (

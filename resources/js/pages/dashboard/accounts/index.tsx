@@ -1,6 +1,7 @@
 import { DataTable, DataTableHeader, DataTablePagination } from '@/components/datatable';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { Badge } from '@/components/ui/badge';
+import ExportButton from '@/components/ui/export-button';
 import { Button } from '@/components/ui/button';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { Account } from '@/types/account';
@@ -183,18 +184,19 @@ export default function AccountsIndex({ accounts }: AccountsIndexProps) {
 
             <div className="space-y-6">
                 {/* Header */}
-                <DataTableHeader
-                    title="Contas"
-                    description="Gerencie seus compromissos financeiros e visualize transações futuras"
-                    actions={[
-                        {
-                            label: 'Nova Conta',
-                            onClick: handleCreate,
-                            icon: <Plus className="h-4 w-4" />,
-                            variant: 'default',
-                        },
-                    ]}
-                />
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold tracking-tight">Contas</h1>
+                        <p className="text-muted-foreground">Gerencie seus compromissos financeiros e visualize transações futuras</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <ExportButton entity="accounts" />
+                        <Button onClick={handleCreate}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Nova Conta
+                        </Button>
+                    </div>
+                </div>
 
                 {/* DataTable */}
                 <DataTable

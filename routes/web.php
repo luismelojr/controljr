@@ -108,5 +108,17 @@ Route::middleware('auth')->group(function () {
 
         // Budget routes
         Route::resource('budgets', \App\Http\Controllers\Dashboard\BudgetController::class)->except(['create', 'edit', 'show']);
+
+        // Export routes
+        Route::prefix('exports')->as('exports.')->group(function () {
+            Route::post('/transactions', [\App\Http\Controllers\Dashboard\ExportsController::class, 'transactions'])
+                ->name('transactions');
+            Route::post('/incomes', [\App\Http\Controllers\Dashboard\ExportsController::class, 'incomes'])
+                ->name('incomes');
+            Route::post('/accounts', [\App\Http\Controllers\Dashboard\ExportsController::class, 'accounts'])
+                ->name('accounts');
+            Route::post('/budgets', [\App\Http\Controllers\Dashboard\ExportsController::class, 'budgets'])
+                ->name('budgets');
+        });
     });
 });

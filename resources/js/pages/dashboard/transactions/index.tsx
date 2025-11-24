@@ -3,6 +3,7 @@ import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import ExportButton from '@/components/ui/export-button';
 import { Category } from '@/types/category';
 import { ColumnDef, FilterConfig, PaginatedResponse } from '@/types/datatable';
 import { Transaction } from '@/types/transaction';
@@ -277,12 +278,17 @@ export default function TransactionsIndex({ transactions, categories, filters }:
 
             <div className="space-y-6">
                 {/* Header */}
-                <DataTableHeader title="Transações" description="Visualize e gerencie todas as suas transações financeiras" actions={[]} />
+                <DataTableHeader
+                    title="Transações"
+                    description="Visualize e gerencie todas as suas transações financeiras"
+                    actions={[]}
+                />
 
                 {/* Filters and Active Filters */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                     <FilterBadges filters={activeFilters} filterConfigs={filterConfigs} currentSort={filters?.sort} />
-                    <div className={'flex flex-1 justify-end'}>
+                    <div className={'flex flex-1 justify-end gap-2'}>
+                        <ExportButton entity="transactions" filters={activeFilters} />
                         <DataTableFilters filters={filterConfigs} activeFilters={activeFilters} currentSort={filters?.sort} />
                     </div>
                 </div>

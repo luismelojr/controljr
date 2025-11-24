@@ -3,6 +3,7 @@ import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import ExportButton from '@/components/ui/export-button';
 import { IncomeTransaction } from '@/types/income-transaction';
 import { ColumnDef, PaginatedResponse } from '@/types/datatable';
 import { Head, router } from '@inertiajs/react';
@@ -187,12 +188,14 @@ export default function IncomeTransactionsIndex({ incomeTransactions, filters }:
             <Head title="Transações de Receita" />
 
             <div className="space-y-6">
-                {/* Header */}
-                <DataTableHeader
-                    title="Transações de Receita"
-                    description="Visualize e gerencie todas as suas transações de receita"
-                    actions={[]}
-                />
+                {/* Header with Export */}
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h2 className="text-2xl font-bold tracking-tight">Transações de Receita</h2>
+                        <p className="text-muted-foreground">Visualize e gerencie todas as suas transações de receita</p>
+                    </div>
+                    <ExportButton entity="incomes" />
+                </div>
 
                 {/* DataTable */}
                 <DataTable data={incomeTransactions.data} columns={columns} activeSort={{ key: '', direction: null }} currentFilters={{}} />
