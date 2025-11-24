@@ -42,9 +42,14 @@ export function BudgetForm({ open, onOpenChange, categories, budgetToEdit, curre
                 period: currentDate, // Keep current period
                 recurrence: 'monthly', // Default for now
             });
-        } else {
-            reset();
-            setData('period', currentDate);
+        } else if (open) {
+            // Explicitly reset form when opening for creation
+            setData({
+                category_id: '',
+                amount: 0,
+                period: currentDate,
+                recurrence: 'monthly',
+            });
         }
         clearErrors();
     }, [budgetToEdit, open, currentDate]);

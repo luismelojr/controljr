@@ -2,25 +2,28 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Domain\Transactions\Actions\CreateTransactionAction;
+use App\Domain\Transactions\Actions\MarkTransactionAsPaidAction;
+use App\Domain\Transactions\Actions\MarkTransactionAsUnpaidAction;
 use App\Domain\Transactions\Services\TransactionService;
 use App\Facades\Toast;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\Transaction\StoreTransactionRequest;
 use App\Http\Requests\Transaction\MarkAsPaidRequest;
 use App\Http\Resources\TransactionResource;
-use App\Models\Account;
 use App\Models\Transaction;
-use App\Enums\AccountStatusEnum;
-use App\Enums\RecurrenceTypeEnum;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class TransactionsController extends Controller
 {
     public function __construct(
-        private TransactionService $transactionService
+        private readonly TransactionService $transactionService,
+        private readonly CreateTransactionAction $createTransactionAction,
+        private readonly MarkTransactionAsPaidAction $markTransactionAsPaidAction,
+        private readonly MarkTransactionAsUnpaidAction $markTransactionAsUnpaidAction,
     ) {}
 
     /**
@@ -59,54 +62,13 @@ class TransactionsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreTransactionRequest $request): RedirectResponse
     {
-        // TODO: Move to a dedicated Request class
-        $validated = $request->validate([
-            'amount' => 'required|numeric',
-            'due_date' => 'required|date',
-            'paid_at' => 'nullable|date',
-            'category_id' => 'required|exists:categories,id',
-            'wallet_id' => 'required|exists:wallets,id',
-            'status' => 'required|in:pending,paid,overdue',
-            'is_reconciled' => 'boolean',
-            'external_id' => 'nullable|string',
-            'account_id' => 'nullable|exists:accounts,id', // Optional for one-off transactions from reconciliation
-        ]);
+        $this->createTransactionAction->execute(
+            user: auth()->user(),
+            data: $request->validated()
+        );
 
-        // For reconciliation, if no account_id provided, create a one-time account
-        $accountId = $validated['account_id'] ?? null;
-        
-        if (!$accountId) {
-            // Create a one-time account for this reconciliation transaction
-            $account = Account::create([
-                'user_id' => auth()->id(),
-                'wallet_id' => $validated['wallet_id'],
-                'category_id' => $validated['category_id'],
-                'name' => 'Conciliação Bancária - ' . now()->format('d/m/Y H:i'),
-                'description' => 'Transação criada via conciliação bancária',
-                'total_amount' => $validated['amount'],
-                'recurrence_type' => RecurrenceTypeEnum::ONE_TIME,
-                'start_date' => $validated['due_date'],
-                'status' => AccountStatusEnum::COMPLETED, // Since it's already paid
-            ]);
-            $accountId = $account->id;
-        }
-
-        // Create transaction
-        $transaction = Transaction::create([
-            'user_id' => auth()->id(),
-            'account_id' => $accountId,
-            'amount' => $validated['amount'],
-            'due_date' => $validated['due_date'],
-            'paid_at' => $validated['paid_at'] ?? ($validated['status'] === 'paid' ? $validated['due_date'] : null),
-            'category_id' => $validated['category_id'],
-            'wallet_id' => $validated['wallet_id'],
-            'status' => $validated['status'],
-            'is_reconciled' => $validated['is_reconciled'] ?? false,
-            'external_id' => $validated['external_id'] ?? null,
-        ]);
-        
         Toast::success('Transação criada com sucesso!');
         return back();
     }
@@ -116,8 +78,13 @@ class TransactionsController extends Controller
      */
     public function month(int $year, int $month): Response
     {
-
         $summary = $this->transactionService->getMonthSummary(
+            user: auth()->user(),
+            year: $year,
+            month: $month,
+        );
+
+        $transactions = $this->transactionService->getTransactionsForMonth(
             user: auth()->user(),
             year: $year,
             month: $month,
@@ -161,7 +128,7 @@ class TransactionsController extends Controller
             // Load wallet relationship for credit card limit management
             $transaction->load(['wallet', 'account']);
 
-            $this->transactionService->markAsPaid($transaction, $paidAt);
+            $this->markTransactionAsPaidAction->execute($transaction, $paidAt);
 
             Toast::success('Transação marcada como paga!');
 
@@ -184,7 +151,7 @@ class TransactionsController extends Controller
             // Load wallet relationship for credit card limit management
             $transaction->load('wallet');
 
-            $this->transactionService->markAsUnpaid($transaction);
+            $this->markTransactionAsUnpaidAction->execute($transaction);
 
             Toast::success('Transação marcada como não paga!');
 

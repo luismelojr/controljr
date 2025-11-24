@@ -30,8 +30,8 @@ class CategoryFiltersTest extends TestCase
         // Get response data
         $data = $response->viewData('page')['props'];
 
-        $this->assertCount(1, $data['categories']);
-        $this->assertEquals('Alimentação', $data['categories'][0]['name']);
+        $this->assertCount(1, $data['categories']['data']);
+        $this->assertEquals('Alimentação', $data['categories']['data'][0]['name']);
     }
 
     public function test_can_filter_categories_by_status(): void
@@ -50,8 +50,8 @@ class CategoryFiltersTest extends TestCase
         $response->assertOk();
 
         $data = $response->viewData('page')['props'];
-        $this->assertCount(1, $data['categories']);
-        $this->assertEquals('Active Category', $data['categories'][0]['name']);
+        $this->assertCount(1, $data['categories']['data']);
+        $this->assertEquals('Active Category', $data['categories']['data'][0]['name']);
     }
 
     public function test_can_filter_categories_by_is_default(): void
@@ -70,8 +70,8 @@ class CategoryFiltersTest extends TestCase
         $response->assertOk();
 
         $data = $response->viewData('page')['props'];
-        $this->assertCount(1, $data['categories']);
-        $this->assertEquals('User Category', $data['categories'][0]['name']);
+        $this->assertCount(1, $data['categories']['data']);
+        $this->assertEquals('User Category', $data['categories']['data'][0]['name']);
     }
 
     public function test_can_sort_categories_by_name(): void
@@ -91,9 +91,9 @@ class CategoryFiltersTest extends TestCase
         $response->assertOk();
 
         $data = $response->viewData('page')['props'];
-        $this->assertEquals('Alpha', $data['categories'][0]['name']);
-        $this->assertEquals('Beta', $data['categories'][1]['name']);
-        $this->assertEquals('Zebra', $data['categories'][2]['name']);
+        $this->assertEquals('Alpha', $data['categories']['data'][0]['name']);
+        $this->assertEquals('Beta', $data['categories']['data'][1]['name']);
+        $this->assertEquals('Zebra', $data['categories']['data'][2]['name']);
     }
 
     public function test_can_sort_categories_by_name_descending(): void
@@ -113,9 +113,9 @@ class CategoryFiltersTest extends TestCase
         $response->assertOk();
 
         $data = $response->viewData('page')['props'];
-        $this->assertEquals('Zebra', $data['categories'][0]['name']);
-        $this->assertEquals('Beta', $data['categories'][1]['name']);
-        $this->assertEquals('Alpha', $data['categories'][2]['name']);
+        $this->assertEquals('Zebra', $data['categories']['data'][0]['name']);
+        $this->assertEquals('Beta', $data['categories']['data'][1]['name']);
+        $this->assertEquals('Alpha', $data['categories']['data'][2]['name']);
     }
 
     public function test_default_sort_puts_default_categories_first(): void
@@ -132,8 +132,8 @@ class CategoryFiltersTest extends TestCase
         $response->assertOk();
 
         $data = $response->viewData('page')['props'];
-        $this->assertTrue($data['categories'][0]['is_default']);
-        $this->assertFalse($data['categories'][1]['is_default']);
+        $this->assertTrue($data['categories']['data'][0]['is_default']);
+        $this->assertFalse($data['categories']['data'][1]['is_default']);
     }
 
     public function test_can_combine_multiple_filters(): void
@@ -156,7 +156,7 @@ class CategoryFiltersTest extends TestCase
         $response->assertOk();
 
         $data = $response->viewData('page')['props'];
-        $this->assertCount(1, $data['categories']);
-        $this->assertEquals('Food Active', $data['categories'][0]['name']);
+        $this->assertCount(1, $data['categories']['data']);
+        $this->assertEquals('Food Active', $data['categories']['data'][0]['name']);
     }
 }

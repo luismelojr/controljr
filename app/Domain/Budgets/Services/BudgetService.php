@@ -15,11 +15,34 @@ class BudgetService
 {
     public function create(User $user, CreateBudgetData $data): Budget
     {
+        $period = Carbon::parse($data->period)->startOfMonth();
+
+        $query = Budget::withTrashed()
+            ->where('user_id', $user->id)
+            ->where('category_id', $data->category_id)
+            ->whereDate('period', $period);
+            
+        $budget = $query->first();
+
+        if ($budget) {
+            if ($budget->trashed()) {
+                $budget->restore();
+            }
+
+            $budget->update([
+                'amount' => $data->amount,
+                'recurrence' => $data->recurrence,
+                'status' => true, // Ensure it's active when recreated
+            ]);
+
+            return $budget;
+        }
+
         return Budget::create([
             'user_id' => $user->id,
             'category_id' => $data->category_id,
             'amount' => $data->amount,
-            'period' => Carbon::parse($data->period)->startOfMonth(),
+            'period' => $period,
             'recurrence' => $data->recurrence,
         ]);
     }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\TransactionStatusEnum;
 use App\Traits\HasUuidCustom;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -41,21 +42,14 @@ class Transaction extends Model
     }
 
     /**
-     * Set amount - converts reais to cents for storage
+     * Interact with the transaction's amount.
      */
-    public function setAmountAttribute($value): void
+    protected function amount(): Attribute
     {
-        // Convert reais to cents (145.25 -> 14525)
-        $this->attributes['amount'] = (int) round($value * 100);
-    }
-
-    /**
-     * Get amount - converts cents to reais for display
-     */
-    public function getAmountAttribute($value): float
-    {
-        // Convert cents to reais (14525 -> 145.25)
-        return round($value / 100, 2);
+        return Attribute::make(
+            get: fn ($value) => round($value / 100, 2),
+            set: fn ($value) => (int) round($value * 100),
+        );
     }
 
     /**

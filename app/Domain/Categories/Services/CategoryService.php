@@ -26,7 +26,7 @@ class CategoryService
                     ->orWhere('is_default', true);
             });
 
-        return QueryBuilder::for($baseQuery)
+        $query = QueryBuilder::for($baseQuery)
             ->allowedFilters([
                 AllowedFilter::custom('name', new CategoryNameFilter()),
                 AllowedFilter::exact('is_default'),
@@ -37,9 +37,11 @@ class CategoryService
                 'created_at',
                 AllowedSort::field('default', 'is_default'),
             ])
-            ->defaultSort('-is_default', 'name') // Default categories first, then alphabetically
-            ->paginate($perPage)
-            ->withQueryString();
+            ->defaultSort('-is_default', 'name'); // Default categories first, then alphabetically
+            
+        // dd($query->toSql(), $query->getBindings());
+            
+        return $query->paginate($perPage)->withQueryString();
     }
 
     /**
