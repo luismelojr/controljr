@@ -12,7 +12,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { router, usePage } from '@inertiajs/react';
-import { ArrowLeftRightIcon, BanknoteArrowDownIcon, BanknoteArrowUpIcon, CircleAlert, FileCheck, Home, LogOut, PieChart, Tag, Wallet } from 'lucide-react';
+import { ArrowLeftRightIcon, BanknoteArrowDownIcon, BanknoteArrowUpIcon, BarChart3, CircleAlert, FileCheck, Home, LogOut, PieChart, Tag, Wallet } from 'lucide-react';
 
 interface MenuItemInterface {
     title: string;
@@ -36,6 +36,7 @@ const menuItems: MenuItemInterface[] = [
             { title: 'Transações Contas', icon: ArrowLeftRightIcon, url: route('dashboard.transactions.index') },
             { title: 'Transações Receitas', icon: ArrowLeftRightIcon, url: route('dashboard.income-transactions.index') },
             { title: 'Orçamentos', icon: PieChart, url: route('dashboard.budgets.index') },
+            { title: 'Relatórios', icon: BarChart3, url: route('dashboard.reports.index') },
             { title: 'Conciliação', icon: FileCheck, url: route('dashboard.reconciliation.index') },
             { title: 'Alertas', icon: CircleAlert, url: route('dashboard.alerts.index') },
         ],

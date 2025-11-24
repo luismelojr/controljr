@@ -109,6 +109,9 @@ Route::middleware('auth')->group(function () {
         // Budget routes
         Route::resource('budgets', \App\Http\Controllers\Dashboard\BudgetController::class)->except(['create', 'edit', 'show']);
 
+        // Report routes
+        Route::get('reports', [\App\Http\Controllers\Dashboard\ReportController::class, 'index'])->name('reports.index');
+
         // Export routes
         Route::prefix('exports')->as('exports.')->group(function () {
             Route::post('/transactions', [\App\Http\Controllers\Dashboard\ExportsController::class, 'transactions'])

@@ -156,23 +156,13 @@ app/Domain/
 ├── Dashboard/
 │   └── Services/
 │       └── DashboardService.php
-└── Reports/
-    ├── DTO/
-    │   ├── GenerateReportData.php
-    │   ├── SaveReportConfigData.php
-    │   └── ReportFiltersData.php
-    ├── Queries/
-    │   ├── BaseReportQuery.php
-    │   ├── CashflowQuery.php
-    │   ├── ExpensesByCategoryQuery.php
-    │   ├── ExpensesByWalletQuery.php
-    │   ├── ExpensesEvolutionQuery.php
-    │   └── TopExpensesQuery.php
+├── Budgets/
+│   ├── DTO/
+│   └── Services/
+│       └── BudgetService.php
+└── Reconciliation/
     └── Services/
-        ├── ReportService.php
-        ├── ReportBuilderService.php
-        ├── ReportExportService.php
-        └── ReportCacheService.php
+        └── ReconciliationService.php
 ```
 
 ### Frontend Architecture
@@ -222,7 +212,7 @@ Toast::validation(['email', 'password']); // Show validation errors as toasts
 ```
 
 **Shared Data:**
-All toasts are automatically shared to frontend via `HandleInertiaRequests` middleware (line 50).
+All toasts are automatically shared to frontend via `HandleInertiaRequests` middleware (line 51).
 
 ### Authentication Flow
 
@@ -256,98 +246,72 @@ All Inertia pages receive these props automatically (`HandleInertiaRequests.php`
 - `quote`: Random inspiring quote (message + author)
 - `auth.user`: Authenticated user resource (or null)
 - `toasts`: Array of toast notifications to display
+- `unreadNotificationsCount`: Count of unread alert notifications
 
-### Reports System
+### Budgets System
 
-The application includes a comprehensive reports module built with a domain-driven architecture:
+The application includes a budget management module for tracking spending limits by category:
 
-**Backend Architecture** (`app/Domain/Reports/`):**
+**Backend Architecture** (`app/Domain/Budgets/`):**
 
-**Query Pattern:**
-- `BaseReportQuery` - Abstract base class for all report queries
-- `CashflowQuery` - Income vs expenses comparison
-- `ExpensesByCategoryQuery` - Expenses grouped by category
-- `ExpensesByWalletQuery` - Expenses grouped by wallet
-- `ExpensesEvolutionQuery` - Expense trends over time
-- `TopExpensesQuery` - Highest expense transactions
+**Domain Structure:**
+- `BudgetService` - Core business logic for budget CRUD operations
+- `DTO/` - Data transfer objects for type-safe budget data
 
-**Services:**
-- `ReportService` - Main service for report generation
-- `ReportBuilderService` - Dynamic report creation with filters
-- `ReportExportService` - PDF/Excel/CSV exports (Spatie PDF, Maatwebsite Excel)
-- `ReportCacheService` - Report caching with configurable TTL
+**Database Schema:**
+- Budgets table with UUID primary key
+- Links to user and category
+- Amount limit per period
+- Recurrence: 'monthly' or 'once'
+- Period tracking (first day of month)
+- Status field for active/inactive budgets
+- Unique constraint on user_id + category_id + period
 
-**DTOs:**
-- `GenerateReportData` - Report generation parameters
-- `SaveReportConfigData` - Saved report configuration
-- `ReportFiltersData` - Filter parameters (dates, categories, wallets, etc.)
+**Frontend Components** (`resources/js/components/budgets/`):**
+- `budget-card.tsx` - Display budget with progress and spending
+- `budget-form.tsx` - Create/edit budget form
 
-**Available Report Types:**
-1. **Cashflow** - Income vs Expenses analysis
-2. **Expenses by Category** - Category breakdown with percentages
-3. **Expenses by Wallet** - Wallet breakdown with percentages
-4. **Expenses Evolution** - Time-series expense trends
-5. **Top Expenses** - Ranking of highest transactions
-6. **Income by Category** - Income category breakdown
-7. **Income by Wallet** - Income wallet breakdown
-8. **Income Evolution** - Time-series income trends
+**Features:**
+- Set spending limits per category
+- Monthly recurring or one-time budgets
+- Track budget vs actual spending
+- Visual progress indicators
+- Status management (active/inactive)
 
-**Frontend Components** (`resources/js/components/reports/`):**
+**Routes:**
+- `dashboard.budgets.index` - List all budgets
+- `dashboard.budgets.store` - Create new budget
+- `dashboard.budgets.update` - Update existing budget
+- `dashboard.budgets.destroy` - Delete budget
 
-**Pages:**
-- `index.tsx` - List saved reports, templates, and favorites
-- `builder.tsx` - 4-step wizard for creating reports
-- `view.tsx` - Display generated report with visualizations
-- `show.tsx` - View saved report details
+### Bank Reconciliation System
 
-**Wizard Steps:**
-- `step-1-report-type.tsx` - Select report type
-- `step-2-filters.tsx` - Configure filters (dynamic based on report type)
-- `step-3-visualization.tsx` - Choose visualization (pie, bar, line, table)
-- `step-4-actions.tsx` - Review and save/generate
+The application includes a bank reconciliation module for matching transactions with bank statements:
 
-**Visualizations** (Recharts):
-- `pie-chart-view.tsx` - Pie chart with percentages
-- `bar-chart-view.tsx` - Horizontal/vertical bar charts
-- `line-chart-view.tsx` - Multi-line time-series charts
-- `report-table.tsx` - Sortable data table with summary cards
+**Backend Architecture** (`app/Domain/Reconciliation/`):**
 
-**Auxiliary Components:**
-- `report-header.tsx` - Report metadata and actions
-- `export-buttons.tsx` - Dropdown menu for PDF/Excel/CSV export
-- `saved-report-card.tsx` - Card for saved reports
-- `template-card.tsx` - Card for report templates
+**Domain Structure:**
+- `ReconciliationService` - Core business logic for reconciliation operations
 
-**Report Features:**
-- **Wizard-based creation** - 4-step guided process
-- **Dynamic filters** - Filters change based on report type
-- **Saved configurations** - Save reports for reuse
-- **Favorites** - Mark frequently used reports
-- **Templates** - Pre-configured report templates
-- **Multiple visualizations** - Pie, bar, line charts, and tables
-- **Export formats** - PDF, Excel, CSV
-- **Caching** - Configurable TTL for performance
-- **Responsive design** - Mobile-friendly interface
+**Database Schema:**
+- Transactions table extended with:
+  - `is_reconciled`: Boolean flag for reconciliation status
+  - `external_id`: Bank statement reference ID (indexed)
 
-**Available Filters:**
-- Date ranges (preset periods or custom dates)
-- Categories (multi-select)
-- Wallets (multi-select)
-- Transaction status (paid, pending, all)
-- Amount range (min/max)
-- Top N limit (for ranking reports)
+**Frontend Components:**
+- Reconciliation pages in `resources/js/pages/dashboard/reconciliation/`
 
-**Usage Example:**
-```typescript
-// Navigate to report builder
-router.get(route('dashboard.reports.builder'));
+**Features:**
+- Upload bank statements
+- Match transactions with bank records
+- Mark transactions as reconciled
+- Track external bank statement IDs
+- Identify discrepancies between system and bank
 
-// Run a saved report
-router.post(route('dashboard.reports.run', reportId));
-
-// Export a report
-router.get(route('dashboard.reports.export', reportId));
-```
+**Routes:**
+- `dashboard.reconciliation.index` - Reconciliation interface
+- `dashboard.reconciliation.upload` - Upload bank statement
+- `dashboard.reconciliation.reconcile` - Mark transaction as reconciled
 
 ## File Organization
 
@@ -445,18 +409,20 @@ Default configuration uses SQLite (`database/database.sqlite`). Standard Laravel
 - Wallets table (user's payment methods)
 - Accounts table (expense accounts with recurring support)
 - Categories table (expense categories)
-- Transactions table (expense records)
+- Transactions table (expense records with reconciliation fields)
 - Incomes table (recurring income sources)
 - Income transactions table (income records)
 - Alerts table (user alerts and notifications)
 - Alert notifications table (triggered alert instances)
-- Saved reports table (user-saved report configurations)
+- Budgets table (category spending limits with monthly/one-time recurrence)
 - Cache, Jobs, and Session tables for system operations
 
 **Key Models:**
 - All primary models use UUID as primary key via `HasUuidCustom` trait
 - Most models have a `status` field (active/inactive)
 - Transactions and Incomes support recurring patterns
+- Transactions include reconciliation tracking (`is_reconciled`, `external_id`)
+- Budgets enforce unique constraint per user/category/period
 - Models include soft deletes where appropriate
 
 ## Important Patterns
@@ -469,5 +435,6 @@ Default configuration uses SQLite (`database/database.sqlite`). Standard Laravel
 6. **Inertia pages** should be lightweight; business logic stays in backend services
 7. **UUID Primary Keys**: All user-created models use UUIDs via `HasUuidCustom` trait
 8. **Status Fields**: Most models include status management (active/inactive) with dedicated toggle methods
-9. **Report Queries**: New report types should extend `BaseReportQuery` and implement the query pattern
-10. **Recurring Patterns**: Accounts and Incomes support recurring transactions with automatic generation
+9. **Recurring Patterns**: Accounts, Incomes, and Budgets support recurring patterns with automatic generation
+10. **Reconciliation**: Transactions can be marked as reconciled with external bank statement IDs
+11. **Budget Constraints**: Budgets enforce unique constraints per user/category/period to prevent duplicates
