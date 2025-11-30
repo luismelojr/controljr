@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { Head, router } from '@inertiajs/react';
-import { BellIcon, CalendarIcon, CreditCardIcon, PlusIcon, ToggleLeftIcon, ToggleRightIcon, TrashIcon } from 'lucide-react';
+import { BellIcon, CalendarIcon, CreditCardIcon, PlusIcon, ToggleLeftIcon, ToggleRightIcon, TrashIcon, WalletIcon } from 'lucide-react';
 import { useState } from 'react';
 
 interface Alert {
@@ -38,6 +38,8 @@ export default function AlertsIndex({ alerts = [] }: AlertsProps) {
                 return <CreditCardIcon className="h-5 w-5" />;
             case 'bill_due_date':
                 return <CalendarIcon className="h-5 w-5" />;
+            case 'budget_exceeded':
+                return <WalletIcon className="h-5 w-5" />;
             default:
                 return <BellIcon className="h-5 w-5" />;
         }
@@ -51,6 +53,8 @@ export default function AlertsIndex({ alerts = [] }: AlertsProps) {
                 return `Avisar ${alert.trigger_days?.join(', ')} dia(s) antes do vencimento`;
             case 'account_balance':
                 return `Avisar quando saldo menor que R$ ${alert.trigger_value}`;
+            case 'budget_exceeded':
+                return `Avisar quando gastar ${alert.trigger_value}% do orçamento`;
             default:
                 return 'Alerta personalizado';
         }

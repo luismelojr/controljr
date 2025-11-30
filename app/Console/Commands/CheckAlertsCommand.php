@@ -15,7 +15,7 @@ class CheckAlertsCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'alerts:check {--type=all : Type of alert to check (all, credit-card, bills, accounts)}';
+    protected $signature = 'alerts:check {--type=all : Type of alert to check (all, credit-card, bills, accounts, budgets)}';
 
     /**
      * The console command description.
@@ -43,6 +43,7 @@ class CheckAlertsCommand extends Command
             'credit-card' => $this->checkCreditCardAlerts($alertService),
             'bills' => $this->checkBillAlerts($alertService),
             'accounts' => $this->checkAccountAlerts($alertService),
+            'budgets' => $this->checkBudgetAlerts($alertService),
             default => $this->checkAllAlerts($alertService),
         };
 
@@ -103,6 +104,7 @@ class CheckAlertsCommand extends Command
         $this->checkCreditCardAlerts($alertService);
         $this->checkBillAlerts($alertService);
         $this->checkAccountAlerts($alertService);
+        $this->checkBudgetAlerts($alertService);
     }
 
     protected function checkCreditCardAlerts(AlertService $alertService): void
@@ -139,6 +141,19 @@ class CheckAlertsCommand extends Command
             $this->info('✓ Account alerts checked successfully');
         } catch (\Exception $e) {
             $this->error('✗ Error checking account alerts: ' . $e->getMessage());
+        }
+    }
+
+    protected function checkBudgetAlerts(AlertService $alertService): void
+    {
+        $this->info('💸 Checking budget threshold alerts...');
+
+        try {
+            $alertService->checkBudgetAlerts();
+            $this->info('✓ Budget alerts checked successfully');
+        } catch (\Exception $e) {
+            $this->error('✗ Error checking budget alerts: ' . $e->getMessage());
+            $this->error($e->getTraceAsString());
         }
     }
 }

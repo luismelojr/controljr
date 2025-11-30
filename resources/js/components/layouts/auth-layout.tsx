@@ -1,6 +1,6 @@
 import CustomToast from '@/components/ui/custom-toast';
 import { MeloSysLogo } from '@/components/ui/melosys-logo';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import React from 'react';
 
 interface AuthLayoutProps {
@@ -31,7 +31,9 @@ export default function AuthLayout({ children, title }: AuthLayoutProps) {
                         {/* Logo/Brand */}
                         <div>
                             <div className="mb-8">
-                                <MeloSysLogo className="h-10 w-10" showText />
+                                <Link href={route('login')} className="flex items-center">
+                                    <MeloSysLogo className="h-10 w-10" showText />
+                                </Link>
                             </div>
                         </div>
 

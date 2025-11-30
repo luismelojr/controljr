@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowDownIcon, ArrowUpIcon, DollarSign, PiggyBank } from "lucide-react";
 
 interface OverviewData {

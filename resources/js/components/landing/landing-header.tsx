@@ -3,20 +3,20 @@ import { Link, usePage } from '@inertiajs/react';
 import { home, login, register } from '@/routes';
 import { home as dashboardHome } from '@/routes/dashboard';
 import { LogIn, LayoutDashboard } from 'lucide-react';
+import { MeloSysLogo } from '@/components/ui/melosys-logo';
+import React from 'react';
+import { User } from '@/types';
 
 export function LandingHeader() {
-    const { auth } = usePage().props as { auth: { user: any | null } };
+    const { auth } = usePage().props as unknown as { auth: { user: User | null } };
     const isAuthenticated = !!auth.user;
 
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
                 {/* Logo */}
-                <Link href={home.url()} className="flex items-center space-x-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                        <span className="text-lg font-bold">M</span>
-                    </div>
-                    <span className="text-xl font-bold">Melosys</span>
+                <Link href={home.url()} className="flex items-center">
+                    <MeloSysLogo className="h-10 w-10" showText />
                 </Link>
 
                 {/* Navigation */}

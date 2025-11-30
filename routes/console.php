@@ -21,3 +21,7 @@ Schedule::call(function () {
 Schedule::call(function () {
     app(AlertService::class)->checkAccountBalanceAlerts();
 })->dailyAt('08:00')->name('check-account-balance-alerts');
+
+Schedule::call(function () {
+    app(AlertService::class)->checkBudgetAlerts();
+})->dailyAt('10:00')->name('check-budget-alerts');

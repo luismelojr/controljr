@@ -1,6 +1,8 @@
 import { Github, Twitter, Linkedin, Heart } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 import { home, register } from '@/routes';
+import { MeloSysLogo } from '@/components/ui/melosys-logo';
+import React from 'react';
 
 export function LandingFooter() {
     const currentYear = new Date().getFullYear();
@@ -12,11 +14,8 @@ export function LandingFooter() {
                 <div className="grid gap-8 lg:grid-cols-4">
                     {/* Brand Section */}
                     <div className="lg:col-span-2">
-                        <Link href={home.url()} className="mb-4 flex items-center space-x-2">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                                <span className="text-lg font-bold">M</span>
-                            </div>
-                            <span className="text-xl font-bold">Melosys</span>
+                        <Link href={home.url()} className="mb-4 flex items-center">
+                            <MeloSysLogo className="h-10 w-10" showText />
                         </Link>
                         <p className="mb-4 max-w-md text-sm text-muted-foreground">
                             Simplifique o controle das suas finanças pessoais. Acompanhe receitas, despesas e alcance seus objetivos financeiros de forma inteligente.

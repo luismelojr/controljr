@@ -30,7 +30,6 @@ const plans: PricingPlan[] = [
             { text: 'Controle de receitas e despesas', included: true },
             { text: 'Categorização básica', included: true },
             { text: 'Relatórios mensais', included: true },
-            { text: 'Múltiplas contas', included: false },
             { text: 'Alertas personalizados', included: false },
             { text: 'Relatórios avançados', included: false },
             { text: 'Suporte prioritário', included: false },
@@ -48,7 +47,6 @@ const plans: PricingPlan[] = [
             { text: 'Controle de receitas e despesas', included: true },
             { text: 'Categorização avançada', included: true },
             { text: 'Relatórios ilimitados', included: true },
-            { text: 'Múltiplas contas', included: true },
             { text: 'Alertas personalizados', included: true },
             { text: 'Relatórios avançados com insights', included: true },
             { text: 'Suporte prioritário', included: true },
@@ -123,7 +121,7 @@ export function PricingSection() {
                                 </Link>
 
                                 {/* Features List */}
-                                <div className="space-y-4">
+                                <div className="space-y-4 mt-4">
                                     {plan.features.map((feature, index) => (
                                         <div
                                             key={index}

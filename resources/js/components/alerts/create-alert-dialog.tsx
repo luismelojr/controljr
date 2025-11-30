@@ -84,6 +84,7 @@ export default function CreateAlertDialog({ open, onClose }: Props) {
                                 <SelectItem value="credit_card_usage">Uso de Cartão de Crédito</SelectItem>
                                 <SelectItem value="bill_due_date">Vencimento de Contas</SelectItem>
                                 <SelectItem value="account_balance">Saldo da Conta</SelectItem>
+                                <SelectItem value="budget_exceeded">Orçamento Excedido</SelectItem>
                             </SelectContent>
                         </Select>
                         {errors.type && <p className="text-sm text-destructive">{errors.type}</p>}
@@ -122,6 +123,25 @@ export default function CreateAlertDialog({ open, onClose }: Props) {
                             />
                             <p className="text-xs text-muted-foreground">
                                 Você será notificado quando o saldo ficar abaixo de R$ {data.trigger_value}.
+                            </p>
+                            {errors.trigger_value && <p className="text-sm text-destructive">{errors.trigger_value}</p>}
+                        </div>
+                    )}
+
+                    {/* Percentual de uso do orçamento */}
+                    {data.type === 'budget_exceeded' && (
+                        <div className="space-y-2">
+                            <Label htmlFor="trigger_value">Percentual de Uso do Orçamento (%)</Label>
+                            <Input
+                                id="trigger_value"
+                                type="number"
+                                value={data.trigger_value}
+                                onChange={(e) => setData('trigger_value', Number(e.target.value))}
+                                min={1}
+                                max={150}
+                            />
+                            <p className="text-xs text-muted-foreground">
+                                Você será notificado quando o gasto atingir {data.trigger_value}% do orçamento.
                             </p>
                             {errors.trigger_value && <p className="text-sm text-destructive">{errors.trigger_value}</p>}
                         </div>

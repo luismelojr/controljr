@@ -367,4 +367,103 @@ class AlertService
             ->where('is_read', true)
             ->delete();
     }
+
+    /**
+     * Check budget threshold alerts.
+     * Checks if budgets are approaching or exceeding their limits.
+     */
+    public function checkBudgetAlerts(): void
+    {
+        Alert::active()
+            ->ofType(AlertTypeEnum::BUDGET_EXCEEDED->value)
+            ->with(['user', 'alertable'])
+            ->chunk(100, function ($alerts) {
+                foreach ($alerts as $alert) {
+                    $this->processBudgetAlert($alert);
+                }
+            });
+    }
+
+    /**
+     * Process a single budget alert.
+     * Calculates spending vs budget limit and triggers notification if threshold is reached.
+     */
+    protected function processBudgetAlert(Alert $alert): void
+    {
+        // Get budgets to check
+        if ($alert->alertable_type === \App\Models\Budget::class && $alert->alertable_id) {
+            // Alert for a specific Budget
+            $budgets = [\App\Models\Budget::find($alert->alertable_id)];
+        } else {
+            // Alert for all user's budgets
+            $budgets = \App\Models\Budget::where('user_id', $alert->user_id)
+                ->where('status', true)
+                ->get();
+        }
+
+        foreach ($budgets as $budget) {
+            if (!$budget) {
+                continue;
+            }
+
+            // Calculate spending for this budget's category in the current period
+            $periodStart = \Carbon\Carbon::parse($budget->period)->startOfMonth();
+            $periodEnd = $periodStart->copy()->endOfMonth();
+
+            $totalSpentInCents = \App\Models\Transaction::where('user_id', $budget->user_id)
+                ->where('category_id', $budget->category_id)
+                ->where('status', \App\Enums\TransactionStatusEnum::PAID)
+                ->whereBetween('paid_at', [$periodStart, $periodEnd])
+                ->sum('amount');
+
+            // Convert cents to reais (sum returns raw database value in cents)
+            $totalSpent = round($totalSpentInCents / 100, 2);
+
+            // Calculate usage percentage
+            if ($budget->amount <= 0) {
+                continue;
+            }
+
+            $usagePercent = ($totalSpent / $budget->amount) * 100;
+
+            // Check if threshold is reached
+            if ($usagePercent >= $alert->trigger_value) {
+                // Check if already notified today for this specific budget
+                $alreadyNotified = AlertNotification::where('alert_id', $alert->id)
+                    ->whereDate('created_at', now())
+                    ->whereJsonContains('data->budget_id', $budget->id)
+                    ->exists();
+
+                if ($alreadyNotified) {
+                    continue;
+                }
+
+                $categoryName = $budget->category->name ?? 'Sem categoria';
+                $isExceeded = $usagePercent >= 100;
+
+                $this->createNotification($alert, [
+                    'title' => $isExceeded ? 'Orçamento Excedido' : 'Orçamento Próximo do Limite',
+                    'message' => sprintf(
+                        '%s: você %s %.2f%% do orçamento de %s (R$ %.2f de R$ %.2f).',
+                        $categoryName,
+                        $isExceeded ? 'excedeu' : 'atingiu',
+                        $usagePercent,
+                        $periodStart->locale('pt_BR')->monthName,
+                        $totalSpent,
+                        $budget->amount
+                    ),
+                    'type' => $usagePercent >= 100 ? NotificationTypeEnum::DANGER->value : NotificationTypeEnum::WARNING->value,
+                    'usage_percent' => round($usagePercent, 2),
+                    'total_spent' => $totalSpent,
+                    'budget_amount' => $budget->amount,
+                    'budget_id' => $budget->id,
+                    'category_id' => $budget->category_id,
+                    'category_name' => $categoryName,
+                    'period' => $budget->period->toDateString(),
+                ]);
+
+                $alert->update(['last_triggered_at' => now()]);
+            }
+        }
+    }
 }
