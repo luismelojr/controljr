@@ -56,6 +56,18 @@ class WalletsController extends Controller
         try {
             $data = CreateWalletData::fromRequest($request);
 
+            $currentCount = $request->user()->wallets()->count();
+
+            if (\App\Http\Middleware\CheckPlanFeature::hasReachedLimit($request, 'max_wallets', $currentCount)) {
+                Toast::create('Você atingiu o limite de carteiras do seu plano.')
+                    ->error()
+                    ->action('Fazer Upgrade', route('dashboard.subscription.plans'))
+                    ->persistent()
+                    ->flash();
+
+                return back();
+            }
+
             $this->walletService->create($data, auth()->user());
 
             Toast::create('Carteira criada com sucesso!')

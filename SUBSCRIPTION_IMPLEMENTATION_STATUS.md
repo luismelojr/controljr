@@ -22,21 +22,21 @@
 
 ### Status Atual do Sistema
 
-| Componente | Status | Progresso | Observações |
-|------------|--------|-----------|-------------|
-| **Infraestrutura de Assinatura** | ✅ Completo | 100% | Sistema funcional e testado |
-| **Integração de Pagamento (Asaas)** | ✅ Completo | 100% | PIX, Boleto, Cartão funcionando |
-| **Middleware de Planos** | ✅ Completo | 100% | CheckPlanFeature implementado |
-| **Service de Limites** | ✅ Completo | 100% | PlanLimitService funcionando |
-| **Limites Aplicados** | ⚠️ Parcial | 50% | Budgets e Transactions OK, faltam Wallets e Categories |
-| **Features Premium** | 🔴 Não iniciado | 0% | 7 features principais faltando |
-| **Sistema Family** | 🔴 Não iniciado | 0% | Toda infraestrutura faltando |
-| **Inteligência Artificial** | 🔴 Não iniciado | 0% | OpenAI não integrado |
+| Componente                          | Status          | Progresso | Observações                                    |
+| ----------------------------------- | --------------- | --------- | ---------------------------------------------- |
+| **Infraestrutura de Assinatura**    | ✅ Completo     | 100%      | Sistema funcional e testado                    |
+| **Integração de Pagamento (Asaas)** | ✅ Completo     | 100%      | PIX, Boleto, Cartão funcionando                |
+| **Middleware de Planos**            | ✅ Completo     | 100%      | CheckPlanFeature implementado                  |
+| **Service de Limites**              | ✅ Completo     | 100%      | PlanLimitService funcionando                   |
+| **Limites Aplicados**               | ✅ Completo     | 100%      | Budgets, Transactions, Wallets e Categories OK |
+| **Features Premium**                | 🔴 Não iniciado | 0%        | 7 features principais faltando                 |
+| **Sistema Family**                  | 🔴 Não iniciado | 0%        | Toda infraestrutura faltando                   |
+| **Inteligência Artificial**         | 🔴 Não iniciado | 0%        | OpenAI não integrado                           |
 
-### Progresso Geral: **53%**
+### Progresso Geral: **60%**
 
-✅ **Completo:** 5/10 componentes principais (Infraestrutura + Configuração de Limites)
-⚠️ **Parcial:** 1/10 componentes principais (Aplicação de Limites)
+✅ **Completo:** 6/10 componentes principais (Infraestrutura + Configuração de Limites + Aplicação)
+⚠️ **Parcial:** 0/10 componentes principais
 🔴 **Faltando:** 4/10 componentes principais (Features Premium)
 
 ---
@@ -46,6 +46,7 @@
 ### PLANO FREE
 
 **Especificação Original:**
+
 - Não disponível: Tags Personalizadas
 - 5 Orçamentos
 - 1 Carteira
@@ -59,6 +60,7 @@
 - 12 meses: Histórico de Transações
 
 **Configuração Atual (`config/plan_limits.php`):**
+
 ```php
 'free' => [
     'max_wallets' => 1,                        // ✅ CORRETO
@@ -86,19 +88,19 @@
 
 **Status de Implementação:**
 
-| Feature | Configurado | Limite Aplicado | Feature Existe | Status Final |
-|---------|-------------|-----------------|----------------|--------------|
-| Tags Personalizadas | ❌ Falta | N/A | ❌ Não | 🔴 0% |
-| Orçamentos | ✅ 5 | ✅ Sim | ✅ Sim | ✅ 100% |
-| Carteiras | ✅ 1 | ❌ Não | ✅ Sim | ⚠️ 70% |
-| Categorias | ✅ 10 | ❌ Não | ✅ Sim | ⚠️ 70% |
-| Anexos | ❌ Falta | N/A | ❌ Não | 🔴 0% |
-| Metas de Economia | ❌ Falta | N/A | ❌ Não | 🔴 0% |
-| Previsões IA | ✅ false | ✅ Sim | ❌ Não | ⚠️ 50% |
-| Relatórios Customizados | ❌ Falta | N/A | ❌ Não | 🔴 0% |
-| Membros Família | ✅ 1 | ❌ Não | ❌ Não | ⚠️ 30% |
-| Exportações/mês | 🔴 false (deve ser 5) | ❌ Não | ✅ Sim | ⚠️ 40% |
-| Histórico Transações | ❌ Falta | ❌ Não | ❌ Não | 🔴 0% |
+| Feature                 | Configurado           | Limite Aplicado | Feature Existe | Status Final |
+| ----------------------- | --------------------- | --------------- | -------------- | ------------ |
+| Tags Personalizadas     | ❌ Falta              | N/A             | ❌ Não         | 🔴 0%        |
+| Orçamentos              | ✅ 5                  | ✅ Sim          | ✅ Sim         | ✅ 100%      |
+| Carteiras               | ✅ 1                  | ✅ Sim          | ✅ Sim         | ✅ 100%      |
+| Categorias              | ✅ 10                 | ✅ Sim          | ✅ Sim         | ✅ 100%      |
+| Anexos                  | ❌ Falta              | N/A             | ❌ Não         | 🔴 0%        |
+| Metas de Economia       | ❌ Falta              | N/A             | ❌ Não         | 🔴 0%        |
+| Previsões IA            | ✅ false              | ✅ Sim          | ❌ Não         | ⚠️ 50%       |
+| Relatórios Customizados | ❌ Falta              | N/A             | ❌ Não         | 🔴 0%        |
+| Membros Família         | ✅ 1                  | ❌ Não          | ❌ Não         | ⚠️ 30%       |
+| Exportações/mês         | 🔴 false (deve ser 5) | ❌ Não          | ✅ Sim         | ⚠️ 40%       |
+| Histórico Transações    | ❌ Falta              | ❌ Não          | ❌ Não         | 🔴 0%        |
 
 **Progresso Plano Free: 45%**
 
@@ -107,6 +109,7 @@
 ### PLANO PREMIUM
 
 **Especificação Original:**
+
 - Ilimitado: Tags Personalizadas
 - Ilimitado: Orçamentos
 - Ilimitado: Carteiras
@@ -120,6 +123,7 @@
 - Ilimitado: Histórico de Transações
 
 **Configuração Atual (`config/plan_limits.php`):**
+
 ```php
 'premium' => [
     'max_wallets' => -1,                       // ✅ CORRETO (ilimitado)
@@ -147,19 +151,19 @@
 
 **Status de Implementação:**
 
-| Feature | Configurado | Limite Aplicado | Feature Existe | Status Final |
-|---------|-------------|-----------------|----------------|--------------|
-| Tags Personalizadas | ❌ Falta | N/A | ❌ Não | 🔴 0% |
-| Orçamentos | ✅ -1 (ilimitado) | ✅ Sim | ✅ Sim | ✅ 100% |
-| Carteiras | ✅ -1 (ilimitado) | ❌ Não | ✅ Sim | ⚠️ 70% |
-| Categorias | ✅ -1 (ilimitado) | ❌ Não | ✅ Sim | ⚠️ 70% |
-| Anexos | ✅ 100 | N/A | ❌ Não | ⚠️ 30% |
-| Metas de Economia | ✅ 20 | N/A | ❌ Não | ⚠️ 30% |
-| Previsões IA | ✅ true | ✅ Sim | ❌ Não | ⚠️ 50% |
-| Relatórios Customizados | ✅ 50 | N/A | ❌ Não | ⚠️ 30% |
-| Membros Família | ✅ 1 | ❌ Não | ❌ Não | ⚠️ 30% |
-| Exportações/mês | ✅ true (ilimitado) | ✅ Sim | ✅ Sim | ✅ 100% |
-| Histórico Transações | ✅ -1 (ilimitado) | ❌ Não | ❌ Não | ⚠️ 30% |
+| Feature                 | Configurado         | Limite Aplicado | Feature Existe | Status Final |
+| ----------------------- | ------------------- | --------------- | -------------- | ------------ |
+| Tags Personalizadas     | ❌ Falta            | N/A             | ❌ Não         | 🔴 0%        |
+| Orçamentos              | ✅ -1 (ilimitado)   | ✅ Sim          | ✅ Sim         | ✅ 100%      |
+| Carteiras               | ✅ -1 (ilimitado)   | ✅ Sim          | ✅ Sim         | ✅ 100%      |
+| Categorias              | ✅ -1 (ilimitado)   | ✅ Sim          | ✅ Sim         | ✅ 100%      |
+| Anexos                  | ✅ 100              | N/A             | ❌ Não         | ⚠️ 30%       |
+| Metas de Economia       | ✅ 20               | N/A             | ❌ Não         | ⚠️ 30%       |
+| Previsões IA            | ✅ true             | ✅ Sim          | ❌ Não         | ⚠️ 50%       |
+| Relatórios Customizados | ✅ 50               | N/A             | ❌ Não         | ⚠️ 30%       |
+| Membros Família         | ✅ 1                | ❌ Não          | ❌ Não         | ⚠️ 30%       |
+| Exportações/mês         | ✅ true (ilimitado) | ✅ Sim          | ✅ Sim         | ✅ 100%      |
+| Histórico Transações    | ✅ -1 (ilimitado)   | ❌ Não          | ❌ Não         | ⚠️ 30%       |
 
 **Progresso Plano Premium: 55%**
 
@@ -168,6 +172,7 @@
 ### PLANO FAMILY
 
 **Especificação Original:**
+
 - Ilimitado: Tags Personalizadas
 - Ilimitado: Orçamentos
 - Ilimitado: Carteiras
@@ -181,6 +186,7 @@
 - Ilimitado: Histórico de Transações
 
 **Configuração Atual (`config/plan_limits.php`):**
+
 ```php
 'family' => [
     'max_wallets' => -1,                       // ✅ CORRETO (ilimitado)
@@ -203,19 +209,19 @@
 
 **Status de Implementação:**
 
-| Feature | Configurado | Limite Aplicado | Feature Existe | Status Final |
-|---------|-------------|-----------------|----------------|--------------|
-| Tags Personalizadas | ❌ Falta | N/A | ❌ Não | 🔴 0% |
-| Orçamentos | ✅ -1 (ilimitado) | ✅ Sim | ✅ Sim | ✅ 100% |
-| Carteiras | ✅ -1 (ilimitado) | ❌ Não | ✅ Sim | ⚠️ 70% |
-| Categorias | ✅ -1 (ilimitado) | ❌ Não | ✅ Sim | ⚠️ 70% |
-| Anexos | ✅ 500 | N/A | ❌ Não | ⚠️ 30% |
-| Metas de Economia | ✅ -1 (ilimitado) | N/A | ❌ Não | ⚠️ 30% |
-| Previsões IA | ✅ true | ✅ Sim | ❌ Não | ⚠️ 50% |
-| Relatórios Customizados | ✅ -1 (ilimitado) | N/A | ❌ Não | ⚠️ 30% |
-| Membros Família | ✅ 5 | ❌ Não | ❌ Não | ⚠️ 30% |
-| Exportações/mês | ✅ true (ilimitado) | ✅ Sim | ✅ Sim | ✅ 100% |
-| Histórico Transações | ✅ -1 (ilimitado) | ❌ Não | ❌ Não | ⚠️ 30% |
+| Feature                 | Configurado         | Limite Aplicado | Feature Existe | Status Final |
+| ----------------------- | ------------------- | --------------- | -------------- | ------------ |
+| Tags Personalizadas     | ❌ Falta            | N/A             | ❌ Não         | 🔴 0%        |
+| Orçamentos              | ✅ -1 (ilimitado)   | ✅ Sim          | ✅ Sim         | ✅ 100%      |
+| Carteiras               | ✅ -1 (ilimitado)   | ❌ Não          | ✅ Sim         | ⚠️ 70%       |
+| Categorias              | ✅ -1 (ilimitado)   | ❌ Não          | ✅ Sim         | ⚠️ 70%       |
+| Anexos                  | ✅ 500              | N/A             | ❌ Não         | ⚠️ 30%       |
+| Metas de Economia       | ✅ -1 (ilimitado)   | N/A             | ❌ Não         | ⚠️ 30%       |
+| Previsões IA            | ✅ true             | ✅ Sim          | ❌ Não         | ⚠️ 50%       |
+| Relatórios Customizados | ✅ -1 (ilimitado)   | N/A             | ❌ Não         | ⚠️ 30%       |
+| Membros Família         | ✅ 5                | ❌ Não          | ❌ Não         | ⚠️ 30%       |
+| Exportações/mês         | ✅ true (ilimitado) | ✅ Sim          | ✅ Sim         | ✅ 100%      |
+| Histórico Transações    | ✅ -1 (ilimitado)   | ❌ Não          | ❌ Não         | ⚠️ 30%       |
 
 **Progresso Plano Family: 58%**
 
@@ -226,6 +232,7 @@
 ### 1. Sistema de Assinaturas (100% ✅)
 
 **Implementado:**
+
 - ✅ Migration: `create_subscription_plans_table`
 - ✅ Migration: `create_subscriptions_table`
 - ✅ Migration: `add_subscription_id_to_users_table`
@@ -247,6 +254,7 @@
 - ✅ TypeScript: `types/subscription.d.ts`
 
 **Arquivos Localizados:**
+
 - 📍 `/app/Models/Subscription.php`
 - 📍 `/app/Models/SubscriptionPlan.php`
 - 📍 `/app/Domain/Subscriptions/Services/SubscriptionService.php`
@@ -260,6 +268,7 @@
 ### 2. Sistema de Pagamentos - Asaas (100% ✅)
 
 **Implementado:**
+
 - ✅ Config: `config/asaas.php`
 - ✅ Migration: `create_payments_table`
 - ✅ Migration: `create_webhook_calls_table`
@@ -281,11 +290,13 @@
 - ✅ Emails: `subscription-expiring.blade.php`
 
 **Métodos de Pagamento Funcionando:**
+
 - ✅ PIX (QR Code + Copia e Cola)
 - ✅ Boleto Bancário (linha digitável + PDF)
 - ✅ Cartão de Crédito (tokenização)
 
 **Webhooks Configurados:**
+
 - ✅ PAYMENT_CONFIRMED
 - ✅ PAYMENT_RECEIVED
 - ✅ PAYMENT_OVERDUE
@@ -293,6 +304,7 @@
 - ✅ PAYMENT_DELETED
 
 **Arquivos Localizados:**
+
 - 📍 `/app/Domain/Payments/Services/AsaasService.php`
 - 📍 `/app/Domain/Payments/Services/PaymentGatewayService.php`
 - 📍 `/app/Domain/Payments/Services/WebhookService.php`
@@ -305,6 +317,7 @@
 ### 3. Middleware e Limites (75% ⚠️)
 
 **Implementado:**
+
 - ✅ Middleware: `CheckPlanFeature.php` (verifica feature habilitada)
 - ✅ Service: `PlanLimitService.php` (métodos de verificação de limites)
 - ✅ Config: `config/plan_limits.php` (configuração de limites por plano)
@@ -312,14 +325,16 @@
 - ✅ User Model: Método `getPlanLimits()` implementado
 
 **Limites Aplicados nos Controllers:**
+
 - ✅ `BudgetController@store` - Linha 46 (verifica max_budgets)
 - ✅ `TransactionsController@store` - Linha 71 (verifica max_transactions)
-- ❌ `WalletController@store` - NÃO verifica max_wallets
-- ❌ `CategoryController@store` - NÃO verifica max_categories
+- ✅ `WalletsController@store` - Linha 59 (verifica max_wallets)
+- ✅ `CategoriesController@store` - Linha 59 (verifica max_categories)
 - ❌ Nenhum controller verifica exportações mensais
 - ❌ Nenhum scope filtra histórico de transações por plano
 
 **Arquivos Localizados:**
+
 - 📍 `/app/Http/Middleware/CheckPlanFeature.php`
 - 📍 `/app/Services/PlanLimitService.php`
 - 📍 `/config/plan_limits.php`
@@ -337,6 +352,7 @@
 **Precisa Criar:**
 
 **Backend:**
+
 - ❌ Migration: `create_tags_table`
 - ❌ Migration: `create_taggables_table` (polymorphic)
 - ❌ Model: `Tag.php`
@@ -349,22 +365,25 @@
 - ❌ Policy: `TagPolicy.php`
 
 **Frontend:**
+
 - ❌ Page: `pages/dashboard/tags/index.tsx`
 - ❌ Component: `components/tags/tag-input.tsx`
 - ❌ Component: `components/tags/tag-badge.tsx`
 - ❌ Component: `components/tags/tag-manager.tsx`
 
 **Rotas:**
+
 - ❌ GET `/dashboard/tags` (middleware: plan.feature:tags)
 - ❌ POST `/dashboard/tags`
 - ❌ PATCH `/dashboard/tags/{tag}`
 - ❌ DELETE `/dashboard/tags/{tag}`
 
 **Config:**
+
 - ❌ Adicionar em `plan_limits.php`:
-  - Free: `'max_tags' => 0`
-  - Premium: `'max_tags' => -1`
-  - Family: `'max_tags' => -1`
+    - Free: `'max_tags' => 0`
+    - Premium: `'max_tags' => -1`
+    - Family: `'max_tags' => -1`
 
 ---
 
@@ -375,6 +394,7 @@
 **Precisa Criar:**
 
 **Backend:**
+
 - ❌ Migration: `create_attachments_table` (polymorphic: attachable_id, attachable_type)
 - ❌ Migration: `add_notes_to_transactions_table` (campo notes)
 - ❌ Migration: `add_notes_to_accounts_table` (campo notes)
@@ -388,28 +408,33 @@
 - ❌ Policy: `AttachmentPolicy.php`
 
 **Storage:**
+
 - ❌ Configurar disco `attachments` em `config/filesystems.php`
 - ❌ Configurar storage público
 - ❌ Validações: max 5MB, tipos permitidos (pdf, jpg, png, jpeg)
 
 **Frontend:**
+
 - ❌ Component: `components/attachments/file-upload.tsx` (drag & drop)
 - ❌ Component: `components/attachments/attachment-list.tsx`
 - ❌ Component: `components/attachments/attachment-card.tsx`
 - ❌ Atualizar forms para incluir upload e notes
 
 **Rotas:**
+
 - ❌ POST `/dashboard/attachments` (middleware: plan.feature:attachments)
 - ❌ DELETE `/dashboard/attachments/{attachment}`
 - ❌ GET `/dashboard/attachments/{attachment}/download`
 
 **Config:**
+
 - ❌ Adicionar em `plan_limits.php`:
-  - Free: `'max_attachments' => 0`
-  - Premium: `'max_attachments' => 100`
-  - Family: `'max_attachments' => 500`
+    - Free: `'max_attachments' => 0`
+    - Premium: `'max_attachments' => 100`
+    - Family: `'max_attachments' => 500`
 
 **Segurança:**
+
 - ❌ Validar ownership antes de download
 - ❌ Sanitizar nomes de arquivos
 - ❌ Validar MIME types
@@ -424,6 +449,7 @@
 **Precisa Criar:**
 
 **Backend:**
+
 - ❌ Migration: `create_savings_goals_table`
 - ❌ Model: `SavingsGoal.php`
 - ❌ Service: `SavingsGoalService.php`
@@ -435,6 +461,7 @@
 - ❌ Policy: `SavingsGoalPolicy.php`
 
 **Frontend:**
+
 - ❌ Page: `pages/dashboard/savings-goals/index.tsx`
 - ❌ Page: `pages/dashboard/savings-goals/create.tsx`
 - ❌ Page: `pages/dashboard/savings-goals/edit.tsx`
@@ -446,6 +473,7 @@
 - ❌ Dashboard: Widget de metas ativas
 
 **Rotas:**
+
 - ❌ GET `/dashboard/savings-goals` (middleware: plan.feature:savings_goals)
 - ❌ POST `/dashboard/savings-goals`
 - ❌ GET `/dashboard/savings-goals/{goal}`
@@ -454,10 +482,11 @@
 - ❌ POST `/dashboard/savings-goals/{goal}/contribute`
 
 **Config:**
+
 - ❌ Adicionar em `plan_limits.php`:
-  - Free: `'max_savings_goals' => 0`
-  - Premium: `'max_savings_goals' => 20`
-  - Family: `'max_savings_goals' => -1`
+    - Free: `'max_savings_goals' => 0`
+    - Premium: `'max_savings_goals' => 20`
+    - Family: `'max_savings_goals' => -1`
 
 ---
 
@@ -468,6 +497,7 @@
 **Precisa Criar:**
 
 **Backend:**
+
 - ❌ Migration: `create_saved_reports_table`
 - ❌ Model: `SavedReport.php`
 - ❌ Enum: `ReportTypeEnum.php` (6 tipos diferentes)
@@ -479,12 +509,14 @@
 - ❌ Policy: `SavedReportPolicy.php`
 
 **PDF Export:**
+
 - ❌ Instalar: `composer require barryvdh/laravel-dompdf`
 - ❌ Template: `resources/views/reports/pdf/financial-report.blade.php`
 - ❌ Template: `resources/views/reports/pdf/cashflow-report.blade.php`
 - ❌ Template: `resources/views/reports/pdf/budget-report.blade.php`
 
 **Frontend:**
+
 - ❌ Page: `pages/dashboard/reports/custom.tsx`
 - ❌ Page: `pages/dashboard/reports/saved.tsx`
 - ❌ Page: `pages/dashboard/reports/builder.tsx`
@@ -494,6 +526,7 @@
 - ❌ Component: `components/reports/saved-report-card.tsx`
 
 **Rotas:**
+
 - ❌ GET `/dashboard/reports/custom` (middleware: plan.feature:custom_reports)
 - ❌ POST `/dashboard/reports/custom/generate`
 - ❌ POST `/dashboard/reports/saved`
@@ -503,10 +536,11 @@
 - ❌ GET `/dashboard/reports/saved/{report}/pdf`
 
 **Config:**
+
 - ❌ Adicionar em `plan_limits.php`:
-  - Free: `'max_custom_reports' => 0`
-  - Premium: `'max_custom_reports' => 50`
-  - Family: `'max_custom_reports' => -1`
+    - Free: `'max_custom_reports' => 0`
+    - Premium: `'max_custom_reports' => 50`
+    - Family: `'max_custom_reports' => -1`
 
 ---
 
@@ -517,12 +551,14 @@
 **Precisa Criar:**
 
 **Backend - Migrations:**
+
 - ❌ Migration: `create_family_groups_table`
 - ❌ Migration: `create_family_group_members_table`
 - ❌ Migration: `create_family_invitations_table`
 - ❌ Migration: `add_family_group_id_to_tables` (transactions, wallets, accounts, incomes, budgets, categories, savings_goals)
 
 **Backend - Models:**
+
 - ❌ Model: `FamilyGroup.php`
 - ❌ Model: `FamilyGroupMember.php`
 - ❌ Model: `FamilyInvitation.php`
@@ -530,27 +566,33 @@
 - ❌ Trait: `BelongsToFamilyGroup.php` (para todos os models de recursos)
 
 **Backend - Services:**
+
 - ❌ Service: `FamilyGroupService.php` (create, invite, remove, permissions)
 - ❌ Expandir: `DashboardOrchestrationService.php` (dashboard consolidado)
 
 **Backend - Controllers:**
+
 - ❌ Controller: `FamilyGroupsController.php`
 - ❌ Controller: `FamilyInvitationsController.php`
 
 **Backend - Policies:**
+
 - ❌ Policy: `FamilyGroupPolicy.php`
 - ❌ Atualizar TODAS as policies existentes para considerar family_group_id:
-  - TransactionPolicy, WalletPolicy, AccountPolicy, IncomePolicy, BudgetPolicy, CategoryPolicy, SavingsGoalPolicy
+    - TransactionPolicy, WalletPolicy, AccountPolicy, IncomePolicy, BudgetPolicy, CategoryPolicy, SavingsGoalPolicy
 
 **Backend - Middleware:**
+
 - ❌ Middleware: `CheckFamilyAccess.php`
 
 **Backend - Notifications:**
+
 - ❌ Mail: `FamilyInvitationMail.php`
 - ❌ Notification: `FamilyMemberJoinedNotification.php`
 - ❌ Notification: `FamilyMemberLeftNotification.php`
 
 **Frontend:**
+
 - ❌ Page: `pages/dashboard/family/index.tsx`
 - ❌ Page: `pages/dashboard/family/members.tsx`
 - ❌ Page: `pages/dashboard/family/settings.tsx`
@@ -568,6 +610,7 @@
 - ❌ Component: `components/family/pending-invitations.tsx`
 
 **Rotas:**
+
 - ❌ GET `/dashboard/family` (middleware: plan.feature:family_members)
 - ❌ POST `/dashboard/family`
 - ❌ PATCH `/dashboard/family`
@@ -591,11 +634,13 @@
 **Precisa Criar:**
 
 **Setup:**
+
 - ❌ Instalar: `composer require openai-php/client`
 - ❌ Config: `config/openai.php`
 - ❌ Env: `OPENAI_API_KEY`
 
 **Backend - Predictions:**
+
 - ❌ Migration: `create_ai_insights_table`
 - ❌ Model: `AIInsight.php`
 - ❌ Service: `OpenAIService.php` (client wrapper)
@@ -608,10 +653,12 @@
 - ❌ Resource: `AIInsightResource.php`
 
 **Backend - Alerts:**
+
 - ❌ Expandir: `AlertService.php` com tipo AI_PREDICTION
 - ❌ Adicionar métodos: checkAIPredictionAlerts()
 
 **Frontend:**
+
 - ❌ Page: `pages/dashboard/ai/predictions.tsx`
 - ❌ Page: `pages/dashboard/ai/insights.tsx`
 - ❌ Component: `components/ai/prediction-card.tsx`
@@ -624,12 +671,14 @@
 - ❌ Dashboard: Widget de insights
 
 **Rotas:**
+
 - ❌ GET `/dashboard/ai/predictions` (middleware: plan.feature:ai_predictions)
 - ❌ GET `/dashboard/ai/insights`
 - ❌ POST `/dashboard/ai/insights/generate`
 - ❌ PATCH `/dashboard/ai/insights/{insight}/read`
 
 **Features IA:**
+
 - ❌ Prever gastos do próximo mês
 - ❌ Prever por categoria (3 meses)
 - ❌ Detectar anomalias de gasto
@@ -641,6 +690,7 @@
 - ❌ Recomendações personalizadas
 
 **Segurança:**
+
 - ❌ Rate limiting
 - ❌ Cache de respostas (1 hora)
 - ❌ Validar inputs antes de enviar para API
@@ -655,18 +705,21 @@
 **Precisa Criar:**
 
 **Backend:**
+
 - ❌ Scope: `Transaction::scopeWithinHistoryLimit($query, User $user)`
 - ❌ Aplicar scope em: TransactionsController@index
 - ❌ Aplicar scope em: DashboardController (todos os métodos que buscam transactions)
 - ❌ Aplicar scope em: ReportsController (todos os métodos)
 
 **Config:**
+
 - ❌ Adicionar em `plan_limits.php`:
-  - Free: `'transactions_history_months' => 12`
-  - Premium: `'transactions_history_months' => -1`
-  - Family: `'transactions_history_months' => -1`
+    - Free: `'transactions_history_months' => 12`
+    - Premium: `'transactions_history_months' => -1`
+    - Family: `'transactions_history_months' => -1`
 
 **Lógica:**
+
 ```php
 // Em Transaction.php
 public function scopeWithinHistoryLimit($query, User $user)
@@ -692,21 +745,24 @@ public function scopeWithinHistoryLimit($query, User $user)
 **Precisa Criar:**
 
 **Backend:**
+
 - ❌ Migration: `add_exports_tracking_to_users_table`
-  - Campo: `exports_count` (integer, default 0)
-  - Campo: `exports_reset_at` (timestamp, nullable)
+    - Campo: `exports_count` (integer, default 0)
+    - Campo: `exports_reset_at` (timestamp, nullable)
 - ❌ Atualizar: User Model com métodos de exportação
 - ❌ Middleware ou Service: Verificar limite antes de exportar
 - ❌ Job: `ResetMonthlyExportsCount.php` (roda dia 1 de cada mês)
 - ❌ Atualizar: ExportService para incrementar contador
 
 **Config:**
+
 - ❌ Atualizar em `plan_limits.php`:
-  - Free: `'max_exports_per_month' => 5`
-  - Premium: `'max_exports_per_month' => -1`
-  - Family: `'max_exports_per_month' => -1`
+    - Free: `'max_exports_per_month' => 5`
+    - Premium: `'max_exports_per_month' => -1`
+    - Family: `'max_exports_per_month' => -1`
 
 **Lógica:**
+
 ```php
 // Em ExportService.php
 public function canExport(User $user): bool
@@ -740,6 +796,7 @@ public function incrementExportCount(User $user): void
 ```
 
 **Schedule:**
+
 ```php
 // Em routes/console.php
 Schedule::job(ResetMonthlyExportsCount::class)->monthly();
@@ -758,54 +815,56 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 #### 0.1 Atualizar Configuração de Limites
 
 - [x] **Arquivo:** `config/plan_limits.php` ✅ **CONCLUÍDO**
-  - ✅ Free: 1 carteira, 5 orçamentos, todas features novas adicionadas
-  - ✅ Premium: Wallets, Categories e Budgets ilimitados, todas features novas adicionadas
-  - ✅ Family: Todas as features configuradas corretamente
+    - ✅ Free: 1 carteira, 5 orçamentos, todas features novas adicionadas
+    - ✅ Premium: Wallets, Categories e Budgets ilimitados, todas features novas adicionadas
+    - ✅ Family: Todas as features configuradas corretamente
 
 #### 0.2 Aplicar Limite em Wallets
 
-- [ ] **Arquivo:** `app/Http/Controllers/Dashboard/WalletController.php`
-- [ ] **Método:** `store()`
-- [ ] **Adicionar antes de criar wallet:**
-  ```php
-  $currentCount = $request->user()->wallets()->count();
+- [x] **Arquivo:** `app/Http/Controllers/Dashboard/WalletsController.php`
+- [x] **Método:** `store()`
+- [x] **Adicionar antes de criar wallet:**
 
-  if (\App\Http\Middleware\CheckPlanFeature::hasReachedLimit($request, 'max_wallets', $currentCount)) {
-      \App\Facades\Toast::error('Você atingiu o limite de carteiras do seu plano.')
-          ->action('Fazer Upgrade', route('dashboard.subscription.plans'))
-          ->persistent();
+    ```php
+    $currentCount = $request->user()->wallets()->count();
 
-      return back();
-  }
-  ```
+    if (\App\Http\Middleware\CheckPlanFeature::hasReachedLimit($request, 'max_wallets', $currentCount)) {
+        \App\Facades\Toast::error('Você atingiu o limite de carteiras do seu plano.')
+            ->action('Fazer Upgrade', route('dashboard.subscription.plans'))
+            ->persistent();
+
+        return back();
+    }
+    ```
 
 #### 0.3 Aplicar Limite em Categories
 
-- [ ] **Arquivo:** `app/Http/Controllers/Dashboard/CategoryController.php`
-- [ ] **Método:** `store()`
-- [ ] **Adicionar antes de criar categoria:**
-  ```php
-  $currentCount = $request->user()->categories()->count();
+- [x] **Arquivo:** `app/Http/Controllers/Dashboard/CategoriesController.php`
+- [x] **Método:** `store()`
+- [x] **Adicionar antes de criar categoria:**
 
-  if (\App\Http\Middleware\CheckPlanFeature::hasReachedLimit($request, 'max_categories', $currentCount)) {
-      \App\Facades\Toast::error('Você atingiu o limite de categorias do seu plano.')
-          ->action('Fazer Upgrade', route('dashboard.subscription.plans'))
-          ->persistent();
+    ```php
+    $currentCount = $request->user()->categories()->count();
 
-      return back();
-  }
-  ```
+    if (\App\Http\Middleware\CheckPlanFeature::hasReachedLimit($request, 'max_categories', $currentCount)) {
+        \App\Facades\Toast::error('Você atingiu o limite de categorias do seu plano.')
+            ->action('Fazer Upgrade', route('dashboard.subscription.plans'))
+            ->persistent();
+
+        return back();
+    }
+    ```
 
 #### 0.4 Testar Limites
 
 - [ ] **Criar testes:**
-  - `tests/Feature/WalletLimitTest.php`
-  - `tests/Feature/CategoryLimitTest.php`
-- [ ] **Testar manualmente:**
-  - Plano Free: Criar 3 carteiras, tentar 4ª (deve bloquear)
-  - Plano Free: Criar 10 categorias, tentar 11ª (deve bloquear)
-  - Plano Premium: Criar 50+ carteiras (deve permitir)
-  - Plano Family: Criar 100+ categorias (deve permitir)
+    - [x] Criar `tests/Feature/PlanLimits/WalletLimitTest.php`
+    - [x] Criar `tests/Feature/PlanLimits/CategoryLimitTest.php`
+    - [x] Tentar criar mais carteiras que o permitido (Plano Free: 1)
+    - [x] Tentar criar mais categorias que o permitido (Plano Free: 10)
+    - [x] Verificar toast de erro e redirecionamento
+    - Plano Premium: Criar 50+ carteiras (deve permitir)
+    - Plano Family: Criar 100+ categorias (deve permitir)
 
 ---
 
@@ -818,309 +877,318 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 #### 1.1 Backend - Database
 
 - [ ] **Criar Migration:** `database/migrations/xxxx_create_tags_table.php`
-  ```php
-  Schema::create('tags', function (Blueprint $table) {
-      $table->id();
-      $table->uuid('uuid')->unique();
-      $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-      $table->string('name');
-      $table->string('color', 7)->default('#3B82F6'); // Hex color
-      $table->timestamps();
 
-      $table->unique(['user_id', 'name']); // Evitar duplicatas
-      $table->index('user_id');
-  });
-  ```
+    ```php
+    Schema::create('tags', function (Blueprint $table) {
+        $table->id();
+        $table->uuid('uuid')->unique();
+        $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+        $table->string('name');
+        $table->string('color', 7)->default('#3B82F6'); // Hex color
+        $table->timestamps();
+
+        $table->unique(['user_id', 'name']); // Evitar duplicatas
+        $table->index('user_id');
+    });
+    ```
 
 - [ ] **Criar Migration:** `database/migrations/xxxx_create_taggables_table.php`
-  ```php
-  Schema::create('taggables', function (Blueprint $table) {
-      $table->foreignId('tag_id')->constrained()->cascadeOnDelete();
-      $table->morphs('taggable'); // taggable_id, taggable_type
-      $table->timestamps();
 
-      $table->unique(['tag_id', 'taggable_id', 'taggable_type']);
-  });
-  ```
+    ```php
+    Schema::create('taggables', function (Blueprint $table) {
+        $table->foreignId('tag_id')->constrained()->cascadeOnDelete();
+        $table->morphs('taggable'); // taggable_id, taggable_type
+        $table->timestamps();
+
+        $table->unique(['tag_id', 'taggable_id', 'taggable_type']);
+    });
+    ```
 
 - [ ] **Rodar migrations:** `php artisan migrate`
 
 #### 1.2 Backend - Models
 
 - [ ] **Criar Model:** `app/Models/Tag.php`
-  ```php
-  <?php
-  namespace App\Models;
 
-  use App\Traits\HasUuidCustom;
-  use Illuminate\Database\Eloquent\Model;
+    ```php
+    <?php
+    namespace App\Models;
 
-  class Tag extends Model
-  {
-      use HasUuidCustom;
+    use App\Traits\HasUuidCustom;
+    use Illuminate\Database\Eloquent\Model;
 
-      protected $fillable = ['uuid', 'user_id', 'name', 'color'];
+    class Tag extends Model
+    {
+        use HasUuidCustom;
 
-      public function user()
-      {
-          return $this->belongsTo(User::class);
-      }
+        protected $fillable = ['uuid', 'user_id', 'name', 'color'];
 
-      public function transactions()
-      {
-          return $this->morphedByMany(Transaction::class, 'taggable');
-      }
+        public function user()
+        {
+            return $this->belongsTo(User::class);
+        }
 
-      public function accounts()
-      {
-          return $this->morphedByMany(Account::class, 'taggable');
-      }
+        public function transactions()
+        {
+            return $this->morphedByMany(Transaction::class, 'taggable');
+        }
 
-      public function incomes()
-      {
-          return $this->morphedByMany(Income::class, 'taggable');
-      }
+        public function accounts()
+        {
+            return $this->morphedByMany(Account::class, 'taggable');
+        }
 
-      public function budgets()
-      {
-          return $this->morphedByMany(Budget::class, 'taggable');
-      }
-  }
-  ```
+        public function incomes()
+        {
+            return $this->morphedByMany(Income::class, 'taggable');
+        }
+
+        public function budgets()
+        {
+            return $this->morphedByMany(Budget::class, 'taggable');
+        }
+    }
+    ```
 
 - [ ] **Criar Trait:** `app/Traits/HasTags.php`
-  ```php
-  <?php
-  namespace App\Traits;
 
-  use App\Models\Tag;
+    ```php
+    <?php
+    namespace App\Traits;
 
-  trait HasTags
-  {
-      public function tags()
-      {
-          return $this->morphToMany(Tag::class, 'taggable');
-      }
+    use App\Models\Tag;
 
-      public function attachTag($tag)
-      {
-          $this->tags()->attach($tag);
-      }
+    trait HasTags
+    {
+        public function tags()
+        {
+            return $this->morphToMany(Tag::class, 'taggable');
+        }
 
-      public function detachTag($tag)
-      {
-          $this->tags()->detach($tag);
-      }
+        public function attachTag($tag)
+        {
+            $this->tags()->attach($tag);
+        }
 
-      public function syncTags($tags)
-      {
-          $this->tags()->sync($tags);
-      }
-  }
-  ```
+        public function detachTag($tag)
+        {
+            $this->tags()->detach($tag);
+        }
+
+        public function syncTags($tags)
+        {
+            $this->tags()->sync($tags);
+        }
+    }
+    ```
 
 - [ ] **Adicionar trait em models:**
-  - `app/Models/Transaction.php` - adicionar `use HasTags;`
-  - `app/Models/Account.php` - adicionar `use HasTags;`
-  - `app/Models/Income.php` - adicionar `use HasTags;`
-  - `app/Models/Budget.php` - adicionar `use HasTags;`
+    - `app/Models/Transaction.php` - adicionar `use HasTags;`
+    - `app/Models/Account.php` - adicionar `use HasTags;`
+    - `app/Models/Income.php` - adicionar `use HasTags;`
+    - `app/Models/Budget.php` - adicionar `use HasTags;`
 
 #### 1.3 Backend - Service
 
 - [ ] **Criar Service:** `app/Domain/Tags/Services/TagService.php`
-  ```php
-  <?php
-  namespace App\Domain\Tags\Services;
 
-  use App\Models\Tag;
-  use App\Models\User;
+    ```php
+    <?php
+    namespace App\Domain\Tags\Services;
 
-  class TagService
-  {
-      public function getUserTags(User $user)
-      {
-          return $user->tags()->orderBy('name')->get();
-      }
+    use App\Models\Tag;
+    use App\Models\User;
 
-      public function create(User $user, array $data): Tag
-      {
-          return $user->tags()->create($data);
-      }
+    class TagService
+    {
+        public function getUserTags(User $user)
+        {
+            return $user->tags()->orderBy('name')->get();
+        }
 
-      public function update(Tag $tag, array $data): Tag
-      {
-          $tag->update($data);
-          return $tag->fresh();
-      }
+        public function create(User $user, array $data): Tag
+        {
+            return $user->tags()->create($data);
+        }
 
-      public function delete(Tag $tag): bool
-      {
-          return $tag->delete();
-      }
-  }
-  ```
+        public function update(Tag $tag, array $data): Tag
+        {
+            $tag->update($data);
+            return $tag->fresh();
+        }
+
+        public function delete(Tag $tag): bool
+        {
+            return $tag->delete();
+        }
+    }
+    ```
 
 #### 1.4 Backend - Controller
 
 - [ ] **Criar Controller:** `app/Http/Controllers/Dashboard/TagsController.php`
-  ```php
-  <?php
-  namespace App\Http\Controllers\Dashboard;
 
-  use App\Domain\Tags\Services\TagService;
-  use App\Http\Controllers\Controller;
-  use App\Models\Tag;
-  use Illuminate\Http\Request;
-  use Inertia\Inertia;
+    ```php
+    <?php
+    namespace App\Http\Controllers\Dashboard;
 
-  class TagsController extends Controller
-  {
-      public function __construct(protected TagService $tagService) {}
+    use App\Domain\Tags\Services\TagService;
+    use App\Http\Controllers\Controller;
+    use App\Models\Tag;
+    use Illuminate\Http\Request;
+    use Inertia\Inertia;
 
-      public function index(Request $request)
-      {
-          $tags = $this->tagService->getUserTags($request->user());
+    class TagsController extends Controller
+    {
+        public function __construct(protected TagService $tagService) {}
 
-          return Inertia::render('dashboard/tags/index', [
-              'tags' => $tags,
-          ]);
-      }
+        public function index(Request $request)
+        {
+            $tags = $this->tagService->getUserTags($request->user());
 
-      public function store(Request $request)
-      {
-          $currentCount = $request->user()->tags()->count();
+            return Inertia::render('dashboard/tags/index', [
+                'tags' => $tags,
+            ]);
+        }
 
-          if (\App\Http\Middleware\CheckPlanFeature::hasReachedLimit($request, 'max_tags', $currentCount)) {
-              \App\Facades\Toast::error('Você atingiu o limite de tags do seu plano.')
-                  ->action('Fazer Upgrade', route('dashboard.subscription.plans'))
-                  ->persistent();
+        public function store(Request $request)
+        {
+            $currentCount = $request->user()->tags()->count();
 
-              return back();
-          }
+            if (\App\Http\Middleware\CheckPlanFeature::hasReachedLimit($request, 'max_tags', $currentCount)) {
+                \App\Facades\Toast::error('Você atingiu o limite de tags do seu plano.')
+                    ->action('Fazer Upgrade', route('dashboard.subscription.plans'))
+                    ->persistent();
 
-          $validated = $request->validate([
-              'name' => 'required|string|max:50',
-              'color' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
-          ]);
+                return back();
+            }
 
-          $this->tagService->create($request->user(), $validated);
+            $validated = $request->validate([
+                'name' => 'required|string|max:50',
+                'color' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
+            ]);
 
-          \App\Facades\Toast::success('Tag criada com sucesso!');
+            $this->tagService->create($request->user(), $validated);
 
-          return back();
-      }
+            \App\Facades\Toast::success('Tag criada com sucesso!');
 
-      public function update(Request $request, Tag $tag)
-      {
-          $this->authorize('update', $tag);
+            return back();
+        }
 
-          $validated = $request->validate([
-              'name' => 'required|string|max:50',
-              'color' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
-          ]);
+        public function update(Request $request, Tag $tag)
+        {
+            $this->authorize('update', $tag);
 
-          $this->tagService->update($tag, $validated);
+            $validated = $request->validate([
+                'name' => 'required|string|max:50',
+                'color' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
+            ]);
 
-          \App\Facades\Toast::success('Tag atualizada com sucesso!');
+            $this->tagService->update($tag, $validated);
 
-          return back();
-      }
+            \App\Facades\Toast::success('Tag atualizada com sucesso!');
 
-      public function destroy(Tag $tag)
-      {
-          $this->authorize('delete', $tag);
+            return back();
+        }
 
-          $this->tagService->delete($tag);
+        public function destroy(Tag $tag)
+        {
+            $this->authorize('delete', $tag);
 
-          \App\Facades\Toast::success('Tag excluída com sucesso!');
+            $this->tagService->delete($tag);
 
-          return back();
-      }
-  }
-  ```
+            \App\Facades\Toast::success('Tag excluída com sucesso!');
+
+            return back();
+        }
+    }
+    ```
 
 #### 1.5 Backend - Policy
 
 - [ ] **Criar Policy:** `app/Policies/TagPolicy.php`
-  ```php
-  <?php
-  namespace App\Policies;
 
-  use App\Models\Tag;
-  use App\Models\User;
+    ```php
+    <?php
+    namespace App\Policies;
 
-  class TagPolicy
-  {
-      public function viewAny(User $user): bool
-      {
-          return true;
-      }
+    use App\Models\Tag;
+    use App\Models\User;
 
-      public function view(User $user, Tag $tag): bool
-      {
-          return $user->id === $tag->user_id;
-      }
+    class TagPolicy
+    {
+        public function viewAny(User $user): bool
+        {
+            return true;
+        }
 
-      public function create(User $user): bool
-      {
-          return true;
-      }
+        public function view(User $user, Tag $tag): bool
+        {
+            return $user->id === $tag->user_id;
+        }
 
-      public function update(User $user, Tag $tag): bool
-      {
-          return $user->id === $tag->user_id;
-      }
+        public function create(User $user): bool
+        {
+            return true;
+        }
 
-      public function delete(User $user, Tag $tag): bool
-      {
-          return $user->id === $tag->user_id;
-      }
-  }
-  ```
+        public function update(User $user, Tag $tag): bool
+        {
+            return $user->id === $tag->user_id;
+        }
+
+        public function delete(User $user, Tag $tag): bool
+        {
+            return $user->id === $tag->user_id;
+        }
+    }
+    ```
 
 #### 1.6 Backend - Routes
 
 - [ ] **Adicionar em:** `routes/web.php`
-  ```php
-  Route::middleware(['auth'])->prefix('dashboard')->group(function () {
-      // Tags (Premium/Family)
-      Route::middleware('plan.feature:max_tags')->group(function () {
-          Route::get('/tags', [TagsController::class, 'index'])->name('dashboard.tags.index');
-          Route::post('/tags', [TagsController::class, 'store'])->name('dashboard.tags.store');
-          Route::patch('/tags/{tag}', [TagsController::class, 'update'])->name('dashboard.tags.update');
-          Route::delete('/tags/{tag}', [TagsController::class, 'destroy'])->name('dashboard.tags.destroy');
-      });
-  });
-  ```
+
+    ```php
+    Route::middleware(['auth'])->prefix('dashboard')->group(function () {
+        // Tags (Premium/Family)
+        Route::middleware('plan.feature:max_tags')->group(function () {
+            Route::get('/tags', [TagsController::class, 'index'])->name('dashboard.tags.index');
+            Route::post('/tags', [TagsController::class, 'store'])->name('dashboard.tags.store');
+            Route::patch('/tags/{tag}', [TagsController::class, 'update'])->name('dashboard.tags.update');
+            Route::delete('/tags/{tag}', [TagsController::class, 'destroy'])->name('dashboard.tags.destroy');
+        });
+    });
+    ```
 
 - [ ] **Gerar rotas Wayfinder:** `php artisan wayfinder:generate`
 
 #### 1.7 Frontend - Components
 
 - [ ] **Criar Component:** `resources/js/components/tags/tag-badge.tsx`
-  ```typescript
-  interface TagBadgeProps {
-    name: string;
-    color: string;
-    onRemove?: () => void;
-  }
 
-  export function TagBadge({ name, color, onRemove }: TagBadgeProps) {
-    return (
-      <span
-        className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium"
-        style={{ backgroundColor: color + '20', color: color }}
-      >
-        {name}
-        {onRemove && (
-          <button onClick={onRemove} className="hover:opacity-70">
-            <X className="h-3 w-3" />
-          </button>
-        )}
-      </span>
-    );
-  }
-  ```
+    ```typescript
+    interface TagBadgeProps {
+      name: string;
+      color: string;
+      onRemove?: () => void;
+    }
+
+    export function TagBadge({ name, color, onRemove }: TagBadgeProps) {
+      return (
+        <span
+          className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium"
+          style={{ backgroundColor: color + '20', color: color }}
+        >
+          {name}
+          {onRemove && (
+            <button onClick={onRemove} className="hover:opacity-70">
+              <X className="h-3 w-3" />
+            </button>
+          )}
+        </span>
+      );
+    }
+    ```
 
 - [ ] **Criar Component:** `resources/js/components/tags/tag-input.tsx` (multi-select com criação inline)
 
@@ -1133,20 +1201,20 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 #### 1.9 Atualizar Forms Existentes
 
 - [ ] **Adicionar tag input em:**
-  - `resources/js/pages/dashboard/transactions/form.tsx`
-  - `resources/js/pages/dashboard/accounts/form.tsx`
-  - `resources/js/pages/dashboard/incomes/form.tsx`
-  - `resources/js/pages/dashboard/budgets/form.tsx`
+    - `resources/js/pages/dashboard/transactions/form.tsx`
+    - `resources/js/pages/dashboard/accounts/form.tsx`
+    - `resources/js/pages/dashboard/incomes/form.tsx`
+    - `resources/js/pages/dashboard/budgets/form.tsx`
 
 #### 1.10 Testes
 
 - [ ] **Criar:** `tests/Feature/TagsTest.php`
 - [ ] **Testar:**
-  - Criar tag (Premium OK, Free bloqueado)
-  - Atualizar tag (apenas owner)
-  - Deletar tag
-  - Limite de tags por plano
-  - Associar tag a transaction/account/income/budget
+    - Criar tag (Premium OK, Free bloqueado)
+    - Atualizar tag (apenas owner)
+    - Deletar tag
+    - Limite de tags por plano
+    - Associar tag a transaction/account/income/budget
 
 ---
 
@@ -1159,136 +1227,138 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 #### 2.1 Backend - Database
 
 - [ ] **Criar Migration:** `database/migrations/xxxx_create_savings_goals_table.php`
-  ```php
-  Schema::create('savings_goals', function (Blueprint $table) {
-      $table->id();
-      $table->uuid('uuid')->unique();
-      $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-      $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
-      $table->string('name');
-      $table->text('description')->nullable();
-      $table->bigInteger('target_amount_cents');
-      $table->bigInteger('current_amount_cents')->default(0);
-      $table->date('target_date')->nullable();
-      $table->string('icon')->default('🎯');
-      $table->string('color', 7)->default('#10B981');
-      $table->boolean('is_active')->default(true);
-      $table->timestamps();
 
-      $table->index('user_id');
-      $table->index('is_active');
-  });
-  ```
+    ```php
+    Schema::create('savings_goals', function (Blueprint $table) {
+        $table->id();
+        $table->uuid('uuid')->unique();
+        $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+        $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
+        $table->string('name');
+        $table->text('description')->nullable();
+        $table->bigInteger('target_amount_cents');
+        $table->bigInteger('current_amount_cents')->default(0);
+        $table->date('target_date')->nullable();
+        $table->string('icon')->default('🎯');
+        $table->string('color', 7)->default('#10B981');
+        $table->boolean('is_active')->default(true);
+        $table->timestamps();
+
+        $table->index('user_id');
+        $table->index('is_active');
+    });
+    ```
 
 - [ ] **Rodar migration:** `php artisan migrate`
 
 #### 2.2 Backend - Model
 
 - [ ] **Criar Model:** `app/Models/SavingsGoal.php`
-  ```php
-  <?php
-  namespace App\Models;
 
-  use App\Traits\HasUuidCustom;
-  use App\Traits\HasMoneyAccessors;
-  use Illuminate\Database\Eloquent\Model;
-  use Illuminate\Database\Eloquent\Casts\Attribute;
+    ```php
+    <?php
+    namespace App\Models;
 
-  class SavingsGoal extends Model
-  {
-      use HasUuidCustom, HasMoneyAccessors;
+    use App\Traits\HasUuidCustom;
+    use App\Traits\HasMoneyAccessors;
+    use Illuminate\Database\Eloquent\Model;
+    use Illuminate\Database\Eloquent\Casts\Attribute;
 
-      protected $fillable = [
-          'uuid', 'user_id', 'category_id', 'name', 'description',
-          'target_amount_cents', 'current_amount_cents', 'target_date',
-          'icon', 'color', 'is_active'
-      ];
+    class SavingsGoal extends Model
+    {
+        use HasUuidCustom, HasMoneyAccessors;
 
-      protected $casts = [
-          'target_amount_cents' => 'integer',
-          'current_amount_cents' => 'integer',
-          'target_date' => 'date',
-          'is_active' => 'boolean',
-      ];
+        protected $fillable = [
+            'uuid', 'user_id', 'category_id', 'name', 'description',
+            'target_amount_cents', 'current_amount_cents', 'target_date',
+            'icon', 'color', 'is_active'
+        ];
 
-      // Relationships
-      public function user()
-      {
-          return $this->belongsTo(User::class);
-      }
+        protected $casts = [
+            'target_amount_cents' => 'integer',
+            'current_amount_cents' => 'integer',
+            'target_date' => 'date',
+            'is_active' => 'boolean',
+        ];
 
-      public function category()
-      {
-          return $this->belongsTo(Category::class);
-      }
+        // Relationships
+        public function user()
+        {
+            return $this->belongsTo(User::class);
+        }
 
-      // Accessors
-      protected function progressPercentage(): Attribute
-      {
-          return Attribute::make(
-              get: fn () => $this->target_amount_cents > 0
-                  ? min(100, round(($this->current_amount_cents / $this->target_amount_cents) * 100, 2))
-                  : 0
-          );
-      }
+        public function category()
+        {
+            return $this->belongsTo(Category::class);
+        }
 
-      protected function remainingAmount(): Attribute
-      {
-          return Attribute::make(
-              get: fn () => max(0, $this->target_amount_cents - $this->current_amount_cents)
-          );
-      }
+        // Accessors
+        protected function progressPercentage(): Attribute
+        {
+            return Attribute::make(
+                get: fn () => $this->target_amount_cents > 0
+                    ? min(100, round(($this->current_amount_cents / $this->target_amount_cents) * 100, 2))
+                    : 0
+            );
+        }
 
-      protected function remainingAmountFormatted(): Attribute
-      {
-          return Attribute::make(
-              get: fn () => $this->formatCentsAsBRL($this->remaining_amount)
-          );
-      }
+        protected function remainingAmount(): Attribute
+        {
+            return Attribute::make(
+                get: fn () => max(0, $this->target_amount_cents - $this->current_amount_cents)
+            );
+        }
 
-      protected function daysRemaining(): Attribute
-      {
-          return Attribute::make(
-              get: fn () => $this->target_date ? now()->diffInDays($this->target_date, false) : null
-          );
-      }
+        protected function remainingAmountFormatted(): Attribute
+        {
+            return Attribute::make(
+                get: fn () => $this->formatCentsAsBRL($this->remaining_amount)
+            );
+        }
 
-      // Methods
-      public function addProgress(int $amountCents): self
-      {
-          $this->increment('current_amount_cents', $amountCents);
+        protected function daysRemaining(): Attribute
+        {
+            return Attribute::make(
+                get: fn () => $this->target_date ? now()->diffInDays($this->target_date, false) : null
+            );
+        }
 
-          if ($this->current_amount_cents >= $this->target_amount_cents) {
-              $this->complete();
-          }
+        // Methods
+        public function addProgress(int $amountCents): self
+        {
+            $this->increment('current_amount_cents', $amountCents);
 
-          return $this->fresh();
-      }
+            if ($this->current_amount_cents >= $this->target_amount_cents) {
+                $this->complete();
+            }
 
-      public function removeProgress(int $amountCents): self
-      {
-          $this->decrement('current_amount_cents', $amountCents);
-          return $this->fresh();
-      }
+            return $this->fresh();
+        }
 
-      public function complete(): self
-      {
-          $this->update(['is_active' => false]);
-          return $this->fresh();
-      }
+        public function removeProgress(int $amountCents): self
+        {
+            $this->decrement('current_amount_cents', $amountCents);
+            return $this->fresh();
+        }
 
-      // Scopes
-      public function scopeActive($query)
-      {
-          return $query->where('is_active', true);
-      }
+        public function complete(): self
+        {
+            $this->update(['is_active' => false]);
+            return $this->fresh();
+        }
 
-      public function scopeCompleted($query)
-      {
-          return $query->where('is_active', false);
-      }
-  }
-  ```
+        // Scopes
+        public function scopeActive($query)
+        {
+            return $query->where('is_active', true);
+        }
+
+        public function scopeCompleted($query)
+        {
+            return $query->where('is_active', false);
+        }
+    }
+    ```
 
 #### 2.3 Backend - Service
 
@@ -1311,13 +1381,13 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 #### 2.7 Backend - Routes
 
 - [ ] **Adicionar em:** `routes/web.php`
-  ```php
-  Route::middleware('plan.feature:max_savings_goals')->group(function () {
-      Route::resource('/savings-goals', SavingsGoalsController::class);
-      Route::post('/savings-goals/{savingsGoal}/contribute', [SavingsGoalsController::class, 'addContribution'])
-          ->name('dashboard.savings-goals.contribute');
-  });
-  ```
+    ```php
+    Route::middleware('plan.feature:max_savings_goals')->group(function () {
+        Route::resource('/savings-goals', SavingsGoalsController::class);
+        Route::post('/savings-goals/{savingsGoal}/contribute', [SavingsGoalsController::class, 'addContribution'])
+            ->name('dashboard.savings-goals.contribute');
+    });
+    ```
 
 #### 2.8 Frontend - Components
 
@@ -1359,16 +1429,17 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 #### 3.2 Backend - Storage
 
 - [ ] **Configurar em:** `config/filesystems.php`
-  ```php
-  'disks' => [
-      'attachments' => [
-          'driver' => 'local',
-          'root' => storage_path('app/attachments'),
-          'url' => env('APP_URL').'/storage/attachments',
-          'visibility' => 'private',
-      ],
-  ],
-  ```
+
+    ```php
+    'disks' => [
+        'attachments' => [
+            'driver' => 'local',
+            'root' => storage_path('app/attachments'),
+            'url' => env('APP_URL').'/storage/attachments',
+            'visibility' => 'private',
+        ],
+    ],
+    ```
 
 - [ ] **Criar link simbólico:** `php artisan storage:link`
 
@@ -1381,34 +1452,35 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 #### 3.4 Backend - Service
 
 - [ ] **Criar Service:** `app/Domain/Attachments/Services/AttachmentService.php`
-  ```php
-  public function upload(User $user, $file, $attachable): Attachment
-  {
-      // Verificar limite do plano
-      $currentCount = $user->attachments()->count();
-      if (CheckPlanFeature::hasReachedLimit($request, 'max_attachments', $currentCount)) {
-          throw new \Exception('Limite de anexos atingido');
-      }
 
-      // Validar tipo e tamanho
-      $this->validateFile($file);
+    ```php
+    public function upload(User $user, $file, $attachable): Attachment
+    {
+        // Verificar limite do plano
+        $currentCount = $user->attachments()->count();
+        if (CheckPlanFeature::hasReachedLimit($request, 'max_attachments', $currentCount)) {
+            throw new \Exception('Limite de anexos atingido');
+        }
 
-      // Upload
-      $path = $file->store('attachments', 'attachments');
+        // Validar tipo e tamanho
+        $this->validateFile($file);
 
-      // Criar registro
-      return Attachment::create([
-          'user_id' => $user->id,
-          'attachable_id' => $attachable->id,
-          'attachable_type' => get_class($attachable),
-          'original_name' => $file->getClientOriginalName(),
-          'file_name' => basename($path),
-          'file_path' => $path,
-          'mime_type' => $file->getMimeType(),
-          'file_size' => $file->getSize(),
-      ]);
-  }
-  ```
+        // Upload
+        $path = $file->store('attachments', 'attachments');
+
+        // Criar registro
+        return Attachment::create([
+            'user_id' => $user->id,
+            'attachable_id' => $attachable->id,
+            'attachable_type' => get_class($attachable),
+            'original_name' => $file->getClientOriginalName(),
+            'file_name' => basename($path),
+            'file_path' => $path,
+            'mime_type' => $file->getMimeType(),
+            'file_size' => $file->getSize(),
+        ]);
+    }
+    ```
 
 #### 3.5 Backend - Controller
 
@@ -1417,14 +1489,14 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 #### 3.6 Backend - Validation
 
 - [ ] **Criar Request:** `app/Http/Requests/StoreAttachmentRequest.php`
-  ```php
-  public function rules()
-  {
-      return [
-          'file' => 'required|file|max:5120|mimes:pdf,jpg,jpeg,png', // 5MB
-      ];
-  }
-  ```
+    ```php
+    public function rules()
+    {
+        return [
+            'file' => 'required|file|max:5120|mimes:pdf,jpg,jpeg,png', // 5MB
+        ];
+    }
+    ```
 
 #### 3.7 Backend - Policy
 
@@ -1443,21 +1515,21 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 #### 3.10 Atualizar Forms
 
 - [ ] **Adicionar upload em:**
-  - Transaction form
-  - Account form
-  - Income form
+    - Transaction form
+    - Account form
+    - Income form
 - [ ] **Adicionar campo notes em:**
-  - Transaction form
-  - Account form
-  - Income form
+    - Transaction form
+    - Account form
+    - Income form
 
 #### 3.11 Segurança
 
 - [ ] **Implementar:**
-  - Validação de ownership no download
-  - Sanitização de nomes de arquivos
-  - Validação de MIME types
-  - Proteção contra directory traversal
+    - Validação de ownership no download
+    - Sanitização de nomes de arquivos
+    - Validação de MIME types
+    - Proteção contra directory traversal
 
 #### 3.12 Testes
 
@@ -1474,31 +1546,33 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 #### 4.1 Backend - Scope
 
 - [ ] **Adicionar em:** `app/Models/Transaction.php`
-  ```php
-  public function scopeWithinHistoryLimit($query, User $user)
-  {
-      $limits = $user->getPlanLimits();
-      $historyLimit = $limits['transactions_history_months'] ?? -1;
 
-      if ($historyLimit === -1) {
-          return $query; // Ilimitado
-      }
+    ```php
+    public function scopeWithinHistoryLimit($query, User $user)
+    {
+        $limits = $user->getPlanLimits();
+        $historyLimit = $limits['transactions_history_months'] ?? -1;
 
-      $cutoffDate = now()->subMonths($historyLimit);
-      return $query->where('created_at', '>=', $cutoffDate);
-  }
-  ```
+        if ($historyLimit === -1) {
+            return $query; // Ilimitado
+        }
+
+        $cutoffDate = now()->subMonths($historyLimit);
+        return $query->where('created_at', '>=', $cutoffDate);
+    }
+    ```
 
 #### 4.2 Aplicar Scope nos Controllers
 
 - [ ] **Atualizar:** `app/Http/Controllers/Dashboard/TransactionsController.php@index`
-  ```php
-  $transactions = QueryBuilder::for(Transaction::class)
-      ->where('user_id', auth()->id())
-      ->withinHistoryLimit(auth()->user()) // ➕ ADICIONAR
-      ->allowedFilters([...])
-      ->paginate();
-  ```
+
+    ```php
+    $transactions = QueryBuilder::for(Transaction::class)
+        ->where('user_id', auth()->id())
+        ->withinHistoryLimit(auth()->user()) // ➕ ADICIONAR
+        ->allowedFilters([...])
+        ->paginate();
+    ```
 
 - [ ] **Atualizar:** `app/Http/Controllers/Dashboard/DashboardController.php` (todos os métodos que buscam transactions)
 
@@ -1507,25 +1581,25 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 #### 4.3 Frontend - Aviso
 
 - [ ] **Adicionar aviso em:** `pages/dashboard/transactions/index.tsx`
-  ```typescript
-  {user.currentSubscription?.plan?.slug === 'free' && (
-    <Alert>
-      <InfoIcon className="h-4 w-4" />
-      <AlertDescription>
-        Plano Free: Exibindo transações dos últimos 12 meses.
-        Faça upgrade para acesso ilimitado.
-      </AlertDescription>
-    </Alert>
-  )}
-  ```
+    ```typescript
+    {user.currentSubscription?.plan?.slug === 'free' && (
+      <Alert>
+        <InfoIcon className="h-4 w-4" />
+        <AlertDescription>
+          Plano Free: Exibindo transações dos últimos 12 meses.
+          Faça upgrade para acesso ilimitado.
+        </AlertDescription>
+      </Alert>
+    )}
+    ```
 
 #### 4.4 Testes
 
 - [ ] **Criar:** `tests/Feature/TransactionHistoryLimitTest.php`
 - [ ] **Testar:**
-  - Free: Apenas 12 meses visíveis
-  - Premium: Todas as transações visíveis
-  - Family: Todas as transações visíveis
+    - Free: Apenas 12 meses visíveis
+    - Premium: Todas as transações visíveis
+    - Family: Todas as transações visíveis
 
 ---
 
@@ -1538,103 +1612,107 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 #### 5.1 Backend - Migration
 
 - [ ] **Criar Migration:** `database/migrations/xxxx_add_exports_tracking_to_users_table.php`
-  ```php
-  Schema::table('users', function (Blueprint $table) {
-      $table->integer('exports_count')->default(0);
-      $table->timestamp('exports_reset_at')->nullable();
-  });
-  ```
+
+    ```php
+    Schema::table('users', function (Blueprint $table) {
+        $table->integer('exports_count')->default(0);
+        $table->timestamp('exports_reset_at')->nullable();
+    });
+    ```
 
 - [ ] **Rodar:** `php artisan migrate`
 
 #### 5.2 Backend - User Model
 
 - [ ] **Adicionar métodos em:** `app/Models/User.php`
-  ```php
-  public function canExport(): bool
-  {
-      $limits = $this->getPlanLimits();
-      $maxExports = $limits['max_exports_per_month'] ?? -1;
 
-      if ($maxExports === -1) {
-          return true; // Ilimitado
-      }
+    ```php
+    public function canExport(): bool
+    {
+        $limits = $this->getPlanLimits();
+        $maxExports = $limits['max_exports_per_month'] ?? -1;
 
-      // Reset contador se passou o mês
-      if ($this->exports_reset_at && $this->exports_reset_at->isPast()) {
-          $this->resetExportsCount();
-      }
+        if ($maxExports === -1) {
+            return true; // Ilimitado
+        }
 
-      return $this->exports_count < $maxExports;
-  }
+        // Reset contador se passou o mês
+        if ($this->exports_reset_at && $this->exports_reset_at->isPast()) {
+            $this->resetExportsCount();
+        }
 
-  public function incrementExportCount(): void
-  {
-      $this->increment('exports_count');
+        return $this->exports_count < $maxExports;
+    }
 
-      if (!$this->exports_reset_at) {
-          $this->update(['exports_reset_at' => now()->addMonth()]);
-      }
-  }
+    public function incrementExportCount(): void
+    {
+        $this->increment('exports_count');
 
-  public function resetExportsCount(): void
-  {
-      $this->update([
-          'exports_count' => 0,
-          'exports_reset_at' => now()->addMonth(),
-      ]);
-  }
-  ```
+        if (!$this->exports_reset_at) {
+            $this->update(['exports_reset_at' => now()->addMonth()]);
+        }
+    }
+
+    public function resetExportsCount(): void
+    {
+        $this->update([
+            'exports_count' => 0,
+            'exports_reset_at' => now()->addMonth(),
+        ]);
+    }
+    ```
 
 #### 5.3 Backend - Atualizar Export Controllers
 
 - [ ] **Atualizar todos os controllers de export:**
-  - `app/Http/Controllers/Dashboard/ExportsController.php`
-  - Adicionar verificação antes de exportar:
-  ```php
-  if (!auth()->user()->canExport()) {
-      Toast::error('Você atingiu o limite de exportações deste mês.')
-          ->action('Fazer Upgrade', route('dashboard.subscription.plans'))
-          ->persistent();
+    - `app/Http/Controllers/Dashboard/ExportsController.php`
+    - Adicionar verificação antes de exportar:
 
-      return back();
-  }
+    ```php
+    if (!auth()->user()->canExport()) {
+        Toast::error('Você atingiu o limite de exportações deste mês.')
+            ->action('Fazer Upgrade', route('dashboard.subscription.plans'))
+            ->persistent();
 
-  // ... exportar ...
+        return back();
+    }
 
-  auth()->user()->incrementExportCount();
-  ```
+    // ... exportar ...
+
+    auth()->user()->incrementExportCount();
+    ```
 
 #### 5.4 Backend - Job de Reset
 
 - [ ] **Criar Job:** `app/Jobs/ResetMonthlyExportsCount.php`
-  ```php
-  public function handle()
-  {
-      User::whereNotNull('exports_reset_at')
-          ->where('exports_reset_at', '<=', now())
-          ->update([
-              'exports_count' => 0,
-              'exports_reset_at' => now()->addMonth(),
-          ]);
-  }
-  ```
+
+    ```php
+    public function handle()
+    {
+        User::whereNotNull('exports_reset_at')
+            ->where('exports_reset_at', '<=', now())
+            ->update([
+                'exports_count' => 0,
+                'exports_reset_at' => now()->addMonth(),
+            ]);
+    }
+    ```
 
 - [ ] **Agendar em:** `routes/console.php`
-  ```php
-  Schedule::job(ResetMonthlyExportsCount::class)->monthly();
-  ```
+    ```php
+    Schedule::job(ResetMonthlyExportsCount::class)->monthly();
+    ```
 
 #### 5.5 Frontend - Indicador
 
 - [ ] **Adicionar em botões de export:**
-  ```typescript
-  {user.currentSubscription?.plan?.slug === 'free' && (
-    <p className="text-xs text-muted-foreground">
-      {user.exports_count}/5 exportações este mês
-    </p>
-  )}
-  ```
+    ```typescript
+    {user.currentSubscription?.plan?.slug === 'free' && (
+      <p className="text-xs text-muted-foreground">
+        {user.exports_count}/5 exportações este mês
+      </p>
+    )}
+    ```
 
 #### 5.6 Testes
 
@@ -1648,7 +1726,7 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 **Tempo:** 4-5 dias
 **Objetivo:** Criar e salvar relatórios personalizados
 
-*(Checklist detalhado similar aos anteriores...)*
+_(Checklist detalhado similar aos anteriores...)_
 
 ---
 
@@ -1658,7 +1736,7 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 **Tempo:** 10-14 dias
 **Objetivo:** Compartilhamento entre múltiplos usuários
 
-*(Checklist detalhado com 50+ itens...)*
+_(Checklist detalhado com 50+ itens...)_
 
 ---
 
@@ -1668,7 +1746,7 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 **Tempo:** 10-14 dias
 **Objetivo:** Previsões e insights financeiros
 
-*(Checklist detalhado com integração OpenAI...)*
+_(Checklist detalhado com integração OpenAI...)_
 
 ---
 
@@ -1676,26 +1754,26 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 
 ### Por Fase
 
-| Fase | Nome | Prioridade | Complexidade | Tempo Mínimo | Tempo Máximo | Média |
-|------|------|------------|--------------|--------------|--------------|-------|
-| 0 | Correções Urgentes | 🔴 CRÍTICA | Baixa | 1 dia | 2 dias | 1.5 dias |
-| 1 | Tags Personalizadas | 🟡 ALTA | Baixa | 2 dias | 3 dias | 2.5 dias |
-| 2 | Metas de Economia | 🟡 ALTA | Média | 3 dias | 4 dias | 3.5 dias |
-| 3 | Anexos | 🟡 ALTA | Média | 3 dias | 4 dias | 3.5 dias |
-| 4 | Histórico Limitado | 🟢 MÉDIA | Baixa | 0.5 dia | 1 dia | 0.75 dia |
-| 5 | Contador de Exports | 🟢 MÉDIA | Baixa | 0.5 dia | 1 dia | 0.75 dia |
-| 6 | Relatórios Customizados | 🟢 MÉDIA | Média | 4 dias | 5 dias | 4.5 dias |
-| 7 | Sistema Family | 🟡 ALTA | Muito Alta | 10 dias | 14 dias | 12 dias |
-| 8 | Inteligência Artificial | 🟢 MÉDIA | Alta | 10 dias | 14 dias | 12 dias |
-| **TOTAL** | | | | **34 dias** | **48 dias** | **41 dias** |
+| Fase      | Nome                    | Prioridade | Complexidade | Tempo Mínimo | Tempo Máximo | Média       |
+| --------- | ----------------------- | ---------- | ------------ | ------------ | ------------ | ----------- |
+| 0         | Correções Urgentes      | 🔴 CRÍTICA | Baixa        | 1 dia        | 2 dias       | 1.5 dias    |
+| 1         | Tags Personalizadas     | 🟡 ALTA    | Baixa        | 2 dias       | 3 dias       | 2.5 dias    |
+| 2         | Metas de Economia       | 🟡 ALTA    | Média        | 3 dias       | 4 dias       | 3.5 dias    |
+| 3         | Anexos                  | 🟡 ALTA    | Média        | 3 dias       | 4 dias       | 3.5 dias    |
+| 4         | Histórico Limitado      | 🟢 MÉDIA   | Baixa        | 0.5 dia      | 1 dia        | 0.75 dia    |
+| 5         | Contador de Exports     | 🟢 MÉDIA   | Baixa        | 0.5 dia      | 1 dia        | 0.75 dia    |
+| 6         | Relatórios Customizados | 🟢 MÉDIA   | Média        | 4 dias       | 5 dias       | 4.5 dias    |
+| 7         | Sistema Family          | 🟡 ALTA    | Muito Alta   | 10 dias      | 14 dias      | 12 dias     |
+| 8         | Inteligência Artificial | 🟢 MÉDIA   | Alta         | 10 dias      | 14 dias      | 12 dias     |
+| **TOTAL** |                         |            |              | **34 dias**  | **48 dias**  | **41 dias** |
 
 ### Por Prioridade
 
-| Prioridade | Total de Fases | Tempo Mínimo | Tempo Máximo | Média |
-|------------|----------------|--------------|--------------|-------|
-| 🔴 CRÍTICA | 1 | 1 dia | 2 dias | 1.5 dias |
-| 🟡 ALTA | 4 | 18 dias | 25 dias | 21.5 dias |
-| 🟢 MÉDIA | 4 | 15 dias | 21 dias | 18 dias |
+| Prioridade | Total de Fases | Tempo Mínimo | Tempo Máximo | Média     |
+| ---------- | -------------- | ------------ | ------------ | --------- |
+| 🔴 CRÍTICA | 1              | 1 dia        | 2 dias       | 1.5 dias  |
+| 🟡 ALTA    | 4              | 18 dias      | 25 dias      | 21.5 dias |
+| 🟢 MÉDIA   | 4              | 15 dias      | 21 dias      | 18 dias   |
 
 ---
 
@@ -1706,33 +1784,33 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 Para ter um sistema premium funcional o mais rápido possível:
 
 1. **Semana 1-2:**
-   - ✅ Fase 0: Correções Urgentes (1-2 dias)
-   - ✅ Fase 1: Tags Personalizadas (2-3 dias)
-   - ✅ Fase 2: Metas de Economia (3-4 dias)
-   - ✅ Fase 4: Histórico Limitado (1 dia)
+    - ✅ Fase 0: Correções Urgentes (1-2 dias)
+    - ✅ Fase 1: Tags Personalizadas (2-3 dias)
+    - ✅ Fase 2: Metas de Economia (3-4 dias)
+    - ✅ Fase 4: Histórico Limitado (1 dia)
 
-   **Resultado:** Premium já tem valor (tags + metas + histórico ilimitado)
+    **Resultado:** Premium já tem valor (tags + metas + histórico ilimitado)
 
 2. **Semana 3:**
-   - ✅ Fase 3: Anexos (3-4 dias)
-   - ✅ Fase 5: Contador de Exports (1 dia)
+    - ✅ Fase 3: Anexos (3-4 dias)
+    - ✅ Fase 5: Contador de Exports (1 dia)
 
-   **Resultado:** Premium 100% funcional conforme especificação
+    **Resultado:** Premium 100% funcional conforme especificação
 
 3. **Semana 4-5:**
-   - ✅ Fase 6: Relatórios Customizados (4-5 dias)
+    - ✅ Fase 6: Relatórios Customizados (4-5 dias)
 
-   **Resultado:** Premium com todas as features principais
+    **Resultado:** Premium com todas as features principais
 
 4. **Semana 6-8:**
-   - ✅ Fase 7: Sistema Family (10-14 dias)
+    - ✅ Fase 7: Sistema Family (10-14 dias)
 
-   **Resultado:** Plano Family disponível
+    **Resultado:** Plano Family disponível
 
 5. **Semana 9-11:**
-   - ✅ Fase 8: Inteligência Artificial (10-14 dias)
+    - ✅ Fase 8: Inteligência Artificial (10-14 dias)
 
-   **Resultado:** Diferencial competitivo com IA
+    **Resultado:** Diferencial competitivo com IA
 
 ### Caminho Alternativo (Focado em Revenue)
 
@@ -1769,24 +1847,30 @@ Release semanal com valor agregado:
 ## Update Semanal - [Data]
 
 ### Progresso Geral
+
 - Progresso Anterior: X%
 - Progresso Atual: Y%
 - Delta: +Z%
 
 ### Fases Completadas Esta Semana
+
 - [ ] Fase X: Nome
 
 ### Em Progresso
+
 - [ ] Fase Y: Nome (70% completo)
 
 ### Próxima Semana
+
 - [ ] Iniciar Fase Z
 - [ ] Completar Fase Y
 
 ### Blockers
+
 - Nenhum / [Descrição do blocker]
 
 ### Notas
+
 - [Observações relevantes]
 ```
 
@@ -1821,7 +1905,7 @@ Release semanal com valor agregado:
 - [ ] Widget no dashboard mostrando metas ativas
 - [ ] 100% dos testes passando
 
-*(Continue para cada fase...)*
+_(Continue para cada fase...)_
 
 ---
 
