@@ -8,20 +8,24 @@
 ## 🔴 CRÍTICO - Obrigatório para Produção
 
 ### 1. ✅ Implementar Assinatura Recorrente Mensal
+
 **Prioridade**: CRÍTICA
 **Status**: ✅ **CONCLUÍDO**
 
 **Problema Atual**:
+
 - ~~Cada assinatura cria um pagamento único~~
 - ~~Usuário precisa pagar manualmente todo mês~~
 - ~~Não existe cobrança automática recorrente~~
 
 **Solução Implementada**:
+
 - ✅ Usar `createSubscription()` do Asaas em vez de `createPayment()`
 - ✅ Asaas criará cobranças mensais automaticamente
 - ✅ Webhooks notificarão sobre cada cobrança mensal
 
 **Arquivos modificados**:
+
 - ✅ `PaymentGatewayService.php` - Método `createRecurringSubscription()` criado
 - ✅ `PaymentGatewayService.php` - Método `cancelRecurringSubscription()` criado
 - ✅ `SubscriptionPlan.php` - Método `getAmountInReais()` adicionado
@@ -31,35 +35,40 @@
 - ✅ `SubscriptionService.php` - Cancelamento de subscription recorrente no Asaas
 
 **Eventos Asaas implementados**:
+
 - ✅ `SUBSCRIPTION_CREATED` - Assinatura recorrente criada
 - ✅ `SUBSCRIPTION_UPDATED` - Assinatura atualizada
 - ✅ `SUBSCRIPTION_DELETED` - Assinatura cancelada
 
 **Como funciona agora**:
+
 1. **Plano FREE**: Cria pagamento único (sem cobrança)
 2. **Planos PAGOS** (Premium/Family):
-   - Cria assinatura recorrente no Asaas (`cycle: MONTHLY`)
-   - Asaas gera cobrança mensal automaticamente
-   - Salva `external_subscription_id` na tabela `subscriptions`
-   - Webhook `PAYMENT_RECEIVED` ativa a assinatura a cada pagamento
+    - Cria assinatura recorrente no Asaas (`cycle: MONTHLY`)
+    - Asaas gera cobrança mensal automaticamente
+    - Salva `external_subscription_id` na tabela `subscriptions`
+    - Webhook `PAYMENT_RECEIVED` ativa a assinatura a cada pagamento
 3. **Cancelamento**:
-   - Cancela subscription recorrente no Asaas automaticamente
-   - Impede cobranças futuras
-   - Aplica grace period conforme configurado
+    - Cancela subscription recorrente no Asaas automaticamente
+    - Impede cobranças futuras
+    - Aplica grace period conforme configurado
 
 **Data de conclusão**: 2026-01-04
 
 ---
 
 ### 2. ✅ Adicionar Campo CPF na Tabela Users (CPF Progressivo)
+
 **Prioridade**: CRÍTICA
 **Status**: ✅ **CONCLUÍDO**
 
 **Problema Atual**:
+
 - ~~Todos os usuários usam o mesmo CPF de teste: `24971563792`~~
 - ~~Não é possível usar em produção com clientes reais~~
 
 **Solução Implementada** (Opção C - CPF Progressivo):
+
 - ✅ Migration: Campo `cpf` adicionado (nullable, unique)
 - ✅ Validação: Regra `ValidCpf` com algoritmo completo de validação de CPF
 - ✅ Backend: `UserProfileController` com endpoint para atualizar CPF
@@ -69,6 +78,7 @@
 - ✅ Frontend: Integração em `payment-method.tsx` com detecção automática
 
 **Como funciona**:
+
 1. **Cadastro inicial**: CPF não é obrigatório (baixa fricção)
 2. **Plano FREE**: Não precisa de CPF
 3. **Upgrade para Premium/Family**: Modal aparece solicitando CPF
@@ -76,6 +86,7 @@
 5. **Pagamento**: Apenas processa se tiver CPF válido
 
 **Arquivos modificados**:
+
 - ✅ `database/migrations/2026_01_04_115118_add_cpf_to_users_table.php`
 - ✅ `app/Models/User.php` - Campo `cpf` no fillable
 - ✅ `app/Rules/ValidCpf.php` - Validação completa de CPF brasileiro
@@ -91,16 +102,19 @@
 ---
 
 ### 3. ✅ Configurar Webhooks em Produção
+
 **Prioridade**: CRÍTICA
 **Status**: ✅ **CONCLUÍDO**
 
 **Problema Atual**:
+
 - ~~Webhooks só funcionam com `SimulateWebhook` command~~
 - ~~Asaas não consegue enviar webhooks para localhost~~
 
 **Solução Implementada**:
 
 **✅ Documentação Completa**:
+
 - Guia detalhado criado: `WEBHOOK_SETUP.md`
 - Instruções para desenvolvimento (ngrok)
 - Instruções para produção (domínio público)
@@ -108,12 +122,14 @@
 - Exemplos de configuração
 
 **✅ Ferramentas de Validação**:
+
 - Comando: `php artisan webhook:validate` - Valida configuração
 - Comando: `php artisan webhook:validate --url=https://abc.ngrok.io` - Testa URL externa
 - Endpoint: `GET /webhook/health` - Health check público
 - Endpoint: `POST /webhook/test` - Teste de webhook (apenas dev)
 
 **✅ Segurança**:
+
 - Webhook signature validation implementada
 - HMAC-SHA256 com hash_equals (timing-safe)
 - Validação de token configurado
@@ -122,6 +138,7 @@
 **Como usar**:
 
 **Desenvolvimento (Ngrok)**:
+
 ```bash
 # 1. Iniciar ngrok
 ngrok http 8000
@@ -138,6 +155,7 @@ php artisan asaas:simulate-webhook 1 PAYMENT_RECEIVED
 ```
 
 **Produção**:
+
 ```bash
 # 1. Configurar domínio com HTTPS
 # URL: https://seudominio.com.br/webhook/asaas
@@ -153,6 +171,7 @@ tail -f storage/logs/laravel.log | grep webhook
 ```
 
 **Arquivos criados**:
+
 - ✅ `WEBHOOK_SETUP.md` - Documentação completa (250+ linhas)
 - ✅ `app/Console/Commands/ValidateWebhookSetup.php` - Comando de validação
 - ✅ `WebhookController::healthCheck()` - Endpoint de health check
@@ -166,10 +185,12 @@ tail -f storage/logs/laravel.log | grep webhook
 ## 🟡 IMPORTANTE - Recomendado para Produção
 
 ### 4. ✅ Sistema de Renovação e Falhas de Pagamento
+
 **Prioridade**: IMPORTANTE
 **Status**: ✅ **CONCLUÍDO**
 
 **O que foi implementado**:
+
 - ✅ Webhook handler para `PAYMENT_OVERDUE` atualizado
 - ✅ Novo status `payment_failed` para assinaturas
 - ✅ Grace period configurável (7 dias por padrão)
@@ -180,6 +201,7 @@ tail -f storage/logs/laravel.log | grep webhook
 - ⏸️ Página para atualizar método de pagamento (funcionalidade futura)
 
 **Fluxo implementado**:
+
 1. Pagamento mensal falha
 2. Webhook `PAYMENT_OVERDUE` recebido
 3. Assinatura marcada como `payment_failed`
@@ -189,6 +211,7 @@ tail -f storage/logs/laravel.log | grep webhook
 7. Se pagamento bem sucedido: falhas resetadas, assinatura volta para `active`
 
 **Arquivos modificados/criados**:
+
 - ✅ `database/migrations/2026_01_04_*_add_payment_failure_tracking_to_subscriptions_table.php`
 - ✅ `app/Enums/SubscriptionStatusEnum.php` - Status `PAYMENT_FAILED` adicionado
 - ✅ `app/Models/Subscription.php` - Métodos de gerenciamento de falhas
@@ -198,6 +221,7 @@ tail -f storage/logs/laravel.log | grep webhook
 - ✅ `config/subscriptions.php` - Configurações de grace period e features
 
 **Configuração**:
+
 ```bash
 # .env (opcional, já tem valores padrão)
 SUBSCRIPTION_GRACE_PERIOD_DAYS=7
@@ -205,6 +229,7 @@ SUBSCRIPTION_MAX_FAILED_PAYMENTS=3
 ```
 
 **Comandos**:
+
 ```bash
 # Verificar grace periods expirados (dry run)
 php artisan subscriptions:check-grace-periods --dry-run
@@ -217,41 +242,61 @@ php artisan subscriptions:check-grace-periods
 
 ---
 
-### 5. ⏸️ Valor Proporcional (Prorated) em Upgrades
+### 5. ✅ Valor Proporcional (Prorated) em Upgrades
+
 **Prioridade**: IMPORTANTE
-**Status**: PENDENTE
+**Status**: ✅ **CONCLUÍDO**
 
 **Problema Atual**:
-- Upgrade no meio do mês cobra valor cheio do novo plano
-- Usuário paga 2x no mesmo mês (plano antigo + plano novo)
 
-**Solução**:
-- [ ] Calcular dias restantes do período atual
-- [ ] Calcular valor proporcional a cobrar
-- [ ] Aplicar crédito do plano anterior
-- [ ] Ajustar próxima cobrança
+- ~~Upgrade no meio do mês cobra valor cheio do novo plano~~
+- ~~Usuário paga 2x no mesmo mês (plano antigo + plano novo)~~
+
+**Solução Implementada**:
+
+- ✅ Cálculo proporcional: (Preço Novo - Preço Antigo) \* (Dias Restantes / 30)
+- ✅ Cobrança Híbrida:
+    1. Cria pagamento ÚNICO imediato apenas com a diferença (prorated)
+    2. Agenda assinatura recorrente do plano novo para o fim do ciclo atual
+- ✅ Ciclo de cobrança mantido: Se vence dia 1, continua vencendo dia 1
+- ✅ Controller atualizado para detectar upgrade e processar corretamente
+
+**Como funciona**:
+
+1. Usuário clica em Upgrade dia 15 (Ciclo vence dia 1)
+2. Sistema cria Assinatura Pendente (Plano Novo)
+3. Ao pagar:
+    - Cobra proporcional (15 dias de diferença) via PIX/Cartão agora
+    - Agenda nova assinatura no Asaas para começar dia 1 do próximo mês
+    - Mantém acesso imediato ao plano novo
+
+**Arquivos modificados**:
+
+- ✅ `SubscriptionService.php` - Lógica de cálculo e orquestração
+- ✅ `PaymentGatewayService.php` - Método `createUpgradeSubscription` (Híbrido)
+- ✅ `AsaasService.php` - Suporte a agendamento (`nextDueDate`)
+- ✅ `PaymentController.php` - Detecção de upgrade e chamada correta
 
 **Exemplo**:
+
 ```
 Plano atual: R$ 29,90/mês (pago dia 1)
 Upgrade dia 15 para R$ 59,90/mês
 Dias restantes: 15 dias
 
-Valor a cobrar no upgrade:
-- Plano novo (15 dias): R$ 29,95
-- Crédito plano antigo (15 dias): -R$ 14,95
-- Total a cobrar: R$ 15,00
-
-Próxima cobrança: R$ 59,90 (valor cheio)
+Valor a cobrar HOJE: R$ 15,00 (diferença proporcional)
+Próxima cobrança: R$ 59,90 (No dia 1 do próximo mês)
 ```
 
 ---
 
 ### 6. ⏸️ Notificações por Email
+
 **Prioridade**: IMPORTANTE
 **Status**: PENDENTE
 
 **Emails a implementar**:
+
 - [ ] **Pagamento Confirmado**: "Seu pagamento foi aprovado!"
 - [ ] **Assinatura Ativada**: "Bem-vindo ao plano Premium!"
 - [ ] **Pagamento Falhou**: "Problema com seu pagamento"
@@ -261,6 +306,7 @@ Próxima cobrança: R$ 59,90 (valor cheio)
 - [ ] **Recibo de Pagamento**: PDF anexo com recibo
 
 **Implementação**:
+
 - [ ] Criar Mailables para cada tipo de email
 - [ ] Templates Blade para emails
 - [ ] Queue jobs para envio assíncrono
@@ -272,6 +318,7 @@ Próxima cobrança: R$ 59,90 (valor cheio)
 ## 🟢 OPCIONAL - Melhorias Futuras
 
 ### 7. ⏸️ Painel Administrativo
+
 **Prioridade**: BAIXA
 **Status**: PENDENTE
 
@@ -285,6 +332,7 @@ Próxima cobrança: R$ 59,90 (valor cheio)
 ---
 
 ### 8. ⏸️ Faturas em PDF
+
 **Prioridade**: BAIXA
 **Status**: PENDENTE
 
@@ -297,6 +345,7 @@ Próxima cobrança: R$ 59,90 (valor cheio)
 ---
 
 ### 9. ⏸️ Melhorias de Confiabilidade
+
 **Prioridade**: MÉDIA
 **Status**: PENDENTE
 
@@ -310,21 +359,25 @@ Próxima cobrança: R$ 59,90 (valor cheio)
 ---
 
 ### 10. ⏸️ Aplicar Middleware de Features
+
 **Prioridade**: BAIXA
 **Status**: PENDENTE
 
 **Já existe**:
+
 - `CheckSubscription` middleware
 - `CheckPlanFeature` middleware
 - `PlanLimitService`
 
 **O que falta**:
+
 - [ ] Definir quais rotas requerem quais features
 - [ ] Aplicar middleware nas rotas protegidas
 - [ ] Página de "upgrade necessário" quando feature bloqueada
 - [ ] Verificações de limite (ex: máximo de transações)
 
 **Exemplo**:
+
 ```php
 Route::middleware(['auth', 'check.plan.feature:advanced_reports'])
     ->get('/dashboard/reports/advanced', ...);
@@ -335,19 +388,21 @@ Route::middleware(['auth', 'check.plan.feature:advanced_reports'])
 ## 📊 Progresso Geral
 
 - ✅ Fase 1 - Fundação: **100%** (6/6 completo)
-- 🔄 Fase 2 - Produção: **40%** (4/10 concluídos)
+- 🔄 Fase 2 - Produção: **50%** (5/10 concluídos)
 
-**Total**: 10/16 itens completados (62%)
+**Total**: 11/16 itens completados (68%)
 
 ### Itens Críticos para Produção
+
 - ✅ **1/3** Assinatura recorrente mensal - CONCLUÍDO
 - ✅ **2/3** Campo CPF (Progressivo) - CONCLUÍDO
 - ✅ **3/3** Webhooks em produção - CONCLUÍDO
 
 ### Itens Importantes para Produção
+
 - ✅ **1/3** Falhas de pagamento - CONCLUÍDO
 - ⏸️ **0/3** Notificações por email - PENDENTE
-- ⏸️ **0/3** Valor proporcional - PENDENTE
+- ✅ **1/3** Valor proporcional - CONCLUÍDO
 
 ---
 
@@ -370,6 +425,7 @@ Route::middleware(['auth', 'check.plan.feature:advanced_reports'])
 **Versão**: 1.2
 
 **Mudanças na v1.2**:
+
 - ✅ Item 2 (Campo CPF Progressivo) concluído
 - Implementado sistema de CPF progressivo (só pede quando necessário)
 - Validação completa de CPF brasileiro com dígitos verificadores
@@ -377,6 +433,7 @@ Route::middleware(['auth', 'check.plan.feature:advanced_reports'])
 - AsaasService agora usa CPF real de cada usuário
 
 **Mudanças na v1.1**:
+
 - ✅ Item 1 (Assinatura Recorrente Mensal) concluído
 - Adicionado suporte completo para subscriptions recorrentes no Asaas
 - Implementado cancelamento automático de subscriptions no Asaas

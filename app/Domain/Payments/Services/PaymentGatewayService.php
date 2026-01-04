@@ -124,6 +124,65 @@ class PaymentGatewayService
     }
 
     /**
+     * Create an upgrade subscription (prorated payment + future subscription)
+     */
+    public function createUpgradeSubscription(Subscription $subscription, float $proratedAmount, string $paymentMethod, \Carbon\Carbon $nextDueDate): Payment
+    {
+        return DB::transaction(function () use ($subscription, $proratedAmount, $paymentMethod, $nextDueDate) {
+            $user = $subscription->user;
+            $customerId = $this->getOrCreateCustomer($user);
+
+            // 1. Create One-time Prorated Payment
+            $asaasPayment = $this->asaasService->createPayment($customerId, [
+                'payment_method' => $paymentMethod,
+                'amount' => $proratedAmount,
+                'due_date' => now()->format('Y-m-d'),
+                'description' => "Upgrade para {$subscription->plan->name} (Proporcional) - MeloSys",
+                'external_reference' => $user->uuid,
+            ]);
+
+            // 2. Create Recurring Subscription (Starts on next due date)
+            $asaasSubscription = $this->asaasService->createSubscription($customerId, [
+                'payment_method' => $paymentMethod,
+                'amount' => $subscription->plan->getAmountInReais(),
+                'description' => "Assinatura {$subscription->plan->name} - MeloSys",
+                'external_reference' => $subscription->uuid,
+                'nextDueDate' => $nextDueDate->format('Y-m-d'), // Critical: Scheduling for future
+            ]);
+
+            // 3. Link Subscription
+            $subscription->update([
+                'external_subscription_id' => $asaasSubscription['id'],
+                'external_customer_id' => $customerId,
+            ]);
+
+            // 4. Create Local Payment Record (for the Prorated One-time charge)
+            $payment = Payment::create([
+                'user_id' => $subscription->user_id,
+                'subscription_id' => $subscription->id,
+                'amount_cents' => (int) round($proratedAmount * 100),
+                'status' => $this->mapAsaasStatus($asaasPayment['status']),
+                'payment_method' => $paymentMethod,
+                'payment_gateway' => 'asaas',
+                'external_payment_id' => $asaasPayment['id'],
+                'invoice_url' => $asaasPayment['invoiceUrl'] ?? null,
+                'due_date' => $asaasPayment['dueDate'] ?? null,
+            ]);
+
+            // 5. Fetch QR/Barcode for the one-time payment
+            $this->fetchPaymentMethodData($payment);
+
+            Log::info('Upgrade subscription created (Prorated + Future)', [
+                'subscription_id' => $subscription->id,
+                'prorated_payment_id' => $payment->id,
+                'future_subscription_id' => $asaasSubscription['id'],
+            ]);
+
+            return $payment->fresh();
+        });
+    }
+
+    /**
      * Create a payment
      */
     public function createPayment(CreatePaymentData $data): Payment

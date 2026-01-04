@@ -4,7 +4,9 @@ namespace App\Domain\Subscriptions\Services;
 
 use App\Domain\Payments\Services\PaymentGatewayService;
 use App\Enums\SubscriptionStatusEnum;
+use App\Models\Payment;
 use App\Models\Subscription;
+
 use App\Models\SubscriptionPlan;
 use App\Models\User;
 use Carbon\Carbon;
@@ -75,9 +77,9 @@ class SubscriptionService
 
     /**
      * Upgrade user to a new plan
-     *
-     * IMPORTANTE: A assinatura atual só será cancelada quando o pagamento
-     * da nova assinatura for confirmado via webhook
+     */
+    /**
+     * Upgrade user to a new plan (Step 1: Create pending subscription)
      */
     public function upgrade(User $user, string $newPlanSlug): Subscription
     {
@@ -88,19 +90,94 @@ class SubscriptionService
             return $this->create($user, $newPlanSlug);
         }
 
-        return DB::transaction(function () use ($user, $currentSubscription, $newPlan) {
-            // Calculate prorated amount if needed (implement later)
+        if ($newPlan->price_cents <= $currentSubscription->plan->price_cents) {
+            throw new \Exception('Para realizar um downgrade, aguarde o final do ciclo ou cancele a assinatura atual.');
+        }
 
-            // Create new subscription (PENDING)
-            // A assinatura atual permanece ATIVA até o pagamento ser confirmado
-            $newSubscription = $this->create($user, $newPlan->slug);
+        // Create new pending subscription without cancelling the old one
+        return Subscription::create([
+            'user_id' => $user->id,
+            'subscription_plan_id' => $newPlan->id,
+            'started_at' => now(),
+            'ends_at' => $currentSubscription->ends_at,
+            'status' => SubscriptionStatusEnum::PENDING->value,
+            'payment_gateway' => 'asaas',
+        ]);
+    }
 
-            // NÃO cancelar a assinatura atual aqui!
-            // Ela será cancelada automaticamente quando o webhook confirmar
-            // o pagamento e ativar a nova subscription
+    /**
+     * Process upgrade payment (Step 2: Charge prorated amount + Schedule future sub)
+     */
+    public function processUpgradePayment(Subscription $newSubscription, string $paymentMethod): Payment
+    {
+        $user = $newSubscription->user;
+        $currentSubscription = $user->currentSubscription;
 
-            return $newSubscription;
+        // If no current subscription, just create standard payment
+        if (! $currentSubscription || !$currentSubscription->isActive()) {
+            return $this->paymentGatewayService->createSubscriptionPayment($newSubscription, $paymentMethod);
+        }
+
+        return DB::transaction(function () use ($currentSubscription, $newSubscription, $paymentMethod) {
+            // 1. Calculate Prorated Amount
+            $proratedAmount = $this->calculateProratedAmount($currentSubscription, $newSubscription->plan);
+
+            // 2. Create Upgrade Subscription
+            $nextDueDate = $currentSubscription->ends_at ?? now()->addMonth();
+
+            return $this->paymentGatewayService->createUpgradeSubscription(
+                $newSubscription,
+                $proratedAmount,
+                $paymentMethod,
+                $nextDueDate
+            );
         });
+    }
+
+    /**
+     * Calculate prorated amount for upgrade
+     */
+    public function calculateProratedAmount(Subscription $currentSubscription, SubscriptionPlan $newPlan): float
+    {
+        // If current plan is free or expired, or no end date, full price
+        if ($currentSubscription->plan->isFree() || $currentSubscription->isExpired() || ! $currentSubscription->ends_at) {
+            return $newPlan->getAmountInReais();
+        }
+
+        $now = now();
+        $endsAt = $currentSubscription->ends_at;
+
+        // Safety check: if ends_at is past, full price
+        if ($endsAt->isPast()) {
+            return $newPlan->getAmountInReais();
+        }
+
+        // Days remaining in current cycle
+        $remainingDays = $now->diffInDays($endsAt, false); // false = absolute difference
+        
+        if ($remainingDays <= 0) {
+             return $newPlan->getAmountInReais();
+        }
+
+        // Total days in cycle (approx 30)
+        $totalDays = 30;
+
+        // Ratio of unused time
+        $ratio = $remainingDays / $totalDays;
+
+        // Difference in price
+        $currentPrice = $currentSubscription->plan->getAmountInReais();
+        $newPrice = $newPlan->getAmountInReais();
+
+        $diff = $newPrice - $currentPrice;
+
+        if ($diff <= 0) {
+            return 0.0;
+        }
+
+        $prorated = $diff * $ratio;
+
+        return round($prorated, 2);
     }
 
     /**

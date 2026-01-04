@@ -182,6 +182,10 @@ class AsaasService
             'externalReference' => $data['external_reference'] ?? null,
         ];
 
+        if (isset($data['nextDueDate'])) {
+            $payload['nextDueDate'] = $data['nextDueDate'];
+        }
+
         $response = Http::withHeaders([
             'access_token' => $this->apiKey,
             'Content-Type' => 'application/json',

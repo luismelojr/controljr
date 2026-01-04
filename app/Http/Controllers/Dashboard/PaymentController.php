@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Domain\Payments\DTO\CreatePaymentData;
 use App\Domain\Payments\Services\PaymentGatewayService;
+use App\Domain\Subscriptions\Services\SubscriptionService;
 use App\Facades\Toast;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
@@ -13,7 +14,8 @@ use Inertia\Inertia;
 class PaymentController extends Controller
 {
     public function __construct(
-        protected PaymentGatewayService $paymentGatewayService
+        protected PaymentGatewayService $paymentGatewayService,
+        protected SubscriptionService $subscriptionService
     ) {
     }
 
@@ -24,15 +26,15 @@ class PaymentController extends Controller
     {
         $user = $request->user();
 
-        // Try to get current active subscription first
-        $subscription = $user->currentSubscription;
+        // Try to get pending subscription first (e.g. upgrades)
+        $subscription = $user->subscriptions()
+            ->where('status', 'pending')
+            ->latest()
+            ->first();
 
-        // If no active subscription, get the most recent pending one
+        // If no pending, get current active
         if (! $subscription) {
-            $subscription = $user->subscriptions()
-                ->where('status', 'pending')
-                ->latest()
-                ->first();
+            $subscription = $user->currentSubscription;
         }
 
         if (! $subscription) {
@@ -59,15 +61,15 @@ class PaymentController extends Controller
 
         $user = $request->user();
 
-        // Try to get current active subscription first
-        $subscription = $user->currentSubscription;
+        // Try to get pending subscription first
+        $subscription = $user->subscriptions()
+            ->where('status', 'pending')
+            ->latest()
+            ->first();
 
-        // If no active subscription, get the most recent pending one
+        // If no pending, get current active
         if (! $subscription) {
-            $subscription = $user->subscriptions()
-                ->where('status', 'pending')
-                ->latest()
-                ->first();
+            $subscription = $user->currentSubscription;
         }
 
         if (! $subscription) {
@@ -85,10 +87,21 @@ class PaymentController extends Controller
         }
 
         try {
-            $payment = $this->paymentGatewayService->createSubscriptionPayment(
-                $subscription,
-                $validated['payment_method']
-            );
+            // Check if it is an upgrade (Active ID != Pending ID)
+            $activeSubscription = $user->currentSubscription;
+            $isUpgrade = $activeSubscription && $subscription->status === 'pending' && $activeSubscription->id !== $subscription->id;
+
+            if ($isUpgrade) {
+                $payment = $this->subscriptionService->processUpgradePayment(
+                    $subscription,
+                    $validated['payment_method']
+                );
+            } else {
+                $payment = $this->paymentGatewayService->createSubscriptionPayment(
+                    $subscription,
+                    $validated['payment_method']
+                );
+            }
 
             // Para todos os métodos de pagamento, redirecionar para página de pagamento
             // - PIX: Mostra QR Code
