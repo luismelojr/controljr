@@ -37,7 +37,7 @@ class IncomesController extends Controller
 
         $incomes = Income::query()
             ->where('user_id', auth()->id())
-            ->with(['category', 'incomeTransactions'])
+            ->with(['category', 'incomeTransactions', 'tags'])
             ->latest()
             ->paginate(request()->integer('per_page', 15));
 
@@ -112,7 +112,7 @@ class IncomesController extends Controller
     {
         $this->authorize('view', $income);
 
-        $income->load(['category', 'incomeTransactions']);
+        $income->load(['category', 'incomeTransactions', 'tags']);
 
         return Inertia::render('dashboard/incomes/show', [
             'income' => new IncomeResource($income),

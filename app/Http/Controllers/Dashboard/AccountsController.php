@@ -37,7 +37,7 @@ class AccountsController extends Controller
 
         $accounts = Account::query()
             ->where('user_id', auth()->id())
-            ->with(['wallet', 'category', 'transactions'])
+            ->with(['wallet', 'category', 'transactions', 'tags'])
             ->latest()
             ->paginate(request()->integer('per_page', 15));
 
@@ -108,7 +108,7 @@ class AccountsController extends Controller
     {
         $this->authorize('view', $account);
 
-        $account->load(['wallet', 'category', 'transactions']);
+        $account->load(['wallet', 'category', 'transactions', 'tags']);
 
         return Inertia::render('dashboard/accounts/show', [
             'account' => new AccountResource($account),
@@ -121,6 +121,8 @@ class AccountsController extends Controller
     public function edit(Account $account): Response
     {
         $this->authorize('update', $account);
+
+        $account->load('tags');
 
         return Inertia::render('dashboard/accounts/edit', [
             'account' => new AccountResource($account),

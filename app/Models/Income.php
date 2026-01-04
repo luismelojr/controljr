@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\IncomeRecurrenceTypeEnum;
 use App\Enums\IncomeStatusEnum;
 use App\Traits\HasUuidCustom;
+use App\Traits\HasTags;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Income extends Model
 {
     /** @use HasFactory<\Database\Factories\IncomeFactory> */
-    use HasFactory, HasUuidCustom;
+    use HasFactory, HasUuidCustom, HasTags;
 
     protected $fillable = [
         'uuid',

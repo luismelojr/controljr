@@ -28,6 +28,7 @@ class AccountResource extends JsonResource
             'wallet' => new WalletResource($this->whenLoaded('wallet')),
             'category' => new CategoryResource($this->whenLoaded('category')),
             'transactions' => TransactionResource::collection($this->whenLoaded('transactions')),
+            'tags' => TagResource::collection($this->whenLoaded('tags')),
             'transactions_count' => $this->when(
                 $this->relationLoaded('transactions'),
                 fn() => $this->transactions->count()

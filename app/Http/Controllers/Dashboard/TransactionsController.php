@@ -139,7 +139,7 @@ class TransactionsController extends Controller
     {
         $this->authorize('view', $transaction);
 
-        $transaction->load(['account', 'wallet', 'category']);
+        $transaction->load(['account', 'wallet', 'category', 'tags']);
 
         return Inertia::render('dashboard/transactions/show', [
             'transaction' => new TransactionResource($transaction),

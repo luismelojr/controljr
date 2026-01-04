@@ -2,6 +2,7 @@ import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { TagBadge } from '@/components/tags/tag-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,6 +13,7 @@ import { useState } from 'react';
 
 interface Tag {
     id: number;
+    uuid: string;
     name: string;
     color: string;
     transactions_count?: number;
@@ -24,6 +26,7 @@ interface Props {
 export default function TagsIndex({ tags }: Props) {
     const [createOpen, setCreateOpen] = useState(false);
     const [editingTag, setEditingTag] = useState<Tag | null>(null);
+    const [deletingTag, setDeletingTag] = useState<Tag | null>(null);
 
     const {
         data: createData,
@@ -74,7 +77,7 @@ export default function TagsIndex({ tags }: Props) {
         e.preventDefault();
         if (!editingTag) return;
 
-        editPut(route('dashboard.tags.update', editingTag.id), {
+        editPut(route('dashboard.tags.update', editingTag.uuid), {
             onSuccess: () => {
                 setEditingTag(null);
                 editReset();
@@ -82,10 +85,13 @@ export default function TagsIndex({ tags }: Props) {
         });
     };
 
-    const handleDelete = (tag: Tag) => {
-        if (confirm('Tem certeza que deseja excluir esta tag?')) {
-            destroy(route('dashboard.tags.destroy', tag.id));
-        }
+    const handleDelete = () => {
+        if (!deletingTag) return;
+        destroy(route('dashboard.tags.destroy', deletingTag.uuid), {
+            onSuccess: () => {
+                setDeletingTag(null);
+            },
+        });
     };
 
     return (
@@ -167,7 +173,7 @@ export default function TagsIndex({ tags }: Props) {
                                     {tags.map((tag) => (
                                         <TableRow key={tag.id}>
                                             <TableCell>
-                                                <TagBadge tag={tag} />
+                                                <TagBadge name={tag.name} color={tag.color} />
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-2">
@@ -183,7 +189,7 @@ export default function TagsIndex({ tags }: Props) {
                                                     variant="ghost"
                                                     size="sm"
                                                     className="text-red-500 hover:text-red-700"
-                                                    onClick={() => handleDelete(tag)}
+                                                    onClick={() => setDeletingTag(tag)}
                                                 >
                                                     <Trash2 className="h-4 w-4" />
                                                 </Button>
@@ -242,6 +248,16 @@ export default function TagsIndex({ tags }: Props) {
                         </form>
                     </DialogContent>
                 </Dialog>
+
+                {/* Delete Confirmation Dialog */}
+                <ConfirmDeleteDialog
+                    open={!!deletingTag}
+                    onOpenChange={(open) => !open && setDeletingTag(null)}
+                    onConfirm={handleDelete}
+                    title="Excluir Tag"
+                    description="Esta ação não pode ser desfeita. Isso irá excluir permanentemente a tag"
+                    itemName={deletingTag?.name}
+                />
             </div>
         </DashboardLayout>
     );

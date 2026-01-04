@@ -3,7 +3,7 @@ import { GoalCard } from '@/components/savings/goal-card';
 import { GoalForm } from '@/components/savings/goal-form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { PageProps, SavingsGoal } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
@@ -52,7 +52,7 @@ export default function SavingsGoalsIndex({ goals }: { goals: SavingsGoal[] }) {
     const completedGoals = goals.filter((g) => !g.is_active);
 
     return (
-        <AuthenticatedLayout header={<h2 className="text-xl leading-tight font-semibold text-foreground">Metas de Economia</h2>}>
+        <DashboardLayout title="Metas de Economia" subtitle="Crie e acompanhe suas metas de economia">
             <Head title="Metas de Economia" />
 
             <div className="container mx-auto space-y-8 py-12">
@@ -106,6 +106,6 @@ export default function SavingsGoalsIndex({ goals }: { goals: SavingsGoal[] }) {
 
                 <ContributionModal open={isContributionOpen} onOpenChange={setIsContributionOpen} goal={contributionGoal} />
             </div>
-        </AuthenticatedLayout>
+        </DashboardLayout>
     );
 }

@@ -6,6 +6,7 @@ use App\Domain\Tags\Services\TagService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTagRequest;
 use App\Http\Requests\UpdateTagRequest;
+use App\Http\Resources\TagResource;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use App\Facades\Toast;
@@ -21,7 +22,7 @@ class TagsController extends Controller
         $tags = $this->tagService->getUserTags(auth()->user());
 
         return inertia('dashboard/tags/index', [
-            'tags' => $tags,
+            'tags' => TagResource::collection($tags),
         ]);
     }
 

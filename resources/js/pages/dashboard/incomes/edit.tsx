@@ -1,7 +1,7 @@
 import AppHeader from '@/components/dashboard/app-header';
 import FormCard from '@/components/dashboard/form-card';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
-import { TagOption } from '@/components/tags/tag-input';
+import { TagInput, TagOption } from '@/components/tags/tag-input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import TextAreaCustom from '@/components/ui/text-area-custom';

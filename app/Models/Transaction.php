@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\TransactionStatusEnum;
 use App\Traits\HasUuidCustom;
 use App\Traits\HasMoneyAccessors;
+use App\Traits\HasTags;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Transaction extends Model
 {
     /** @use HasFactory<\Database\Factories\TransactionFactory> */
-    use HasFactory, HasUuidCustom, HasMoneyAccessors;
+    use HasFactory, HasUuidCustom, HasMoneyAccessors, HasTags;
 
     protected $fillable = [
         'uuid',
