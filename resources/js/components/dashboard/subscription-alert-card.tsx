@@ -19,7 +19,7 @@ export function SubscriptionAlertCard() {
     }
 
     return (
-        <SidebarGroup className="mt-auto">
+        <SidebarGroup className="mt-auto group-data-[collapsible=icon]:hidden">
             <SidebarGroupContent>
                 <Card className="border-primary/20 bg-primary/5 shadow-none">
                     <CardHeader className="p-4 pb-2">

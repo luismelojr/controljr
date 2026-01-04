@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -36,7 +36,7 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
         <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-background px-6">
             <div className="flex items-center gap-4">
                 {/* Mobile Sidebar Trigger */}
-                <SidebarTrigger className="lg:hidden" />
+                <SidebarTrigger />
 
                 <h1 className="text-xl font-semibold">
                     {title} {subtitle && <span className="text-2xl">🔥</span>}
@@ -46,18 +46,10 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
             <div className="flex items-center gap-4">
                 <ModeToggle />
                 {/* Notifications */}
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="relative"
-                    onClick={handleNotificationsClick}
-                >
+                <Button variant="ghost" size="icon" className="relative" onClick={handleNotificationsClick}>
                     <Bell className="h-5 w-5" />
                     {unreadNotificationsCount > 0 && (
-                        <Badge
-                            variant="destructive"
-                            className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs"
-                        >
+                        <Badge variant="destructive" className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center p-0 text-xs">
                             {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
                         </Badge>
                     )}

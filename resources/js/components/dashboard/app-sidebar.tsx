@@ -98,12 +98,15 @@ export function AppSidebar() {
     };
 
     return (
-        <Sidebar>
-            <SidebarHeader className="border-b px-6 py-4">
-                <MeloSysLogo showText />
+        <Sidebar collapsible="icon">
+            <SidebarHeader className="border-b px-6 py-4 group-data-[collapsible=icon]:px-2">
+                <div className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
+                    <MeloSysLogo className="h-8 w-8" />
+                    <span className="text-lg font-semibold group-data-[collapsible=icon]:hidden">MeloSys</span>
+                </div>
             </SidebarHeader>
 
-            <SidebarContent className="px-3 py-4">
+            <SidebarContent className="px-3 py-4 group-data-[collapsible=icon]:px-0">
                 {menuItems.map((section) => (
                     <SidebarGroup key={section.title}>
                         <SidebarGroupLabel className="px-3 text-xs font-medium text-muted-foreground">{section.title}</SidebarGroupLabel>
