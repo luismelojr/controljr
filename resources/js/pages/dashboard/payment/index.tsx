@@ -21,8 +21,13 @@ import {
 import type { PaymentIndexPageProps } from '@/types/payment';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { useState } from 'react';
 
 export default function PaymentIndex({ payments }: PaymentIndexPageProps) {
+    const [showCancelDialog, setShowCancelDialog] = useState(false);
+    const [paymentToCancel, setPaymentToCancel] = useState<string | null>(null);
+
     const statusColors = {
         pending: 'bg-yellow-500',
         confirmed: 'bg-green-500',
@@ -54,8 +59,14 @@ export default function PaymentIndex({ payments }: PaymentIndexPageProps) {
     };
 
     const handleCancelPayment = (paymentUuid: string) => {
-        if (confirm('Deseja realmente cancelar este pagamento?')) {
-            router.delete(`/dashboard/payment/${paymentUuid}/cancel`);
+        setPaymentToCancel(paymentUuid);
+        setShowCancelDialog(true);
+    };
+
+    const confirmCancelPayment = () => {
+        if (paymentToCancel) {
+            router.delete(`/dashboard/payment/${paymentToCancel}/cancel`);
+            setPaymentToCancel(null);
         }
     };
 
@@ -64,25 +75,19 @@ export default function PaymentIndex({ payments }: PaymentIndexPageProps) {
             <div className="container mx-auto py-8">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold">Histórico de Pagamentos</h1>
-                    <p className="text-muted-foreground mt-2">
-                        Visualize todos os seus pagamentos
-                    </p>
+                    <p className="mt-2 text-muted-foreground">Visualize todos os seus pagamentos</p>
                 </div>
 
                 <Card>
                     <CardHeader>
                         <CardTitle>Pagamentos</CardTitle>
-                        <CardDescription>
-                            Total de {payments.total} pagamento(s)
-                        </CardDescription>
+                        <CardDescription>Total de {payments.total} pagamento(s)</CardDescription>
                     </CardHeader>
                     <CardContent>
                         {payments.data.length === 0 ? (
-                            <div className="text-center py-12">
-                                <CreditCard className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                                <p className="text-muted-foreground">
-                                    Nenhum pagamento encontrado
-                                </p>
+                            <div className="py-12 text-center">
+                                <CreditCard className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                                <p className="text-muted-foreground">Nenhum pagamento encontrado</p>
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
@@ -99,49 +104,20 @@ export default function PaymentIndex({ payments }: PaymentIndexPageProps) {
                                     </TableHeader>
                                     <TableBody>
                                         {payments.data.map((payment) => {
-                                            const Icon =
-                                                paymentMethodIcons[
-                                                    payment.payment_method
-                                                ];
+                                            const Icon = paymentMethodIcons[payment.payment_method];
                                             return (
                                                 <TableRow key={payment.uuid}>
-                                                    <TableCell>
-                                                        {format(
-                                                            new Date(payment.created_at),
-                                                            'dd/MM/yyyy',
-                                                            { locale: ptBR }
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {payment.subscription
-                                                            ? payment.subscription.plan
-                                                                  .name
-                                                            : '-'}
-                                                    </TableCell>
+                                                    <TableCell>{format(new Date(payment.created_at), 'dd/MM/yyyy', { locale: ptBR })}</TableCell>
+                                                    <TableCell>{payment.subscription ? payment.subscription.plan.name : '-'}</TableCell>
                                                     <TableCell>
                                                         <div className="flex items-center gap-2">
                                                             <Icon className="h-4 w-4" />
-                                                            <span>
-                                                                {
-                                                                    paymentMethodLabels[
-                                                                        payment
-                                                                            .payment_method
-                                                                    ]
-                                                                }
-                                                            </span>
+                                                            <span>{paymentMethodLabels[payment.payment_method]}</span>
                                                         </div>
                                                     </TableCell>
-                                                    <TableCell className="font-medium">
-                                                        {payment.amount_formatted}
-                                                    </TableCell>
+                                                    <TableCell className="font-medium">{payment.amount_formatted}</TableCell>
                                                     <TableCell>
-                                                        <Badge
-                                                            className={
-                                                                statusColors[payment.status]
-                                                            }
-                                                        >
-                                                            {statusLabels[payment.status]}
-                                                        </Badge>
+                                                        <Badge className={statusColors[payment.status]}>{statusLabels[payment.status]}</Badge>
                                                     </TableCell>
                                                     <TableCell className="text-right">
                                                         <div className="flex justify-end gap-2">
@@ -150,42 +126,28 @@ export default function PaymentIndex({ payments }: PaymentIndexPageProps) {
                                                                     <Button
                                                                         variant="outline"
                                                                         size="sm"
-                                                                        onClick={() =>
-                                                                            router.visit(
-                                                                                `/dashboard/payment/${payment.uuid}`
-                                                                            )
-                                                                        }
+                                                                        onClick={() => router.visit(`/dashboard/payment/${payment.uuid}`)}
                                                                     >
-                                                                        <Eye className="h-4 w-4 mr-1" />
+                                                                        <Eye className="mr-1 h-4 w-4" />
                                                                         Ver
                                                                     </Button>
                                                                     <Button
                                                                         variant="outline"
                                                                         size="sm"
-                                                                        onClick={() =>
-                                                                            handleCancelPayment(
-                                                                                payment.uuid
-                                                                            )
-                                                                        }
+                                                                        onClick={() => handleCancelPayment(payment.uuid)}
                                                                     >
-                                                                        <X className="h-4 w-4 mr-1" />
+                                                                        <X className="mr-1 h-4 w-4" />
                                                                         Cancelar
                                                                     </Button>
                                                                 </>
                                                             )}
-                                                            {(payment.status === 'confirmed' ||
-                                                                payment.status ===
-                                                                    'received') && (
+                                                            {(payment.status === 'confirmed' || payment.status === 'received') && (
                                                                 <Button
                                                                     variant="outline"
                                                                     size="sm"
-                                                                    onClick={() =>
-                                                                        router.visit(
-                                                                            `/dashboard/payment/${payment.uuid}/success`
-                                                                        )
-                                                                    }
+                                                                    onClick={() => router.visit(`/dashboard/payment/${payment.uuid}/success`)}
                                                                 >
-                                                                    <Eye className="h-4 w-4 mr-1" />
+                                                                    <Eye className="mr-1 h-4 w-4" />
                                                                     Ver Detalhes
                                                                 </Button>
                                                             )}
@@ -201,15 +163,11 @@ export default function PaymentIndex({ payments }: PaymentIndexPageProps) {
 
                         {/* Pagination */}
                         {payments.last_page > 1 && (
-                            <div className="flex justify-center gap-2 mt-6">
+                            <div className="mt-6 flex justify-center gap-2">
                                 <Button
                                     variant="outline"
                                     disabled={payments.current_page === 1}
-                                    onClick={() =>
-                                        router.visit(
-                                            `/dashboard/payment?page=${payments.current_page - 1}`
-                                        )
-                                    }
+                                    onClick={() => router.visit(`/dashboard/payment?page=${payments.current_page - 1}`)}
                                 >
                                     Anterior
                                 </Button>
@@ -218,14 +176,8 @@ export default function PaymentIndex({ payments }: PaymentIndexPageProps) {
                                 </span>
                                 <Button
                                     variant="outline"
-                                    disabled={
-                                        payments.current_page === payments.last_page
-                                    }
-                                    onClick={() =>
-                                        router.visit(
-                                            `/dashboard/payment?page=${payments.current_page + 1}`
-                                        )
-                                    }
+                                    disabled={payments.current_page === payments.last_page}
+                                    onClick={() => router.visit(`/dashboard/payment?page=${payments.current_page + 1}`)}
                                 >
                                     Próxima
                                 </Button>
@@ -235,14 +187,21 @@ export default function PaymentIndex({ payments }: PaymentIndexPageProps) {
                 </Card>
 
                 <div className="mt-6">
-                    <Button
-                        variant="outline"
-                        onClick={() => router.visit('/dashboard/subscription')}
-                    >
+                    <Button variant="outline" onClick={() => router.visit('/dashboard/subscription')}>
                         Voltar para Assinatura
                     </Button>
                 </div>
             </div>
+
+            <ConfirmDeleteDialog
+                open={showCancelDialog}
+                onOpenChange={setShowCancelDialog}
+                onConfirm={confirmCancelPayment}
+                title="Cancelar Pagamento"
+                description="Deseja realmente cancelar este pagamento? Esta ação não pode ser desfeita."
+                confirmText="Sim, cancelar"
+                cancelText="Não"
+            />
         </DashboardLayout>
     );
 }

@@ -1,6 +1,6 @@
 import { router } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
-import { CheckCircle, Clock, Copy, CreditCard, QrCode, Receipt, X } from 'lucide-react';
+import { CheckCircle, Clock, Copy, CreditCard, QrCode, Receipt } from 'lucide-react';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import type { PaymentPageProps } from '@/types/payment';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { formatPriceCent } from '@/lib/format';
 
 export default function ShowPayment({ payment }: PaymentPageProps) {
     const [copied, setCopied] = useState(false);
@@ -61,6 +62,7 @@ export default function ShowPayment({ payment }: PaymentPageProps) {
         received: 'bg-green-600',
         overdue: 'bg-red-500',
         cancelled: 'bg-gray-500',
+        refunded: 'bg-purple-500',
     };
 
     const statusLabels = {
@@ -69,16 +71,15 @@ export default function ShowPayment({ payment }: PaymentPageProps) {
         received: 'Recebido',
         overdue: 'Vencido',
         cancelled: 'Cancelado',
+        refunded: 'Reembolsado',
     };
 
     return (
         <DashboardLayout title={'Detalhes do Pagamento - Asaas'}>
-            <div className="container max-w-3xl mx-auto py-8">
+            <div className="container mx-auto py-8">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold">Detalhes do Pagamento</h1>
-                    <p className="text-muted-foreground mt-2">
-                        Complete o pagamento para ativar sua assinatura
-                    </p>
+                    <p className="mt-2 text-muted-foreground">Complete o pagamento para ativar sua assinatura</p>
                 </div>
 
                 {/* Status Card */}
@@ -87,35 +88,21 @@ export default function ShowPayment({ payment }: PaymentPageProps) {
                         <div className="flex items-center justify-between">
                             <div>
                                 <CardTitle>Status do Pagamento</CardTitle>
-                                <CardDescription>
-                                    Plano {payment.subscription?.plan.name}
-                                </CardDescription>
+                                <CardDescription>Plano {payment.subscription?.plan.name}</CardDescription>
                             </div>
-                            <Badge className={statusColors[payment.status]}>
-                                {statusLabels[payment.status]}
-                            </Badge>
+                            <Badge className={statusColors[payment.status]}>{statusLabels[payment.status]}</Badge>
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="flex items-center justify-between gap-4">
                             <div>
                                 <p className="text-sm text-muted-foreground">Valor</p>
-                                <p className="text-xl font-bold">
-                                    {payment.amount_formatted}
-                                </p>
+                                <p className="text-xl font-bold">{formatPriceCent(payment.amount_cents)}</p>
                             </div>
                             {payment.due_date && (
                                 <div>
-                                    <p className="text-sm text-muted-foreground">
-                                        Vencimento
-                                    </p>
-                                    <p className="text-xl font-bold">
-                                        {format(
-                                            new Date(payment.due_date),
-                                            "dd 'de' MMMM",
-                                            { locale: ptBR }
-                                        )}
-                                    </p>
+                                    <p className="text-sm text-muted-foreground">Vencimento</p>
+                                    <p className="text-xl font-bold">{format(new Date(payment.due_date), "dd 'de' MMMM", { locale: ptBR })}</p>
                                 </div>
                             )}
                         </div>
@@ -130,47 +117,29 @@ export default function ShowPayment({ payment }: PaymentPageProps) {
                                 <QrCode className="h-5 w-5" />
                                 <CardTitle>Pague com PIX</CardTitle>
                             </div>
-                            <CardDescription>
-                                Escaneie o QR Code abaixo ou copie o código PIX
-                            </CardDescription>
+                            <CardDescription>Escaneie o QR Code abaixo ou copie o código PIX</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="flex flex-col items-center space-y-6">
                                 {/* QR Code Image */}
-                                <div className="bg-white p-4 rounded-lg border">
-                                    <img
-                                        src={`data:image/png;base64,${payment.pix_qr_code}`}
-                                        alt="QR Code PIX"
-                                        className="w-64 h-64"
-                                    />
+                                <div className="rounded-lg border bg-white p-4">
+                                    <img src={`data:image/png;base64,${payment.pix_qr_code}`} alt="QR Code PIX" className="h-64 w-64" />
                                 </div>
 
                                 {/* Copy PIX Code */}
                                 {payment.pix_copy_paste && (
                                     <div className="w-full">
-                                        <div className="flex items-center gap-2 p-4 bg-muted rounded-lg">
-                                            <code className="flex-1 text-xs overflow-hidden text-ellipsis">
-                                                {payment.pix_copy_paste}
-                                            </code>
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                onClick={() =>
-                                                    copyToClipboard(payment.pix_copy_paste!)
-                                                }
-                                            >
-                                                {copied ? (
-                                                    <CheckCircle className="h-4 w-4" />
-                                                ) : (
-                                                    <Copy className="h-4 w-4" />
-                                                )}
+                                        <div className="flex items-center gap-2 rounded-lg bg-muted p-4">
+                                            <code className="flex-1 overflow-hidden text-xs text-ellipsis">{payment.pix_copy_paste}</code>
+                                            <Button size="sm" variant="outline" onClick={() => copyToClipboard(payment.pix_copy_paste!)}>
+                                                {copied ? <CheckCircle className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                                             </Button>
                                         </div>
                                     </div>
                                 )}
 
                                 <div className="text-center text-sm text-muted-foreground">
-                                    <Clock className="inline h-4 w-4 mr-1" />
+                                    <Clock className="mr-1 inline h-4 w-4" />
                                     Aguardando confirmação do pagamento...
                                 </div>
                             </div>
@@ -186,50 +155,29 @@ export default function ShowPayment({ payment }: PaymentPageProps) {
                                 <Receipt className="h-5 w-5" />
                                 <CardTitle>Boleto Bancário</CardTitle>
                             </div>
-                            <CardDescription>
-                                Pague o boleto até a data de vencimento
-                            </CardDescription>
+                            <CardDescription>Pague o boleto até a data de vencimento</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {payment.boleto_barcode && (
                                 <div>
-                                    <p className="text-sm font-medium mb-2">
-                                        Código de barras
-                                    </p>
-                                    <div className="flex items-center gap-2 p-4 bg-muted rounded-lg">
-                                        <code className="flex-1 text-sm">
-                                            {payment.boleto_barcode}
-                                        </code>
-                                        <Button
-                                            size="sm"
-                                            variant="outline"
-                                            onClick={() =>
-                                                copyToClipboard(payment.boleto_barcode!)
-                                            }
-                                        >
-                                            {copied ? (
-                                                <CheckCircle className="h-4 w-4" />
-                                            ) : (
-                                                <Copy className="h-4 w-4" />
-                                            )}
+                                    <p className="mb-2 text-sm font-medium">Código de barras</p>
+                                    <div className="flex items-center gap-2 rounded-lg bg-muted p-4">
+                                        <code className="flex-1 text-sm">{payment.boleto_barcode}</code>
+                                        <Button size="sm" variant="outline" onClick={() => copyToClipboard(payment.boleto_barcode!)}>
+                                            {copied ? <CheckCircle className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                                         </Button>
                                     </div>
                                 </div>
                             )}
 
                             {payment.invoice_url && (
-                                <Button
-                                    className="w-full"
-                                    onClick={() =>
-                                        window.open(payment.invoice_url!, '_blank')
-                                    }
-                                >
+                                <Button className="w-full" onClick={() => window.open(payment.invoice_url!, '_blank')}>
                                     Visualizar Boleto
                                 </Button>
                             )}
 
                             <div className="text-center text-sm text-muted-foreground">
-                                <Clock className="inline h-4 w-4 mr-1" />
+                                <Clock className="mr-1 inline h-4 w-4" />
                                 Aguardando confirmação do pagamento...
                             </div>
                         </CardContent>
@@ -244,14 +192,12 @@ export default function ShowPayment({ payment }: PaymentPageProps) {
                                 <CreditCard className="h-5 w-5" />
                                 <CardTitle>Pagamento com Cartão de Crédito</CardTitle>
                             </div>
-                            <CardDescription>
-                                Complete o pagamento inserindo os dados do cartão
-                            </CardDescription>
+                            <CardDescription>Complete o pagamento inserindo os dados do cartão</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="bg-muted rounded-lg p-6 space-y-4">
+                            <div className="space-y-4 rounded-lg bg-muted p-6">
                                 <div className="flex items-start gap-3">
-                                    <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
+                                    <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-green-600" />
                                     <div className="space-y-1">
                                         <p className="font-medium">Ambiente seguro</p>
                                         <p className="text-sm text-muted-foreground">
@@ -260,31 +206,23 @@ export default function ShowPayment({ payment }: PaymentPageProps) {
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-3">
-                                    <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
+                                    <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-green-600" />
                                     <div className="space-y-1">
                                         <p className="font-medium">Aprovação imediata</p>
-                                        <p className="text-sm text-muted-foreground">
-                                            Seu pagamento será processado instantaneamente
-                                        </p>
+                                        <p className="text-sm text-muted-foreground">Seu pagamento será processado instantaneamente</p>
                                     </div>
                                 </div>
                             </div>
 
                             {payment.invoice_url && (
-                                <Button
-                                    className="w-full"
-                                    size="lg"
-                                    onClick={() =>
-                                        window.open(payment.invoice_url!, '_blank')
-                                    }
-                                >
-                                    <CreditCard className="h-4 w-4 mr-2" />
+                                <Button className="w-full" size="lg" onClick={() => window.open(payment.invoice_url!, '_blank')}>
+                                    <CreditCard className="mr-2 h-4 w-4" />
                                     Ir para Pagamento Seguro
                                 </Button>
                             )}
 
                             <div className="text-center text-sm text-muted-foreground">
-                                <Clock className="inline h-4 w-4 mr-1" />
+                                <Clock className="mr-1 inline h-4 w-4" />
                                 Aguardando pagamento...
                             </div>
                         </CardContent>
@@ -293,18 +231,10 @@ export default function ShowPayment({ payment }: PaymentPageProps) {
 
                 {/* Action Buttons */}
                 <div className="flex gap-4">
-                    <Button
-                        variant="outline"
-                        onClick={() => router.visit('/dashboard/subscription')}
-                        className="flex-1"
-                    >
+                    <Button variant="outline" onClick={() => router.visit('/dashboard/subscription')} className="flex-1">
                         Voltar
                     </Button>
-                    <Button
-                        onClick={checkPaymentStatus}
-                        disabled={isChecking}
-                        className="flex-1"
-                    >
+                    <Button onClick={checkPaymentStatus} disabled={isChecking} className="flex-1">
                         {isChecking ? 'Verificando...' : 'Verificar Pagamento'}
                     </Button>
                 </div>
