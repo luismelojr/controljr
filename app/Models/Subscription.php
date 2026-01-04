@@ -59,6 +59,16 @@ class Subscription extends Model
     }
 
     /**
+     * Get status color
+     */
+    protected function statusColor(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->statusEnum?->color() ?? 'default',
+        );
+    }
+
+    /**
      * Check if subscription is active
      */
     public function isActive(): bool

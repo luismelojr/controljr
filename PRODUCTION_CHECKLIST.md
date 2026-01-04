@@ -317,14 +317,17 @@ Próxima cobrança: R$ 59,90 (No dia 1 do próximo mês)
 
 ## 🟢 OPCIONAL - Melhorias Futuras
 
-### 7. ⏸️ Painel Administrativo
+### 7. ✅ Painel Administrativo
 
-**Prioridade**: BAIXA
-**Status**: PENDENTE
+**Prioridade**: MÉDIA
+**Status**: ✅ **CONCLUÍDO**
 
-- [ ] Dashboard com métricas de assinaturas
-- [ ] Listar todos os pagamentos
-- [ ] Cancelar/reembolsar manualmente
+**Funcionalidades**:
+
+- [x] **Dashboard Admin**: Métricas gerais (MRR, Total de Assinantes)
+- [x] **Listagem de Assinaturas**: Ver status, filtrar
+- [x] **Listagem de Pagamentos**: Histórico completo
+- [x] **Gestão**: Cancelar assinatura manualmente (Admin)
 - [ ] Ver detalhes de webhooks recebidos
 - [ ] Gráficos de receita mensal
 - [ ] Exportar relatórios

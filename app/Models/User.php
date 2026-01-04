@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'uuid',
         'email',
+        'is_admin',
         'cpf',
         'google_id',
         'password',
@@ -51,6 +52,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'status' => 'boolean',
+            'is_admin' => 'boolean',
         ];
     }
 
@@ -219,5 +221,13 @@ class User extends Authenticatable
     public function plan()
     {
         return $this->currentSubscription?->plan;
+    }
+
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->is_admin === true;
     }
 }

@@ -31,6 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'subscription' => \App\Http\Middleware\CheckSubscription::class,
             'plan.feature' => \App\Http\Middleware\CheckPlanFeature::class,
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
     })
     ->withSchedule(function (Schedule $schedule): void {

@@ -25,6 +25,7 @@ import {
     LogOut,
     PieChart,
     Tag,
+    Users,
     Wallet,
 } from 'lucide-react';
 
@@ -37,34 +38,6 @@ interface MenuItemInterface {
         badge?: number;
     }[];
 }
-
-const menuItems: MenuItemInterface[] = [
-    {
-        title: 'Menu',
-        items: [
-            { title: 'Dashboard', icon: Home, url: route('dashboard.home') },
-            { title: 'Carteiras', icon: Wallet, url: route('dashboard.wallets.index') },
-            { title: 'Categorias', icon: Tag, url: route('dashboard.categories.index') },
-            { title: 'Contas', icon: BanknoteArrowDownIcon, url: route('dashboard.accounts.index') },
-            { title: 'Receitas', icon: BanknoteArrowUpIcon, url: route('dashboard.incomes.index') },
-            { title: 'Transações Contas', icon: ArrowLeftRightIcon, url: route('dashboard.transactions.index') },
-            { title: 'Transações Receitas', icon: ArrowLeftRightIcon, url: route('dashboard.income-transactions.index') },
-            { title: 'Orçamentos', icon: PieChart, url: route('dashboard.budgets.index') },
-            { title: 'Relatórios', icon: BarChart3, url: route('dashboard.reports.index') },
-            { title: 'Conciliação', icon: FileCheck, url: route('dashboard.reconciliation.index') },
-            { title: 'Alertas', icon: CircleAlert, url: route('dashboard.alerts.index') },
-            { title: 'Minha Assinatura', icon: CreditCard, url: route('dashboard.subscription.index') },
-        ],
-    },
-    // {
-    //     title: 'Help & Settings',
-    //     items: [
-    //         { title: 'Settings', icon: Settings, url: '#' },
-    //         { title: 'Feedback', icon: HelpCircle, url: '#' },
-    //         { title: 'Help & Center', icon: HelpCircle, url: '#' },
-    //     ],
-    // },
-];
 
 /**
  * Verifica se uma rota está ativa baseado na URL atual
@@ -94,6 +67,40 @@ function isActiveRoute(itemUrl: string, currentUrl: string): boolean {
 
 export function AppSidebar() {
     const { url } = usePage();
+    const { auth } = usePage<any>().props;
+
+    const baseMenuItems: MenuItemInterface[] = [
+        {
+            title: 'Menu',
+            items: [
+                { title: 'Dashboard', icon: Home, url: route('dashboard.home') },
+                { title: 'Carteiras', icon: Wallet, url: route('dashboard.wallets.index') },
+                { title: 'Categorias', icon: Tag, url: route('dashboard.categories.index') },
+                { title: 'Contas', icon: BanknoteArrowDownIcon, url: route('dashboard.accounts.index') },
+                { title: 'Receitas', icon: BanknoteArrowUpIcon, url: route('dashboard.incomes.index') },
+                { title: 'Transações Contas', icon: ArrowLeftRightIcon, url: route('dashboard.transactions.index') },
+                { title: 'Transações Receitas', icon: ArrowLeftRightIcon, url: route('dashboard.income-transactions.index') },
+                { title: 'Orçamentos', icon: PieChart, url: route('dashboard.budgets.index') },
+                { title: 'Relatórios', icon: BarChart3, url: route('dashboard.reports.index') },
+                { title: 'Conciliação', icon: FileCheck, url: route('dashboard.reconciliation.index') },
+                { title: 'Alertas', icon: CircleAlert, url: route('dashboard.alerts.index') },
+                { title: 'Minha Assinatura', icon: CreditCard, url: route('dashboard.subscription.index') },
+            ],
+        },
+    ];
+
+    const menuItems = [...baseMenuItems];
+
+    if (auth.user?.is_admin) {
+        menuItems.push({
+            title: 'Admin',
+            items: [
+                { title: 'Painel Admin', icon: BarChart3, url: route('admin.dashboard') },
+                { title: 'Assinaturas', icon: Users, url: route('admin.subscriptions.index') },
+                { title: 'Pagamentos', icon: BanknoteArrowUpIcon, url: route('admin.payments.index') },
+            ],
+        });
+    }
 
     const handleLogout = () => {
         router.post(route('logout'));

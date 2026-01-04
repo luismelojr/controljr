@@ -172,4 +172,11 @@ Route::middleware('auth')->group(function () {
                 ->name('cancel');
         });
     });
+
+    // Admin Routes
+    Route::middleware(['admin'])->prefix('admin')->as('admin.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/subscriptions', [\App\Http\Controllers\Admin\SubscriptionController::class, 'index'])->name('subscriptions.index');
+        Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
+    });
 });
