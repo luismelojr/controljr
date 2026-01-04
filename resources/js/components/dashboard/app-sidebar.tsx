@@ -27,6 +27,7 @@ import {
     Tag,
     Users,
     Wallet,
+    Webhook,
 } from 'lucide-react';
 
 interface MenuItemInterface {
@@ -98,6 +99,7 @@ export function AppSidebar() {
                 { title: 'Painel Admin', icon: BarChart3, url: route('admin.dashboard') },
                 { title: 'Assinaturas', icon: Users, url: route('admin.subscriptions.index') },
                 { title: 'Pagamentos', icon: BanknoteArrowUpIcon, url: route('admin.payments.index') },
+                { title: 'Webhooks', icon: Webhook, url: route('admin.webhooks.index') },
             ],
         });
     }

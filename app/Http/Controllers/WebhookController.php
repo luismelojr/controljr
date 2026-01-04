@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain\Payments\DTO\WebhookEventData;
 use App\Domain\Payments\Services\WebhookService;
 use App\Jobs\ProcessPaymentWebhook;
+use App\Models\WebhookCall;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -20,13 +21,21 @@ class WebhookController extends Controller
      */
     public function asaas(Request $request)
     {
+        $webhookCall = null;
         try {
+            // Log incoming webhook
+            $webhookCall = WebhookCall::create([
+                'type' => $request->input('event'),
+                'payload' => $request->all(),
+            ]);
+
             // 1. Verify webhook signature for security
             $signature = $request->header('asaas-signature');
             $payload = $request->getContent();
 
             if ($signature && ! $this->webhookService->verifyWebhookSignature($payload, $signature)) {
                 Log::warning('Invalid webhook signature received');
+                $webhookCall->update(['exception' => 'Invalid signature']);
 
                 return response()->json(['error' => 'Invalid signature'], 401);
             }
@@ -55,6 +64,10 @@ class WebhookController extends Controller
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
+
+            if ($webhookCall) {
+                $webhookCall->update(['exception' => $e->getMessage()]);
+            }
 
             // Return 200 even on error to avoid Asaas retrying indefinitely
             return response()->json(['success' => false, 'error' => 'Internal error'], 200);

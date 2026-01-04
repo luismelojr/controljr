@@ -328,9 +328,9 @@ Próxima cobrança: R$ 59,90 (No dia 1 do próximo mês)
 - [x] **Listagem de Assinaturas**: Ver status, filtrar
 - [x] **Listagem de Pagamentos**: Histórico completo
 - [x] **Gestão**: Cancelar assinatura manualmente (Admin)
-- [ ] Ver detalhes de webhooks recebidos
-- [ ] Gráficos de receita mensal
-- [ ] Exportar relatórios
+- [x] Ver detalhes de webhooks recebidos
+- [x] Gráficos de receita mensal
+- [x] Exportar relatórios
 
 ---
 

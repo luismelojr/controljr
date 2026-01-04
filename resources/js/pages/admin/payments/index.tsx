@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Head } from '@inertiajs/react';
+import { Download } from 'lucide-react';
 
 interface Payment {
     uuid: string;
@@ -39,6 +40,15 @@ export default function AdminPayments({ payments }: Props) {
             <Head title="Histórico de Pagamentos" />
 
             <div className="flex h-full flex-1 flex-col gap-4">
+                <div className="flex items-center justify-end">
+                    <a href={route('admin.export.payments')} target="_blank" rel="noreferrer">
+                        <Button variant="outline" size="sm" className="gap-2">
+                            <Download className="h-4 w-4" />
+                            Exportar CSV
+                        </Button>
+                    </a>
+                </div>
+
                 <Card>
                     <CardHeader>
                         <CardTitle>Histórico de Transações</CardTitle>

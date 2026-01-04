@@ -44,6 +44,30 @@ class DashboardController extends Controller
                 ];
             });
 
+        // Revenue Chart Data (Last 30 days)
+        $endDate = now();
+        $startDate = now()->subDays(29);
+        
+        $revenueData = Payment::where('status', 'received')
+            ->whereBetween('created_at', [$startDate->startOfDay(), $endDate->endOfDay()])
+            ->selectRaw('DATE(created_at) as date, SUM(amount_cents) as total_cents')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [$item->date => (float) ($item->total_cents / 100)];
+            });
+
+        // Fill in missing days with 0
+        $chartData = [];
+        for ($i = 0; $i < 30; $i++) {
+            $date = $startDate->copy()->addDays($i)->format('Y-m-d');
+            $chartData[] = [
+                'date' => \Carbon\Carbon::parse($date)->format('d/m'),
+                'value' => $revenueData[$date] ?? 0,
+            ];
+        }
+
         return Inertia::render('admin/dashboard/index', [
             'metrics' => [
                 'total_users' => $totalUsers,
@@ -51,6 +75,7 @@ class DashboardController extends Controller
                 'mrr' => $mrr,
             ],
             'recent_payments' => $recentPayments,
+            'revenue_chart' => $chartData,
         ]);
     }
 }

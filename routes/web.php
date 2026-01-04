@@ -178,5 +178,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/subscriptions', [\App\Http\Controllers\Admin\SubscriptionController::class, 'index'])->name('subscriptions.index');
         Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/webhooks', [\App\Http\Controllers\Admin\WebhookController::class, 'index'])->name('webhooks.index');
+        
+        // Export Routes
+        Route::get('/export/subscriptions', [\App\Http\Controllers\Admin\ExportController::class, 'subscriptions'])->name('export.subscriptions');
+        Route::get('/export/payments', [\App\Http\Controllers\Admin\ExportController::class, 'payments'])->name('export.payments');
     });
 });

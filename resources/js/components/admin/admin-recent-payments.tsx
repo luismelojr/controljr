@@ -13,8 +13,11 @@ interface Payment {
     billing_type?: string;
 }
 
+import { cn } from '@/lib/utils';
+
 interface AdminRecentPaymentsProps {
     payments: Payment[];
+    className?: string;
 }
 
 const statusMap: Record<string, { label: string; variant: 'default' | 'success' | 'destructive' | 'warning' | 'secondary' | 'outline'; icon: any }> =
@@ -27,9 +30,9 @@ const statusMap: Record<string, { label: string; variant: 'default' | 'success' 
         CANCELLED: { label: 'Cancelado', variant: 'destructive', icon: XCircle },
     };
 
-export function AdminRecentPayments({ payments }: AdminRecentPaymentsProps) {
+export function AdminRecentPayments({ payments, className }: AdminRecentPaymentsProps) {
     return (
-        <Card className="col-span-4 lg:col-span-7">
+        <Card className={cn('col-span-4 lg:col-span-7', className)}>
             <CardHeader className="flex flex-row items-center justify-between">
                 <div className="space-y-1.5">
                     <CardTitle>Pagamentos Recentes</CardTitle>

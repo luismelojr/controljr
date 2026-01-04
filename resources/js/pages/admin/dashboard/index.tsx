@@ -1,4 +1,5 @@
 import { AdminRecentPayments } from '@/components/admin/admin-recent-payments';
+import { AdminRevenueChart } from '@/components/admin/admin-revenue-chart';
 import { AdminStatsCard } from '@/components/admin/admin-stats-card';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { Head } from '@inertiajs/react';
@@ -17,9 +18,13 @@ interface Props {
         status: string;
         date: string;
     }[];
+    revenue_chart: {
+        date: string;
+        value: number;
+    }[];
 }
 
-export default function AdminDashboard({ metrics, recent_payments }: Props) {
+export default function AdminDashboard({ metrics, recent_payments, revenue_chart }: Props) {
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('pt-BR', {
             style: 'currency',
@@ -56,7 +61,8 @@ export default function AdminDashboard({ metrics, recent_payments }: Props) {
 
                 {/* Main Content Area */}
                 <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-7">
-                    <AdminRecentPayments payments={recent_payments} />
+                    <AdminRevenueChart data={revenue_chart} className="col-span-4" />
+                    <AdminRecentPayments payments={recent_payments} className="col-span-4 lg:col-span-3" />
                 </div>
             </div>
         </DashboardLayout>

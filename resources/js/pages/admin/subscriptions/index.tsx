@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Head } from '@inertiajs/react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Download } from 'lucide-react';
 
 interface Subscription {
     id: number;
@@ -36,6 +37,15 @@ export default function AdminSubscriptions({ subscriptions }: Props) {
             <Head title="Gerenciar Assinaturas" />
 
             <div className="flex h-full flex-1 flex-col gap-4">
+                <div className="flex items-center justify-end">
+                    <a href={route('admin.export.subscriptions')} target="_blank" rel="noreferrer">
+                        <Button variant="outline" size="sm" className="gap-2">
+                            <Download className="h-4 w-4" />
+                            Exportar CSV
+                        </Button>
+                    </a>
+                </div>
+
                 <Card>
                     <CardHeader>
                         <CardTitle>Todas as Assinaturas</CardTitle>
