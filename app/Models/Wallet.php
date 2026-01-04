@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\WalletTypeEnum;
 use App\Traits\HasUuidCustom;
+use App\Traits\HasMoneyAccessors;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Wallet extends Model
 {
     /** @use HasFactory<\Database\Factories\WalletFactory> */
-    use HasFactory, HasUuidCustom;
+    use HasFactory, HasUuidCustom, HasMoneyAccessors;
 
     protected $fillable = [
       'name',
@@ -34,31 +36,27 @@ class Wallet extends Model
     }
 
     /**
-     * @param $value
-     * @return void
+     * Interact with the wallet's card limit.
+     * Uses HasMoneyAccessors trait for consistent money conversion
      */
-    public function setCardLimitAttribute($value): void
+    protected function cardLimit(): Attribute
     {
-        $this->attributes['card_limit'] = $value * 100;
+        return Attribute::make(
+            get: fn ($value) => $this->centsToBRL($value),
+            set: fn ($value) => $this->brlToCents($value),
+        );
     }
 
     /**
-     * @param $value
-     * @return float|int
+     * Interact with the wallet's initial balance.
+     * Uses HasMoneyAccessors trait for consistent money conversion
      */
-    public function getCardLimitAttribute($value): float|int
+    protected function initialBalance(): Attribute
     {
-        return $value / 100;
-    }
-
-    public function setInitialBalanceAttribute($value): void
-    {
-        $this->attributes['initial_balance'] = $value * 100;
-    }
-
-    public function getInitialBalanceAttribute($value): float|int
-    {
-        return $value / 100;
+        return Attribute::make(
+            get: fn ($value) => $this->centsToBRL($value),
+            set: fn ($value) => $this->brlToCents($value),
+        );
     }
 
     public function user(): BelongsTo
@@ -89,6 +87,7 @@ class Wallet extends Model
     /**
      * Get the current balance of the wallet.
      * Balance = initial_balance + received_incomes - paid_transactions
+     * Uses HasMoneyAccessors trait for consistent money conversion
      */
     public function getBalanceAttribute(): float
     {
@@ -108,6 +107,6 @@ class Wallet extends Model
         // Calculate final balance in cents, then convert to reais
         $balanceInCents = $initialBalanceInCents + $receivedIncomesInCents - $paidTransactionsInCents;
 
-        return $balanceInCents / 100;
+        return $this->centsToBRL($balanceInCents);
     }
 }

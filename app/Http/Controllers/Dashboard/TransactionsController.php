@@ -6,6 +6,8 @@ use App\Domain\Transactions\Actions\CreateTransactionAction;
 use App\Domain\Transactions\Actions\MarkTransactionAsPaidAction;
 use App\Domain\Transactions\Actions\MarkTransactionAsUnpaidAction;
 use App\Domain\Transactions\Services\TransactionService;
+use App\Exceptions\TransactionException;
+use App\Exceptions\WalletException;
 use App\Facades\Toast;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\Transaction\StoreTransactionRequest;
@@ -133,8 +135,16 @@ class TransactionsController extends Controller
             Toast::success('Transação marcada como paga!');
 
             return back();
+        } catch (TransactionException $e) {
+            Toast::error('Erro na transação: '.$e->getMessage());
+
+            return back();
+        } catch (WalletException $e) {
+            Toast::error('Erro na carteira: '.$e->getMessage());
+
+            return back();
         } catch (\Exception $e) {
-            Toast::error('Erro ao marcar transação como paga: ' . $e->getMessage());
+            Toast::error('Erro inesperado: '.$e->getMessage());
 
             return back();
         }
@@ -156,8 +166,16 @@ class TransactionsController extends Controller
             Toast::success('Transação marcada como não paga!');
 
             return back();
+        } catch (TransactionException $e) {
+            Toast::error('Erro na transação: '.$e->getMessage());
+
+            return back();
+        } catch (WalletException $e) {
+            Toast::error('Erro na carteira: '.$e->getMessage());
+
+            return back();
         } catch (\Exception $e) {
-            Toast::error($e->getMessage());
+            Toast::error('Erro inesperado: '.$e->getMessage());
 
             return back();
         }

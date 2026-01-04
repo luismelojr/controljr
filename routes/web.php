@@ -7,11 +7,15 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\GoogleLoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\WebhookController;
 use Inertia\Inertia;
 
 use App\Http\Controllers\LandingPageController;
 
 Route::get('/', LandingPageController::class)->name('home');
+
+// Webhook routes (public, no auth)
+Route::post('/webhook/asaas', [WebhookController::class, 'asaas'])->name('webhook.asaas');
 
 Route::prefix('toast-test')->group(function () {
     Route::get('/', [ToastTestController::class, 'index'])->name('toast-test.index');
@@ -122,6 +126,44 @@ Route::middleware('auth')->group(function () {
                 ->name('accounts');
             Route::post('/budgets', [\App\Http\Controllers\Dashboard\ExportsController::class, 'budgets'])
                 ->name('budgets');
+        });
+
+        // Subscription routes
+        Route::prefix('subscription')->as('subscription.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Dashboard\SubscriptionController::class, 'index'])
+                ->name('index');
+            Route::get('/plans', [\App\Http\Controllers\Dashboard\SubscriptionController::class, 'plans'])
+                ->name('plans');
+            Route::post('/subscribe/{planSlug}', [\App\Http\Controllers\Dashboard\SubscriptionController::class, 'subscribe'])
+                ->name('subscribe');
+            Route::delete('/cancel', [\App\Http\Controllers\Dashboard\SubscriptionController::class, 'cancel'])
+                ->name('cancel');
+            Route::post('/resume', [\App\Http\Controllers\Dashboard\SubscriptionController::class, 'resume'])
+                ->name('resume');
+            Route::post('/upgrade/{planSlug}', [\App\Http\Controllers\Dashboard\SubscriptionController::class, 'upgrade'])
+                ->name('upgrade');
+            Route::post('/downgrade/{planSlug}', [\App\Http\Controllers\Dashboard\SubscriptionController::class, 'downgrade'])
+                ->name('downgrade');
+            Route::get('/preview/{planSlug}', [\App\Http\Controllers\Dashboard\SubscriptionController::class, 'previewChange'])
+                ->name('preview');
+        });
+
+        // Payment routes
+        Route::prefix('payment')->as('payment.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Dashboard\PaymentController::class, 'index'])
+                ->name('index');
+            Route::get('/choose-method', [\App\Http\Controllers\Dashboard\PaymentController::class, 'choosePaymentMethod'])
+                ->name('choose-method');
+            Route::post('/create', [\App\Http\Controllers\Dashboard\PaymentController::class, 'createPayment'])
+                ->name('create');
+            Route::get('/{payment:uuid}', [\App\Http\Controllers\Dashboard\PaymentController::class, 'show'])
+                ->name('show');
+            Route::get('/{payment:uuid}/success', [\App\Http\Controllers\Dashboard\PaymentController::class, 'success'])
+                ->name('success');
+            Route::get('/{payment:uuid}/check-status', [\App\Http\Controllers\Dashboard\PaymentController::class, 'checkStatus'])
+                ->name('check-status');
+            Route::delete('/{payment:uuid}/cancel', [\App\Http\Controllers\Dashboard\PaymentController::class, 'cancel'])
+                ->name('cancel');
         });
     });
 });

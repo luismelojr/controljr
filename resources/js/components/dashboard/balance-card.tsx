@@ -2,6 +2,7 @@ import { TrendingUp, Copy, ArrowUpRight, ArrowDownRight, Plus } from 'lucide-rea
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { formatCurrency } from '@/lib/format';
 
 interface BalanceCardProps {
     balance: number;
@@ -11,12 +12,6 @@ interface BalanceCardProps {
 }
 
 export function BalanceCard({ balance, accountNumber, percentageChange, className }: BalanceCardProps) {
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-        }).format(value);
-    };
 
     const copyAccountNumber = () => {
         navigator.clipboard.writeText(accountNumber);

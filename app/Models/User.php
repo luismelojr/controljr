@@ -25,7 +25,8 @@ class User extends Authenticatable
         'google_id',
         'password',
         'phone',
-        'status'
+        'status',
+        'current_subscription_id',
     ];
 
     /**
@@ -114,5 +115,108 @@ class User extends Authenticatable
     public function alertNotifications()
     {
         return $this->hasMany(AlertNotification::class);
+    }
+
+    /**
+     * Get all subscriptions for the user.
+     */
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    /**
+     * Get the current active subscription.
+     */
+    public function currentSubscription()
+    {
+        return $this->belongsTo(Subscription::class, 'current_subscription_id');
+    }
+
+    /**
+     * Check if user has an active subscription
+     */
+    public function hasActiveSubscription(): bool
+    {
+        return $this->currentSubscription?->isActive() ?? false;
+    }
+
+    /**
+     * Check if user is on a specific plan
+     */
+    public function isOnPlan(string $slug): bool
+    {
+        return $this->currentSubscription?->plan?->slug === $slug;
+    }
+
+    /**
+     * Check if user is on free plan
+     */
+    public function isOnFreePlan(): bool
+    {
+        return $this->currentSubscription === null
+            || $this->isOnPlan('free');
+    }
+
+    /**
+     * Check if user is on premium plan
+     */
+    public function isOnPremiumPlan(): bool
+    {
+        return $this->isOnPlan('premium');
+    }
+
+    /**
+     * Check if user is on family plan
+     */
+    public function isOnFamilyPlan(): bool
+    {
+        return $this->isOnPlan('family');
+    }
+
+    /**
+     * Get plan limits for current subscription
+     */
+    public function getPlanLimits(): array
+    {
+        if (! $this->currentSubscription || ! $this->currentSubscription->plan) {
+            return config('plan_limits.free', []);
+        }
+
+        $planSlug = $this->currentSubscription->plan->slug;
+
+        return config("plan_limits.{$planSlug}", config('plan_limits.free', []));
+    }
+
+    /**
+     * Check if user can use a feature
+     */
+    public function canUseFeature(string $feature): bool
+    {
+        $limits = $this->getPlanLimits();
+
+        if (! isset($limits[$feature])) {
+            return true; // Se não tem limite definido, permite
+        }
+
+        // Se é boolean
+        if (is_bool($limits[$feature])) {
+            return $limits[$feature];
+        }
+
+        // Se é -1, é ilimitado
+        if ($limits[$feature] === -1) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get current subscription plan
+     */
+    public function plan()
+    {
+        return $this->currentSubscription?->plan;
     }
 }

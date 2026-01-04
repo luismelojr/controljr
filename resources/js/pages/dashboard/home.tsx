@@ -8,6 +8,7 @@ import { NotificationsList } from '@/components/dashboard/notifications-list';
 import { WalletsSummaryList } from '@/components/dashboard/wallets-summary-list';
 import { PageProps } from '@/types';
 import { usePage, router } from '@inertiajs/react';
+import { formatCurrency } from '@/lib/format';
 
 interface DashboardData {
     total_balance: number;
@@ -60,13 +61,6 @@ export default function Home() {
     const { auth, ...dashboardData } = usePage<PageProps & DashboardData>().props;
 
     const firstName = auth.user?.name ? auth.user.name.split(' ')[0] : 'User';
-
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-        }).format(value);
-    };
 
     const handleMarkAsPaid = (transactionId: string) => {
         router.patch(route('dashboard.transactions.mark-as-paid', { transaction: transactionId }), {}, {

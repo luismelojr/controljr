@@ -31,5 +31,8 @@ class DatabaseSeeder extends Seeder
                 'is_default' => true
             ]);
         }
+
+        // Seed subscription plans
+        $this->call(SubscriptionPlanSeeder::class);
     }
 }

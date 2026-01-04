@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import ExportButton from '@/components/ui/export-button';
+import { formatDate } from '@/lib/format';
 import { Category } from '@/types/category';
 import { ColumnDef, FilterConfig, PaginatedResponse } from '@/types/datatable';
 import { Transaction } from '@/types/transaction';
@@ -134,10 +135,10 @@ export default function TransactionsIndex({ transactions, categories, filters }:
             sortable: true,
             render: (transaction) => (
                 <div className="space-y-1">
-                    <p className="font-medium">{new Date(transaction.due_date + 'T00:00:00').toLocaleDateString('pt-BR')}</p>
+                    <p className="font-medium">{formatDate(transaction.due_date)}</p>
                     {transaction.paid_at && (
                         <p className="text-xs text-muted-foreground">
-                            Pago em {new Date(transaction.paid_at + 'T00:00:00').toLocaleDateString('pt-BR')}
+                            Pago em {formatDate(transaction.paid_at)}
                         </p>
                     )}
                 </div>

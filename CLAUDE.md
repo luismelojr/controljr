@@ -37,10 +37,23 @@ This is a Laravel 12 application with React/Inertia.js frontend, using TypeScrip
 
 ## Development Commands
 
+### Package Manager
+This project uses **pnpm** for JavaScript dependencies. While npm commands are also supported, pnpm is preferred for consistency.
+
 ### Initial Setup
 ```bash
 composer setup  # Runs composer install, copies .env, generates key, migrates DB, npm install, npm build
 ```
+
+### Docker Setup (Optional)
+A `docker-compose.yml` is available for running MySQL and Redis services:
+```bash
+docker-compose up -d  # Start MySQL and Redis containers
+```
+
+Services:
+- MySQL 8.0: Port 3306 (user: melosys, password: melosys, database: melosys)
+- Redis 7: Port 6379
 
 ### Development Server
 ```bash
@@ -590,6 +603,34 @@ QueryBuilder::for(Transaction::class)
 
 - `app/Helpers/Helpers.php`: Utility functions (e.g., `formatStringRemoveCharactersSpecial()`)
 
+### Enums
+
+All enums in `app/Enums/` follow a consistent pattern with `label()` methods for Portuguese translations:
+
+**Available Enums:**
+- `AccountStatusEnum`: ACTIVE, COMPLETED, CANCELLED
+- `AlertTypeEnum`: CREDIT_CARD_USAGE, BILL_DUE_DATE, ACCOUNT_BALANCE, BUDGET_EXCEEDED
+- `ExportFormatEnum`: XLSX, CSV
+- `IncomeRecurrenceTypeEnum`: MONTHLY, WEEKLY, YEARLY, CUSTOM
+- `IncomeStatusEnum`: ACTIVE, INACTIVE
+- `IncomeTransactionStatusEnum`: PENDING, RECEIVED, CANCELLED
+- `NotificationTypeEnum`: INFO, WARNING, DANGER, SUCCESS
+- `RecurrenceTypeEnum`: MONTHLY, ONCE (for budgets and accounts)
+- `TransactionStatusEnum`: PENDING, PAID, CANCELLED
+- `VisualizationTypeEnum`: CHART, TABLE
+- `WalletTypeEnum`: BANK_ACCOUNT, CREDIT_CARD, OTHER
+
+**Pattern:**
+```php
+public function label(): string
+{
+    return match ($this) {
+        self::ACTIVE => 'Ativa',
+        // ... Portuguese labels
+    };
+}
+```
+
 ## Configuration Notes
 
 ### Google OAuth Setup
@@ -658,6 +699,9 @@ Default configuration uses SQLite (`database/database.sqlite`). Standard Laravel
 
 **Key Models:**
 - All primary models use UUID as primary key via `HasUuidCustom` trait
+  - Automatically generates UUID on creation
+  - Uses UUID for route model binding instead of ID
+  - Provides `whereUuid()` scope for UUID-based queries
 - Most models have a `status` field (active/inactive) with dedicated toggle methods
 - Transactions and Incomes support recurring patterns with automatic generation
 - Transactions include reconciliation tracking (`is_reconciled`, `external_id`)
@@ -679,7 +723,7 @@ Default configuration uses SQLite (`database/database.sqlite`). Standard Laravel
 4. **Follow domain separation**: Controllers → DTOs → Services → Models
 5. **Use Form Requests** for validation logic instead of controller validation
 6. **Inertia pages** should be lightweight; business logic stays in backend services
-7. **UUID Primary Keys**: All user-created models use UUIDs via `HasUuidCustom` trait
+7. **UUID Primary Keys**: All user-created models use UUIDs via `HasUuidCustom` trait for route model binding
 8. **Status Fields**: Most models include status management (active/inactive) with dedicated toggle methods
 9. **Recurring Patterns**: Accounts, Incomes, and Budgets support recurring patterns with automatic generation
 10. **Reconciliation**: Transactions can be marked as reconciled with external bank statement IDs
@@ -692,3 +736,5 @@ Default configuration uses SQLite (`database/database.sqlite`). Standard Laravel
 17. **Type Safety**: Leverage TypeScript strict mode, Wayfinder for routes, Spatie Data for DTOs
 18. **Soft Deletes**: Implement soft deletes for data that users may want to restore (e.g., Budgets)
 19. **Brand Consistency**: Use `melosys-logo.tsx` component for all logo displays with `showText` prop for control
+20. **Enum Labels**: All enums implement `label()` method returning Portuguese translations for frontend display
+21. **Scheduled Tasks**: Alert checking runs on schedules defined in `routes/console.php`; use `php artisan alerts:check` for manual execution

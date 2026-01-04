@@ -26,6 +26,12 @@ return Application::configure(basePath: dirname(__DIR__))
         // Configure redirect for authenticated users
         $middleware->redirectGuestsTo('/login');
         $middleware->redirectUsersTo('/dashboard');
+
+        // Register middleware aliases
+        $middleware->alias([
+            'subscription' => \App\Http\Middleware\CheckSubscription::class,
+            'plan.feature' => \App\Http\Middleware\CheckPlanFeature::class,
+        ]);
     })
     ->withSchedule(function (Schedule $schedule): void {
         // Mark overdue transactions (expenses) - runs daily at midnight

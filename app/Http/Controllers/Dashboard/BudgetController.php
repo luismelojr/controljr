@@ -6,6 +6,8 @@ use App\Domain\Budgets\DTO\CreateBudgetData;
 use App\Domain\Budgets\DTO\UpdateBudgetData;
 use App\Domain\Budgets\Services\BudgetService;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreBudgetRequest;
+use App\Http\Requests\UpdateBudgetRequest;
 use App\Models\Budget;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -37,14 +39,9 @@ class BudgetController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreBudgetRequest $request)
     {
-        $validated = $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'amount' => 'required|numeric|min:0.01',
-            'period' => 'required|date',
-            'recurrence' => 'in:monthly,once',
-        ]);
+        $validated = $request->validated();
 
         $data = new CreateBudgetData(
             category_id: $validated['category_id'],
@@ -58,13 +55,9 @@ class BudgetController extends Controller
         return redirect()->back()->with('success', 'Orçamento criado com sucesso!');
     }
 
-    public function update(Request $request, Budget $budget)
+    public function update(UpdateBudgetRequest $request, Budget $budget)
     {
-        $validated = $request->validate([
-            'amount' => 'numeric|min:0.01',
-            'recurrence' => 'in:monthly,once',
-            'status' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
         $data = new UpdateBudgetData(
             amount: $validated['amount'] ?? null,
