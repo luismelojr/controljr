@@ -4,9 +4,14 @@ namespace App\Domain\Payments\Services;
 
 use App\Domain\Payments\DTO\WebhookEventData;
 use App\Domain\Subscriptions\Services\SubscriptionService;
+use App\Mail\PaymentConfirmedMail;
+use App\Mail\PaymentFailedMail;
+use App\Mail\SubscriptionActivatedMail;
+use App\Mail\SubscriptionCanceledMail;
 use App\Models\Payment;
 use App\Models\Subscription;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class WebhookService
 {
@@ -146,6 +151,16 @@ class WebhookService
             'subscription_id' => $payment->subscription_id,
         ]);
 
+        // Send payment confirmation email
+        try {
+            Mail::to($payment->user)->send(new PaymentConfirmedMail($payment->user, $payment));
+        } catch (\Exception $e) {
+            Log::error('Failed to send payment confirmation email', [
+                'payment_id' => $payment->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
         return true;
     }
 
@@ -179,7 +194,15 @@ class WebhookService
                 'grace_period_ends_at' => $subscription->payment_grace_period_ends_at,
             ]);
 
-            // TODO: Send email notification to user about payment failure
+            // Send email notification to user about payment failure
+            try {
+                Mail::to($subscription->user)->send(new PaymentFailedMail($subscription->user));
+            } catch (\Exception $e) {
+                Log::error('Failed to send payment failed email', [
+                    'subscription_id' => $subscription->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         return true;
@@ -298,6 +321,16 @@ class WebhookService
             Log::info('Subscription cancelled via Asaas webhook', [
                 'subscription_id' => $subscription->id,
             ]);
+
+            // Send cancellation email
+            try {
+                Mail::to($subscription->user)->send(new SubscriptionCanceledMail($subscription->user, $subscription));
+            } catch (\Exception $e) {
+                Log::error('Failed to send cancellation email', [
+                    'subscription_id' => $subscription->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         return true;
@@ -344,9 +377,12 @@ class WebhookService
             // Activate the new subscription
             $this->subscriptionService->activate($subscription);
 
+            $isUpgrade = false;
+
             // Cancel old subscription if exists and is different
             if ($currentSubscription && $currentSubscription->id !== $subscription->id) {
                 $currentSubscription->cancel();
+                $isUpgrade = true;
 
                 Log::info('Old subscription cancelled after upgrade', [
                     'old_subscription_id' => $currentSubscription->id,
@@ -357,7 +393,22 @@ class WebhookService
             Log::info('Subscription activated via webhook', [
                 'subscription_id' => $subscription->id,
                 'user_id' => $subscription->user_id,
+                'is_upgrade' => $isUpgrade,
             ]);
+
+            // Send welcome or upgrade email
+            try {
+                if ($isUpgrade) {
+                    Mail::to($subscription->user)->send(new \App\Mail\UpgradeConfirmedMail($subscription->user, $subscription));
+                } else {
+                    Mail::to($subscription->user)->send(new SubscriptionActivatedMail($subscription->user, $subscription));
+                }
+            } catch (\Exception $e) {
+                Log::error('Failed to send subscription activation/upgrade email', [
+                    'subscription_id' => $subscription->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
     }
 

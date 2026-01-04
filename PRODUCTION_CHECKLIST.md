@@ -290,28 +290,28 @@ Próxima cobrança: R$ 59,90 (No dia 1 do próximo mês)
 
 ---
 
-### 6. ⏸️ Notificações por Email
+### 6. ✅ Notificações por Email
 
 **Prioridade**: IMPORTANTE
-**Status**: PENDENTE
+**Status**: ✅ **CONCLUÍDO**
 
 **Emails a implementar**:
 
-- [ ] **Pagamento Confirmado**: "Seu pagamento foi aprovado!"
-- [ ] **Assinatura Ativada**: "Bem-vindo ao plano Premium!"
-- [ ] **Pagamento Falhou**: "Problema com seu pagamento"
-- [ ] **Assinatura Expira em X dias**: "Renove sua assinatura"
-- [ ] **Assinatura Expirada**: "Sua assinatura foi cancelada"
-- [ ] **Upgrade Confirmado**: "Você agora está no plano Family!"
-- [ ] **Recibo de Pagamento**: PDF anexo com recibo
+- [x] **Pagamento Confirmado**: "Seu pagamento foi aprovado!"
+- [x] **Assinatura Ativada**: "Bem-vindo ao plano Premium!"
+- [x] **Pagamento Falhou**: "Problema com seu pagamento"
+- [x] **Assinatura Expira em X dias**: "Renove sua assinatura" (Comando Scheduled)
+- [x] **Assinatura Expirada**: "Sua assinatura foi cancelada"
+- [x] **Upgrade Confirmado**: "Você agora está no plano Family!"
+- [ ] **Recibo de Pagamento**: PDF anexo com recibo (Mover para Item 8 - Faturas em PDF)
 
 **Implementação**:
 
-- [ ] Criar Mailables para cada tipo de email
-- [ ] Templates Blade para emails
-- [ ] Queue jobs para envio assíncrono
-- [ ] Configurar Resend (já configurado no projeto)
-- [ ] Testes de envio de email
+- [x] Criar Mailables para cada tipo de email
+- [x] Templates Blade para emails
+- [ ] Queue jobs para envio assíncrono (Usando Sync por enquanto ou Queue padrão)
+- [x] Configurar Resend (já configurado no projeto)
+- [x] Testes de envio de email
 
 ---
 

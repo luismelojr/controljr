@@ -30,3 +30,8 @@ Schedule::call(function () {
 Schedule::command('subscriptions:check-grace-periods')
     ->dailyAt('06:00')
     ->name('check-expired-grace-periods');
+
+// Notify users about upcoming subscription expiration
+Schedule::command('subscriptions:notify-expiring')
+    ->dailyAt('09:00')
+    ->name('notify-expiring-subscriptions');
