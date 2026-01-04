@@ -478,31 +478,35 @@
 
 ---
 
-### 3. Metas de Economia (Savings Goals) (0% 🔴)
+### 3. Metas de Economia (Savings Goals) (100% ✅)
 
 **Status:** Não existe nenhum arquivo relacionado
 
-**Precisa Criar:**
+\*\*Precisa- [x] 1. Database Implementation
 
-**Backend:**
+- [x] Create migration `create_savings_goals_table`
+- [x] Run migrations
 
-- ❌ Migration: `create_savings_goals_table`
-- ❌ Model: `SavingsGoal.php`
-- ❌ Service: `SavingsGoalService.php`
-- ❌ Controller: `SavingsGoalsController.php`
-- ❌ Resource: `SavingsGoalResource.php`
-- ❌ Request: `StoreSavingsGoalRequest.php`
-- ❌ Request: `UpdateSavingsGoalRequest.php`
-- ❌ Request: `AddContributionRequest.php`
-- ❌ Policy: `SavingsGoalPolicy.php`
+- [x]   2. Backend Implementation
+    - [x] Create `SavingsGoal` Model
+    - [x] Create `SavingsGoalService`
+    - [x] Create Requests (`StoreSavingsGoalRequest`, `UpdateSavingsGoalRequest`)
+    - [x] Create `SavingsGoalsController`
+    - [x] Create `SavingsGoalPolicy`
+    - [x] Register Routes
 
-**Frontend:**
+- [x]   3. Frontend Implementation
+    - [x] Create `GoalCard` Component
+    - [x] Create `GoalForm` Component
+    - [x] Create `ContributionModal` Component
+    - [x] Create Pages (`index`, `create`, `edit`)
+    - [x] Add Widget to Dashboard
 
-- ❌ Page: `pages/dashboard/savings-goals/index.tsx`
-- ❌ Page: `pages/dashboard/savings-goals/create.tsx`
-- ❌ Page: `pages/dashboard/savings-goals/edit.tsx`
-- ❌ Page: `pages/dashboard/savings-goals/show.tsx`
-- ❌ Component: `components/savings/goal-card.tsx` (progress bar circular)
+- [x]   4. Testing
+    - [x] Create `SavingsGoalsTest.php`
+    - [x] Test Plan Limits (0 for free, 20 for premium)
+    - [x] Test CRUD operations
+    - [x] Test Contributionsent: `components/savings/goal-card.tsx` (progress bar circular)
 - ❌ Component: `components/savings/goal-form.tsx`
 - ❌ Component: `components/savings/contribution-modal.tsx`
 - ❌ Component: `components/savings/goal-progress-chart.tsx`
@@ -1922,6 +1926,18 @@ Release semanal com valor agregado:
 - [ ] Testes passando para todos os limites
 - [ ] Toast exibido corretamente ao atingir limite
 
+### Implemented
+
+- [x] **Subscription System Core**
+    - [x] Database Migrations (plans, subscriptions, payment_methods)
+    - [x] Models (Plan, Subscription, PaymentMethod)
+    - [x] Subscription Service
+    - [x] Payment Service Pattern (Stripe/Asaas adapters)
+    - [x] Webhook Handling
+- [x] **Features Premium**
+    - [x] Tags Personalizadas (Limit: 0 Free / Unlimited Premium)
+    - [x] Metas de Economia (Limit: 0 Free / 20 Premium)
+
 ### Fase 1 - Tags
 
 - [x] Premium/Family podem criar tags ilimitadas
@@ -1933,7 +1949,7 @@ Release semanal com valor agregado:
 
 ### Fase 2 - Metas de Economia
 
-- [ ] Premium pode criar até 20 metas, Family ilimitado
+- [x] Premium pode criar até 20 metas, Family ilimitado
 - [ ] Free vê erro ao tentar criar meta
 - [ ] Cálculo de progresso correto (%)
 - [ ] Contribuições incrementam progresso

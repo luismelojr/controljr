@@ -132,6 +132,12 @@ Route::middleware('auth')->group(function () {
             ->name('reports.index')
             ->middleware('plan.feature:advanced_reports');
 
+        // Savings Goals routes
+        Route::middleware('plan.feature:max_savings_goals')->group(function () {
+             Route::resource('savings-goals', \App\Http\Controllers\Dashboard\SavingsGoalsController::class);
+             Route::post('savings-goals/{savings_goal}/contribute', [\App\Http\Controllers\Dashboard\SavingsGoalsController::class, 'addContribution'])->name('savings-goals.contribute');
+        });
+
         // Export routes
         Route::prefix('exports')->as('exports.')->middleware(['plan.feature:export_data'])->group(function () {
             Route::post('/transactions', [\App\Http\Controllers\Dashboard\ExportsController::class, 'transactions'])

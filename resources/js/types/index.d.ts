@@ -16,9 +16,23 @@ export interface SharedData {
     [key: string]: unknown;
 }
 
-export interface PageProps extends SharedData {
-    errors: Record<string, string>;
-}
+export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
+    auth: {
+        user: User;
+        subscription: Subscription | null;
+        plan_limits: any;
+    };
+    ziggy: Config & { location: string };
+    toast?: {
+        message: string;
+        type: 'success' | 'error' | 'info' | 'warning';
+        action?: { label: string; url: string };
+        duration?: number;
+    };
+};
+
+export * from './category';
+export * from './savings-goal';
 
 export interface User {
     id: number;
@@ -26,7 +40,7 @@ export interface User {
     email: string;
     phone: string;
     status: boolean;
-    subscription?: Subscription;
+    subscription?: Subscription | null;
     [key: string]: unknown; // This allows for additional properties...
 }
 

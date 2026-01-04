@@ -65,6 +65,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the savings goals for the user.
+     */
+    public function savingsGoals()
+    {
+        return $this->hasMany(SavingsGoal::class);
+    }
+
+    /**
      * Get the wallets for the user.
      */
     public function wallets()
