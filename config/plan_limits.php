@@ -27,11 +27,11 @@ return [
     */
 
     'free' => [
-        'max_wallets' => 2,
+        'max_wallets' => 1,
         'max_categories' => 10,
         'max_accounts' => 5,
         'max_transactions_per_month' => 50,
-        'max_budgets' => 2,
+        'max_budgets' => 5,
         'max_alerts' => 2,
         'financial_reports' => false,
         'data_export' => false,
@@ -40,14 +40,21 @@ return [
         'api_access' => false,
         'priority_support' => false,
         'max_team_members' => 1,
+        'max_tags' => 0,
+        'max_attachments' => 0,
+        'max_savings_goals' => 0,
+        'max_custom_reports' => 0,
+        'max_exports_per_month' => 5,
+        'transactions_history_months' => 12,
+        'ai_predictions' => false,
     ],
 
     'premium' => [
-        'max_wallets' => 10,
-        'max_categories' => 50,
+        'max_wallets' => -1, // Unlimited
+        'max_categories' => -1, // Unlimited
         'max_accounts' => 30,
         'max_transactions_per_month' => -1, // Unlimited
-        'max_budgets' => 20,
+        'max_budgets' => -1, // Unlimited
         'max_alerts' => 10,
         'financial_reports' => true,
         'data_export' => true,
@@ -56,6 +63,13 @@ return [
         'api_access' => false,
         'priority_support' => true,
         'max_team_members' => 1,
+        'max_tags' => -1, // Unlimited
+        'max_attachments' => 100,
+        'max_savings_goals' => 20,
+        'max_custom_reports' => 50,
+        'max_exports_per_month' => -1, // Unlimited
+        'transactions_history_months' => -1, // Unlimited
+        'ai_predictions' => true,
     ],
 
     'family' => [
@@ -72,5 +86,12 @@ return [
         'api_access' => true,
         'priority_support' => true,
         'max_team_members' => 5,
+        'max_tags' => -1, // Unlimited
+        'max_attachments' => 500,
+        'max_savings_goals' => -1, // Unlimited
+        'max_custom_reports' => -1, // Unlimited
+        'max_exports_per_month' => -1, // Unlimited
+        'transactions_history_months' => -1, // Unlimited
+        'ai_predictions' => true,
     ],
 ];
