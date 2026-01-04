@@ -350,14 +350,14 @@ Próxima cobrança: R$ 59,90 (No dia 1 do próximo mês)
 ### 9. ⏸️ Melhorias de Confiabilidade
 
 **Prioridade**: MÉDIA
-**Status**: PENDENTE
+**Status**: 🔄 **PARCIAL**
 
-- [ ] Queue jobs para processar webhooks (em vez de síncrono)
-- [ ] Retry logic para webhooks falhados
-- [ ] Idempotency keys para evitar duplicação
-- [ ] Logs estruturados com contexto
+- [x] Queue jobs para processar webhooks (em vez de síncrono)
+- [x] Retry logic para webhooks falhados (Jobs com backoff)
+- [ ] Idempotency keys para evitar duplicação (Lógica de serviço)
+- [x] Logs estruturados com contexto (Tabela webhook_calls + Logs)
 - [ ] Monitoramento com Sentry/Bugsnag
-- [ ] Alertas de falhas críticas
+- [x] Alertas de falhas críticas (Log::critical em falhas de Job)
 
 ---
 

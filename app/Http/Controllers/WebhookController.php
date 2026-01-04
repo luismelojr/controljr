@@ -43,10 +43,12 @@ class WebhookController extends Controller
             // 2. Get webhook data
             $event = $request->input('event');
             $paymentData = $request->input('payment', []);
+            $subscriptionData = $request->input('subscription', []);
 
             Log::info('Webhook received from Asaas', [
                 'event' => $event,
                 'payment_id' => $paymentData['id'] ?? null,
+                'subscription_id' => $subscriptionData['id'] ?? null,
             ]);
 
             // 3. Dispatch job to process webhook asynchronously
@@ -54,7 +56,9 @@ class WebhookController extends Controller
                 WebhookEventData::from([
                     'event' => $event,
                     'payment' => $paymentData,
-                ])
+                    'subscription' => $subscriptionData,
+                ]),
+                $webhookCall
             );
 
             // 4. Return 200 immediately to Asaas

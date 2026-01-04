@@ -23,7 +23,8 @@ class ProcessPaymentWebhook implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        public WebhookEventData $webhookData
+        public WebhookEventData $webhookData,
+        public ?\App\Models\WebhookCall $webhookCall = null
     ) {
     }
 
@@ -55,10 +56,14 @@ class ProcessPaymentWebhook implements ShouldQueue
      */
     public function failed(\Throwable $exception): void
     {
-        Log::critical('Webhook job failed after all retries', [
+            Log::critical('Webhook job failed after all retries', [
             'event' => $this->webhookData->event,
             'payment_id' => $this->webhookData->getExternalPaymentId(),
             'error' => $exception->getMessage(),
         ]);
+
+        if ($this->webhookCall) {
+            $this->webhookCall->update(['exception' => 'Job Failed: ' . $exception->getMessage()]);
+        }
     }
 }
