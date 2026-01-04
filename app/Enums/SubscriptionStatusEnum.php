@@ -8,6 +8,7 @@ enum SubscriptionStatusEnum: string
     case CANCELLED = 'cancelled';
     case EXPIRED = 'expired';
     case PENDING = 'pending';
+    case PAYMENT_FAILED = 'payment_failed';
 
     /**
      * Get the Portuguese label for the status
@@ -19,6 +20,7 @@ enum SubscriptionStatusEnum: string
             self::CANCELLED => 'Cancelada',
             self::EXPIRED => 'Expirada',
             self::PENDING => 'Pendente',
+            self::PAYMENT_FAILED => 'Pagamento Falhou',
         };
     }
 
@@ -32,6 +34,7 @@ enum SubscriptionStatusEnum: string
             self::CANCELLED => 'destructive',
             self::EXPIRED => 'secondary',
             self::PENDING => 'warning',
+            self::PAYMENT_FAILED => 'destructive',
         };
     }
 

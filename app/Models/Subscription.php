@@ -25,12 +25,17 @@ class Subscription extends Model
         'payment_gateway',
         'external_subscription_id',
         'external_customer_id',
+        'failed_payments_count',
+        'last_payment_failed_at',
+        'payment_grace_period_ends_at',
     ];
 
     protected $casts = [
         'started_at' => 'datetime',
         'ends_at' => 'datetime',
         'cancelled_at' => 'datetime',
+        'last_payment_failed_at' => 'datetime',
+        'payment_grace_period_ends_at' => 'datetime',
     ];
 
     /**
@@ -157,6 +162,52 @@ class Subscription extends Model
         $this->update([
             'status' => SubscriptionStatusEnum::EXPIRED->value,
         ]);
+    }
+
+    /**
+     * Mark payment as failed and start grace period
+     */
+    public function markPaymentAsFailed(int $gracePeriodDays = 7): void
+    {
+        $this->increment('failed_payments_count');
+
+        $this->update([
+            'status' => SubscriptionStatusEnum::PAYMENT_FAILED->value,
+            'last_payment_failed_at' => now(),
+            'payment_grace_period_ends_at' => now()->addDays($gracePeriodDays),
+        ]);
+    }
+
+    /**
+     * Reset payment failure tracking
+     */
+    public function resetPaymentFailures(): void
+    {
+        $this->update([
+            'failed_payments_count' => 0,
+            'last_payment_failed_at' => null,
+            'payment_grace_period_ends_at' => null,
+        ]);
+    }
+
+    /**
+     * Check if subscription is in payment grace period
+     */
+    public function inPaymentGracePeriod(): bool
+    {
+        return $this->status === SubscriptionStatusEnum::PAYMENT_FAILED->value
+            && $this->payment_grace_period_ends_at !== null
+            && $this->payment_grace_period_ends_at->isFuture();
+    }
+
+    /**
+     * Check if payment grace period has expired
+     */
+    public function paymentGracePeriodExpired(): bool
+    {
+        return $this->status === SubscriptionStatusEnum::PAYMENT_FAILED->value
+            && $this->payment_grace_period_ends_at !== null
+            && $this->payment_grace_period_ends_at->isPast();
     }
 
     /**

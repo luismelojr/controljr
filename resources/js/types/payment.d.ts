@@ -35,6 +35,7 @@ export interface PaymentMethodPageProps {
         boleto: boolean;
         credit_card: boolean;
     };
+    hasCpf: boolean;
 }
 
 export interface PaymentIndexPageProps {

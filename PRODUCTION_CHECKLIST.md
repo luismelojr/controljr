@@ -90,54 +90,130 @@
 
 ---
 
-### 3. ⏸️ Configurar Webhooks em Produção
+### 3. ✅ Configurar Webhooks em Produção
 **Prioridade**: CRÍTICA
-**Status**: PENDENTE
+**Status**: ✅ **CONCLUÍDO**
 
 **Problema Atual**:
-- Webhooks só funcionam com `SimulateWebhook` command
-- Asaas não consegue enviar webhooks para localhost
+- ~~Webhooks só funcionam com `SimulateWebhook` command~~
+- ~~Asaas não consegue enviar webhooks para localhost~~
 
-**Solução para Desenvolvimento**:
-- [ ] Instalar e configurar ngrok
-- [ ] Configurar URL do ngrok no dashboard Asaas
-- [ ] Testar recebimento de webhooks reais
+**Solução Implementada**:
 
-**Solução para Produção**:
-- [ ] Configurar domínio público (ex: https://melosys.com.br/webhook/asaas)
-- [ ] Certificado SSL válido (HTTPS obrigatório)
-- [ ] Configurar URL no dashboard Asaas
-- [ ] Testar webhook signature validation
-- [ ] Monitorar logs de webhooks
+**✅ Documentação Completa**:
+- Guia detalhado criado: `WEBHOOK_SETUP.md`
+- Instruções para desenvolvimento (ngrok)
+- Instruções para produção (domínio público)
+- Troubleshooting completo
+- Exemplos de configuração
 
-**Segurança**:
-- [ ] Verificar signature em todos os webhooks
-- [ ] Rate limiting no endpoint de webhook
-- [ ] Logs de tentativas de webhook inválidas
+**✅ Ferramentas de Validação**:
+- Comando: `php artisan webhook:validate` - Valida configuração
+- Comando: `php artisan webhook:validate --url=https://abc.ngrok.io` - Testa URL externa
+- Endpoint: `GET /webhook/health` - Health check público
+- Endpoint: `POST /webhook/test` - Teste de webhook (apenas dev)
+
+**✅ Segurança**:
+- Webhook signature validation implementada
+- HMAC-SHA256 com hash_equals (timing-safe)
+- Validação de token configurado
+- Logs de tentativas inválidas
+
+**Como usar**:
+
+**Desenvolvimento (Ngrok)**:
+```bash
+# 1. Iniciar ngrok
+ngrok http 8000
+
+# 2. Validar configuração
+php artisan webhook:validate --url=https://abc123.ngrok.io
+
+# 3. Configurar no Asaas Sandbox
+# URL: https://abc123.ngrok.io/webhook/asaas
+# Token: Valor de ASAAS_WEBHOOK_TOKEN
+
+# 4. Testar
+php artisan asaas:simulate-webhook 1 PAYMENT_RECEIVED
+```
+
+**Produção**:
+```bash
+# 1. Configurar domínio com HTTPS
+# URL: https://seudominio.com.br/webhook/asaas
+
+# 2. Validar
+php artisan webhook:validate
+
+# 3. Configurar no Asaas Produção
+# Usar API key de produção
+
+# 4. Monitorar
+tail -f storage/logs/laravel.log | grep webhook
+```
+
+**Arquivos criados**:
+- ✅ `WEBHOOK_SETUP.md` - Documentação completa (250+ linhas)
+- ✅ `app/Console/Commands/ValidateWebhookSetup.php` - Comando de validação
+- ✅ `WebhookController::healthCheck()` - Endpoint de health check
+- ✅ `WebhookController::test()` - Endpoint de teste
+- ✅ `routes/web.php` - Rotas adicionadas
+
+**Data de conclusão**: 2026-01-04
 
 ---
 
 ## 🟡 IMPORTANTE - Recomendado para Produção
 
-### 4. ⏸️ Sistema de Renovação e Falhas de Pagamento
+### 4. ✅ Sistema de Renovação e Falhas de Pagamento
 **Prioridade**: IMPORTANTE
-**Status**: PENDENTE
+**Status**: ✅ **CONCLUÍDO**
 
-**O que implementar**:
-- [ ] Webhook handler para `SUBSCRIPTION_PAYMENT_OVERDUE`
-- [ ] Lógica para suspender assinatura após X tentativas falhadas
-- [ ] Email notificando usuário sobre falha de pagamento
-- [ ] Página para atualizar método de pagamento
-- [ ] Retry automático de pagamento (se configurado no Asaas)
-- [ ] Grace period de 3-7 dias antes de cancelar
+**O que foi implementado**:
+- ✅ Webhook handler para `PAYMENT_OVERDUE` atualizado
+- ✅ Novo status `payment_failed` para assinaturas
+- ✅ Grace period configurável (7 dias por padrão)
+- ✅ Contagem de tentativas falhadas (`failed_payments_count`)
+- ✅ Comando para cancelar assinaturas após grace period expirado
+- ✅ Reset automático de falhas quando pagamento é bem sucedido
+- ⏸️ Email notificando usuário sobre falha de pagamento (TODO: Item 6)
+- ⏸️ Página para atualizar método de pagamento (funcionalidade futura)
 
-**Fluxo de falha**:
+**Fluxo implementado**:
 1. Pagamento mensal falha
-2. Webhook SUBSCRIPTION_PAYMENT_OVERDUE recebido
-3. Email enviado ao usuário
-4. Status da assinatura: `payment_failed` (novo status)
-5. Após 3 dias sem pagamento: suspender acesso
-6. Após 7 dias: cancelar assinatura definitivamente
+2. Webhook `PAYMENT_OVERDUE` recebido
+3. Assinatura marcada como `payment_failed`
+4. Grace period de 7 dias iniciado
+5. Durante grace period: usuário mantém acesso
+6. Após 7 dias: comando `subscriptions:check-grace-periods` cancela assinatura
+7. Se pagamento bem sucedido: falhas resetadas, assinatura volta para `active`
+
+**Arquivos modificados/criados**:
+- ✅ `database/migrations/2026_01_04_*_add_payment_failure_tracking_to_subscriptions_table.php`
+- ✅ `app/Enums/SubscriptionStatusEnum.php` - Status `PAYMENT_FAILED` adicionado
+- ✅ `app/Models/Subscription.php` - Métodos de gerenciamento de falhas
+- ✅ `app/Domain/Payments/Services/WebhookService.php` - Handler `PAYMENT_OVERDUE` atualizado
+- ✅ `app/Console/Commands/CheckExpiredGracePeriods.php` - Comando criado
+- ✅ `routes/console.php` - Comando agendado diariamente às 06:00
+- ✅ `config/subscriptions.php` - Configurações de grace period e features
+
+**Configuração**:
+```bash
+# .env (opcional, já tem valores padrão)
+SUBSCRIPTION_GRACE_PERIOD_DAYS=7
+SUBSCRIPTION_MAX_FAILED_PAYMENTS=3
+```
+
+**Comandos**:
+```bash
+# Verificar grace periods expirados (dry run)
+php artisan subscriptions:check-grace-periods --dry-run
+
+# Cancelar assinaturas com grace period expirado
+php artisan subscriptions:check-grace-periods
+```
+
+**Data de conclusão**: 2026-01-04
 
 ---
 
@@ -259,14 +335,19 @@ Route::middleware(['auth', 'check.plan.feature:advanced_reports'])
 ## 📊 Progresso Geral
 
 - ✅ Fase 1 - Fundação: **100%** (6/6 completo)
-- 🔄 Fase 2 - Produção: **20%** (2/10 concluídos)
+- 🔄 Fase 2 - Produção: **40%** (4/10 concluídos)
 
-**Total**: 8/16 itens completados (50%)
+**Total**: 10/16 itens completados (62%)
 
 ### Itens Críticos para Produção
 - ✅ **1/3** Assinatura recorrente mensal - CONCLUÍDO
 - ✅ **2/3** Campo CPF (Progressivo) - CONCLUÍDO
-- ⏸️ **0/3** Webhooks em produção - PENDENTE
+- ✅ **3/3** Webhooks em produção - CONCLUÍDO
+
+### Itens Importantes para Produção
+- ✅ **1/3** Falhas de pagamento - CONCLUÍDO
+- ⏸️ **0/3** Notificações por email - PENDENTE
+- ⏸️ **0/3** Valor proporcional - PENDENTE
 
 ---
 

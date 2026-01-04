@@ -60,7 +60,7 @@ export default function PaymentIndex({ payments }: PaymentIndexPageProps) {
     };
 
     return (
-        <DashboardLayout>
+        <DashboardLayout title={'Meus Pagamentos - Asaas'}>
             <div className="container mx-auto py-8">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold">Histórico de Pagamentos</h1>

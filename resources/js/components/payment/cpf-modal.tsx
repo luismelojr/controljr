@@ -10,13 +10,15 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import TextMask from '@/components/ui/text-mask';
+import { isValidCPF } from '@/lib/validFields';
 
 interface CpfModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    onSuccess?: () => void;
 }
 
-export default function CpfModal({ open, onOpenChange }: CpfModalProps) {
+export default function CpfModal({ open, onOpenChange, onSuccess }: CpfModalProps) {
     const [cpf, setCpf] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -31,6 +33,7 @@ export default function CpfModal({ open, onOpenChange }: CpfModalProps) {
                 onSuccess: () => {
                     onOpenChange(false);
                     setCpf('');
+                    onSuccess?.();
                 },
                 onFinish: () => setIsSubmitting(false),
             }
@@ -51,15 +54,14 @@ export default function CpfModal({ open, onOpenChange }: CpfModalProps) {
 
                     <div className="grid gap-4 py-4">
                         <TextMask
+                            id={"cpf"}
                             label="CPF"
                             mask="000.000.000-00"
                             placeholder="000.000.000-00"
                             value={cpf}
-                            onChange={(e) => setCpf(e.target.value)}
+                            onChange={(value) => setCpf(value)}
                             required
-                            autoFocus
                         />
-
                         <div className="text-sm text-muted-foreground space-y-2">
                             <p className="font-medium">Por que precisamos do CPF?</p>
                             <ul className="list-disc list-inside space-y-1 text-xs">
@@ -80,8 +82,8 @@ export default function CpfModal({ open, onOpenChange }: CpfModalProps) {
                         >
                             Cancelar
                         </Button>
-                        <Button type="submit" disabled={isSubmitting || !cpf}>
-                            {isSubmitting ? 'Salvando...' : 'Salvar CPF'}
+                        <Button type="submit" disabled={isSubmitting || !isValidCPF(cpf)} loading={isSubmitting}>
+                            Salvar CPF
                         </Button>
                     </DialogFooter>
                 </form>

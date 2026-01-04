@@ -127,7 +127,18 @@ class WebhookService
 
         // Se for pagamento de assinatura, ativar a assinatura
         if ($payment->subscription_id) {
-            $this->activateSubscription($payment->subscription);
+            $subscription = $payment->subscription;
+
+            // Reset payment failures if any
+            if ($subscription->failed_payments_count > 0) {
+                $subscription->resetPaymentFailures();
+
+                Log::info('Payment failures reset after successful payment', [
+                    'subscription_id' => $subscription->id,
+                ]);
+            }
+
+            $this->activateSubscription($subscription);
         }
 
         Log::info('Payment received', [
@@ -151,15 +162,25 @@ class WebhookService
 
         $payment->markAsOverdue();
 
-        // Se for pagamento de assinatura, cancelar a assinatura
+        // Se for pagamento de assinatura, marcar como falha e iniciar grace period
         if ($payment->subscription_id) {
-            $this->subscriptionService->cancel($payment->subscription->user);
-        }
+            $subscription = $payment->subscription;
 
-        Log::warning('Payment overdue', [
-            'payment_id' => $payment->id,
-            'subscription_id' => $payment->subscription_id,
-        ]);
+            // Grace period configuration: 7 days by default
+            $gracePeriodDays = config('subscriptions.grace_period_days', 7);
+
+            // Mark payment as failed and start grace period
+            $subscription->markPaymentAsFailed($gracePeriodDays);
+
+            Log::warning('Payment overdue - Grace period started', [
+                'payment_id' => $payment->id,
+                'subscription_id' => $subscription->id,
+                'failed_payments_count' => $subscription->failed_payments_count,
+                'grace_period_ends_at' => $subscription->payment_grace_period_ends_at,
+            ]);
+
+            // TODO: Send email notification to user about payment failure
+        }
 
         return true;
     }

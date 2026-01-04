@@ -63,20 +63,38 @@ class PaymentGatewayService
                 'external_customer_id' => $customerId,
             ]);
 
-            // 4. Criar registro do primeiro pagamento no banco
-            // O Asaas já criou a primeira cobrança automaticamente
-            $firstPayment = $asaasSubscription['payment'] ?? null;
+            // 4. Buscar o primeiro pagamento da subscription via API
+            // O Asaas cria automaticamente o primeiro pagamento, mas não retorna na resposta da subscription
+            Log::info('Fetching first payment from subscription', [
+                'subscription_id' => $asaasSubscription['id'],
+            ]);
 
-            if (! $firstPayment) {
-                // Fallback: buscar o pagamento via API
-                Log::warning('First payment not returned in subscription response, fetching manually');
-                // Por enquanto, criar um payment pendente
+            try {
+                // Buscar payments da subscription
+                $payments = $this->asaasService->getSubscriptionPayments($asaasSubscription['id']);
+                $firstPayment = $payments[0] ?? null;
+
+                if (! $firstPayment) {
+                    throw new \Exception('No payments found for subscription');
+                }
+
+                Log::info('First payment found', [
+                    'payment_id' => $firstPayment['id'],
+                    'status' => $firstPayment['status'],
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Failed to fetch subscription payments', [
+                    'subscription_id' => $asaasSubscription['id'],
+                    'error' => $e->getMessage(),
+                ]);
+
+                // Fallback: criar um payment pendente sem dados do Asaas
                 $firstPayment = [
-                    'id' => $asaasSubscription['id'] . '-initial',
+                    'id' => $asaasSubscription['id'] . '-pending',
                     'status' => 'PENDING',
                     'value' => $asaasSubscription['value'],
                     'dueDate' => $asaasSubscription['nextDueDate'] ?? now()->format('Y-m-d'),
-                    'invoiceUrl' => $asaasSubscription['invoiceUrl'] ?? null,
+                    'invoiceUrl' => null,
                 ];
             }
 

@@ -16,6 +16,8 @@ Route::get('/', LandingPageController::class)->name('home');
 
 // Webhook routes (public, no auth)
 Route::post('/webhook/asaas', [WebhookController::class, 'asaas'])->name('webhook.asaas');
+Route::get('/webhook/health', [WebhookController::class, 'healthCheck'])->name('webhook.health');
+Route::post('/webhook/test', [WebhookController::class, 'test'])->name('webhook.test');
 
 Route::prefix('toast-test')->group(function () {
     Route::get('/', [ToastTestController::class, 'index'])->name('toast-test.index');

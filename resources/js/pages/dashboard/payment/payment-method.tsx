@@ -1,5 +1,5 @@
-import { router, usePage } from '@inertiajs/react';
-import { useState, useEffect } from 'react';
+import { router } from '@inertiajs/react';
+import { useState } from 'react';
 import { CreditCard, QrCode, Receipt } from 'lucide-react';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { Button } from '@/components/ui/button';
@@ -14,24 +14,24 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import CpfModal from '@/components/payment/cpf-modal';
 import type { PaymentMethodPageProps } from '@/types/payment';
+import { formatPriceCent } from '@/lib/format';
 
 export default function PaymentMethod({
     subscription,
     paymentMethods,
+    hasCpf,
 }: PaymentMethodPageProps) {
     const [selectedMethod, setSelectedMethod] = useState<string>('pix');
     const [isProcessing, setIsProcessing] = useState(false);
     const [showCpfModal, setShowCpfModal] = useState(false);
-    const { props } = usePage();
-
-    // Check if CPF modal should be shown
-    useEffect(() => {
-        if (props.requires_cpf) {
-            setShowCpfModal(true);
-        }
-    }, [props.requires_cpf]);
 
     const handleSubmit = () => {
+        // Check if user has CPF before processing payment (only for paid plans)
+        if (!subscription.plan.is_free && !hasCpf) {
+            setShowCpfModal(true);
+            return;
+        }
+
         setIsProcessing(true);
 
         router.post(
@@ -45,10 +45,9 @@ export default function PaymentMethod({
         );
     };
 
-    const methodIcons = {
-        pix: QrCode,
-        boleto: Receipt,
-        credit_card: CreditCard,
+    const handleCpfSaved = () => {
+        setShowCpfModal(false);
+
     };
 
     const methodLabels = {
@@ -64,29 +63,22 @@ export default function PaymentMethod({
     };
 
     return (
-        <DashboardLayout>
-            <div className="container max-w-2xl mx-auto py-8">
+        <DashboardLayout title={subscription.plan.name + ' - Pagamento'}>
+            <div className="container mx-auto py-8">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold">Escolha o método de pagamento</h1>
-                    <p className="text-muted-foreground mt-2">
-                        Complete o pagamento da sua assinatura{' '}
-                        {subscription.plan.name}
-                    </p>
+                    <p className="mt-2 text-muted-foreground">Complete o pagamento da sua assinatura {subscription.plan.name}</p>
                 </div>
 
                 <Card className="mb-6">
                     <CardHeader>
                         <CardTitle>Resumo da assinatura</CardTitle>
-                        <CardDescription>
-                            Plano {subscription.plan.name}
-                        </CardDescription>
+                        <CardDescription>Plano {subscription.plan.name}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex justify-between items-center">
+                        <div className="flex items-center justify-between">
                             <span className="text-lg">Total a pagar</span>
-                            <span className="text-2xl font-bold">
-                                {subscription.plan.price_formatted}
-                            </span>
+                            <span className="text-2xl font-bold">{formatPriceCent(subscription.plan.price_cents)}</span>
                         </div>
                     </CardContent>
                 </Card>
@@ -96,84 +88,47 @@ export default function PaymentMethod({
                         <CardTitle>Selecione o método de pagamento</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <RadioGroup
-                            value={selectedMethod}
-                            onValueChange={setSelectedMethod}
-                            className="space-y-4"
-                        >
+                        <RadioGroup value={selectedMethod} onValueChange={setSelectedMethod} className="space-y-4">
                             {paymentMethods.pix && (
-                                <div className="flex items-center space-x-3 border rounded-lg p-4 cursor-pointer hover:bg-accent">
-                                    <RadioGroupItem
-                                        value="pix"
-                                        id="pix"
-                                        className="shrink-0"
-                                    />
-                                    <Label
-                                        htmlFor="pix"
-                                        className="flex items-start gap-4 flex-1 cursor-pointer"
-                                    >
+                                <div className="flex cursor-pointer items-center space-x-3 rounded-lg border p-4 hover:bg-accent">
+                                    <RadioGroupItem value="pix" id="pix" className="shrink-0" />
+                                    <Label htmlFor="pix" className="flex flex-1 cursor-pointer items-start gap-4">
                                         <div className="mt-1">
                                             <QrCode className="h-6 w-6" />
                                         </div>
                                         <div>
-                                            <div className="font-semibold">
-                                                {methodLabels.pix}
-                                            </div>
-                                            <div className="text-sm text-muted-foreground">
-                                                {methodDescriptions.pix}
-                                            </div>
+                                            <div className="font-semibold">{methodLabels.pix}</div>
+                                            <div className="text-sm text-muted-foreground">{methodDescriptions.pix}</div>
                                         </div>
                                     </Label>
                                 </div>
                             )}
 
                             {paymentMethods.boleto && (
-                                <div className="flex items-center space-x-3 border rounded-lg p-4 cursor-pointer hover:bg-accent">
-                                    <RadioGroupItem
-                                        value="boleto"
-                                        id="boleto"
-                                        className="shrink-0"
-                                    />
-                                    <Label
-                                        htmlFor="boleto"
-                                        className="flex items-start gap-4 flex-1 cursor-pointer"
-                                    >
+                                <div className="flex cursor-pointer items-center space-x-3 rounded-lg border p-4 hover:bg-accent">
+                                    <RadioGroupItem value="boleto" id="boleto" className="shrink-0" />
+                                    <Label htmlFor="boleto" className="flex flex-1 cursor-pointer items-start gap-4">
                                         <div className="mt-1">
                                             <Receipt className="h-6 w-6" />
                                         </div>
                                         <div>
-                                            <div className="font-semibold">
-                                                {methodLabels.boleto}
-                                            </div>
-                                            <div className="text-sm text-muted-foreground">
-                                                {methodDescriptions.boleto}
-                                            </div>
+                                            <div className="font-semibold">{methodLabels.boleto}</div>
+                                            <div className="text-sm text-muted-foreground">{methodDescriptions.boleto}</div>
                                         </div>
                                     </Label>
                                 </div>
                             )}
 
                             {paymentMethods.credit_card && (
-                                <div className="flex items-center space-x-3 border rounded-lg p-4 cursor-pointer hover:bg-accent">
-                                    <RadioGroupItem
-                                        value="credit_card"
-                                        id="credit_card"
-                                        className="shrink-0"
-                                    />
-                                    <Label
-                                        htmlFor="credit_card"
-                                        className="flex items-start gap-4 flex-1 cursor-pointer"
-                                    >
+                                <div className="flex cursor-pointer items-center space-x-3 rounded-lg border p-4 hover:bg-accent">
+                                    <RadioGroupItem value="credit_card" id="credit_card" className="shrink-0" />
+                                    <Label htmlFor="credit_card" className="flex flex-1 cursor-pointer items-start gap-4">
                                         <div className="mt-1">
                                             <CreditCard className="h-6 w-6" />
                                         </div>
                                         <div>
-                                            <div className="font-semibold">
-                                                {methodLabels.credit_card}
-                                            </div>
-                                            <div className="text-sm text-muted-foreground">
-                                                {methodDescriptions.credit_card}
-                                            </div>
+                                            <div className="font-semibold">{methodLabels.credit_card}</div>
+                                            <div className="text-sm text-muted-foreground">{methodDescriptions.credit_card}</div>
                                         </div>
                                     </Label>
                                 </div>
@@ -181,18 +136,10 @@ export default function PaymentMethod({
                         </RadioGroup>
 
                         <div className="mt-6 flex gap-4">
-                            <Button
-                                variant="outline"
-                                onClick={() => router.visit('/dashboard/subscription')}
-                                className="flex-1"
-                            >
+                            <Button variant="outline" onClick={() => router.visit('/dashboard/subscription')} className="flex-1">
                                 Cancelar
                             </Button>
-                            <Button
-                                onClick={handleSubmit}
-                                disabled={isProcessing}
-                                className="flex-1"
-                            >
+                            <Button onClick={handleSubmit} disabled={isProcessing} className="flex-1">
                                 {isProcessing ? 'Processando...' : 'Continuar'}
                             </Button>
                         </div>
@@ -200,7 +147,7 @@ export default function PaymentMethod({
                 </Card>
 
                 {/* CPF Modal */}
-                <CpfModal open={showCpfModal} onOpenChange={setShowCpfModal} />
+                <CpfModal open={showCpfModal} onOpenChange={setShowCpfModal} onSuccess={handleCpfSaved} />
             </div>
         </DashboardLayout>
     );

@@ -25,3 +25,8 @@ Schedule::call(function () {
 Schedule::call(function () {
     app(AlertService::class)->checkBudgetAlerts();
 })->dailyAt('10:00')->name('check-budget-alerts');
+
+// Subscription payment failure grace period check
+Schedule::command('subscriptions:check-grace-periods')
+    ->dailyAt('06:00')
+    ->name('check-expired-grace-periods');

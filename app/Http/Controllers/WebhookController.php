@@ -60,4 +60,63 @@ class WebhookController extends Controller
             return response()->json(['success' => false, 'error' => 'Internal error'], 200);
         }
     }
+
+    /**
+     * Health check endpoint for webhooks
+     * Use this to verify webhook configuration
+     */
+    public function healthCheck()
+    {
+        $webhookToken = config('asaas.webhook_token');
+        $apiKey = config('asaas.api_key');
+        $environment = config('asaas.environment');
+
+        return response()->json([
+            'status' => 'ok',
+            'webhook_endpoint' => url('/webhook/asaas'),
+            'configuration' => [
+                'webhook_token_configured' => ! empty($webhookToken),
+                'api_key_configured' => ! empty($apiKey),
+                'environment' => $environment,
+            ],
+            'timestamp' => now()->toIso8601String(),
+        ]);
+    }
+
+    /**
+     * Test webhook endpoint
+     * Simulates a webhook call without signature validation
+     */
+    public function test(Request $request)
+    {
+        if (! app()->environment('local', 'development')) {
+            return response()->json(['error' => 'Test endpoint only available in development'], 403);
+        }
+
+        $event = $request->input('event', 'PAYMENT_RECEIVED');
+        $paymentData = $request->input('payment', [
+            'id' => 'test_payment_'.uniqid(),
+            'status' => 'RECEIVED',
+            'value' => 100.00,
+        ]);
+
+        Log::info('TEST Webhook received', [
+            'event' => $event,
+            'payment' => $paymentData,
+        ]);
+
+        // Process immediately (not via queue) for testing
+        $result = $this->webhookService->processWebhook(
+            WebhookEventData::from([
+                'event' => $event,
+                'payment' => $paymentData,
+            ])
+        );
+
+        return response()->json([
+            'success' => $result,
+            'event' => $event,
+            'message' => $result ? 'Webhook processed successfully' : 'Webhook processing failed',
+        ]);
+    }
 }

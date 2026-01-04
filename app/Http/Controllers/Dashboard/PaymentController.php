@@ -44,6 +44,7 @@ class PaymentController extends Controller
         return Inertia::render('dashboard/payment/payment-method', [
             'subscription' => $subscription->load('plan'),
             'paymentMethods' => config('asaas.payment_methods'),
+            'hasCpf' => ! empty($user->cpf),
         ]);
     }
 
@@ -76,11 +77,11 @@ class PaymentController extends Controller
         }
 
         // ✅ CRITICAL: For paid plans, require CPF
+        // Frontend checks for CPF before submitting, but double-check here for security
         if (! $subscription->plan->isFree() && empty($user->cpf)) {
             Toast::error('Para processar pagamentos, precisamos do seu CPF. Por favor, informe seu CPF para continuar.');
 
-            return redirect()->route('dashboard.payment.choose-method')
-                ->with('requires_cpf', true);
+            return redirect()->route('dashboard.payment.choose-method');
         }
 
         try {

@@ -72,7 +72,7 @@ export default function ShowPayment({ payment }: PaymentPageProps) {
     };
 
     return (
-        <DashboardLayout>
+        <DashboardLayout title={'Detalhes do Pagamento - Asaas'}>
             <div className="container max-w-3xl mx-auto py-8">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold">Detalhes do Pagamento</h1>

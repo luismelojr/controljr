@@ -78,3 +78,9 @@ export const formatPercentage = (
 ): string => {
     return `${value.toFixed(decimals)}%`;
 };
+
+export const formatPriceCent = (value: number) => {
+    if (value === 0) return '0,00';
+    const valueFormatted = value / 100;
+    return formatCurrency(valueFormatted)
+}

@@ -200,6 +200,22 @@ class AsaasService
     }
 
     /**
+     * Get payments from a subscription
+     */
+    public function getSubscriptionPayments(string $subscriptionId): array
+    {
+        $response = Http::withHeaders([
+            'access_token' => $this->apiKey,
+        ])->get("{$this->apiUrl}/subscriptions/{$subscriptionId}/payments");
+
+        if ($response->failed()) {
+            throw new \Exception('Falha ao buscar pagamentos da assinatura');
+        }
+
+        return $response->json('data', []);
+    }
+
+    /**
      * Cancel subscription in Asaas
      */
     public function cancelSubscription(string $subscriptionId): array
