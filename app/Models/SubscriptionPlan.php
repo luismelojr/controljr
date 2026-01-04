@@ -97,6 +97,15 @@ class SubscriptionPlan extends Model
     }
 
     /**
+     * Get amount in reais (BRL) for Asaas API
+     * Asaas expects decimal value (e.g., 39.90), not cents
+     */
+    public function getAmountInReais(): float
+    {
+        return $this->price_cents / 100;
+    }
+
+    /**
      * Relationships
      */
     public function subscriptions(): HasMany

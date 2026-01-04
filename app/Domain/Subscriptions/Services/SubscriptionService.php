@@ -2,6 +2,7 @@
 
 namespace App\Domain\Subscriptions\Services;
 
+use App\Domain\Payments\Services\PaymentGatewayService;
 use App\Enums\SubscriptionStatusEnum;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
@@ -11,6 +12,11 @@ use Illuminate\Support\Facades\DB;
 
 class SubscriptionService
 {
+    public function __construct(
+        protected PaymentGatewayService $paymentGatewayService
+    ) {
+    }
+
     /**
      * Create a new subscription for a user
      */
@@ -136,6 +142,9 @@ class SubscriptionService
      */
     public function cancel(Subscription $subscription, bool $immediately = false): Subscription
     {
+        // Cancel recurring subscription in Asaas if exists
+        $this->paymentGatewayService->cancelRecurringSubscription($subscription);
+
         if ($immediately) {
             $subscription->cancel();
             $subscription->markAsExpired();

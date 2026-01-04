@@ -110,6 +110,10 @@ Route::middleware('auth')->group(function () {
         Route::delete('notifications/{notification}', [\App\Http\Controllers\Dashboard\NotificationsController::class, 'destroy'])->name('notifications.destroy');
         Route::delete('notifications', [\App\Http\Controllers\Dashboard\NotificationsController::class, 'deleteAllRead'])->name('notifications.delete-all-read');
 
+        // User Profile routes
+        Route::post('profile/cpf', [\App\Http\Controllers\Dashboard\UserProfileController::class, 'updateCpf'])->name('profile.cpf.update');
+        Route::get('profile/cpf/check', [\App\Http\Controllers\Dashboard\UserProfileController::class, 'hasCpf'])->name('profile.cpf.check');
+
         // Budget routes
         Route::resource('budgets', \App\Http\Controllers\Dashboard\BudgetController::class)->except(['create', 'edit', 'show']);
 

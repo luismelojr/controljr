@@ -75,6 +75,14 @@ class PaymentController extends Controller
             return redirect()->route('dashboard.subscription.plans');
         }
 
+        // ✅ CRITICAL: For paid plans, require CPF
+        if (! $subscription->plan->isFree() && empty($user->cpf)) {
+            Toast::error('Para processar pagamentos, precisamos do seu CPF. Por favor, informe seu CPF para continuar.');
+
+            return redirect()->route('dashboard.payment.choose-method')
+                ->with('requires_cpf', true);
+        }
+
         try {
             $payment = $this->paymentGatewayService->createSubscriptionPayment(
                 $subscription,

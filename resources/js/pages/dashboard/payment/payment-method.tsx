@@ -1,5 +1,5 @@
-import { router } from '@inertiajs/react';
-import { useState } from 'react';
+import { router, usePage } from '@inertiajs/react';
+import { useState, useEffect } from 'react';
 import { CreditCard, QrCode, Receipt } from 'lucide-react';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import CpfModal from '@/components/payment/cpf-modal';
 import type { PaymentMethodPageProps } from '@/types/payment';
 
 export default function PaymentMethod({
@@ -20,6 +21,15 @@ export default function PaymentMethod({
 }: PaymentMethodPageProps) {
     const [selectedMethod, setSelectedMethod] = useState<string>('pix');
     const [isProcessing, setIsProcessing] = useState(false);
+    const [showCpfModal, setShowCpfModal] = useState(false);
+    const { props } = usePage();
+
+    // Check if CPF modal should be shown
+    useEffect(() => {
+        if (props.requires_cpf) {
+            setShowCpfModal(true);
+        }
+    }, [props.requires_cpf]);
 
     const handleSubmit = () => {
         setIsProcessing(true);
@@ -188,6 +198,9 @@ export default function PaymentMethod({
                         </div>
                     </CardContent>
                 </Card>
+
+                {/* CPF Modal */}
+                <CpfModal open={showCpfModal} onOpenChange={setShowCpfModal} />
             </div>
         </DashboardLayout>
     );

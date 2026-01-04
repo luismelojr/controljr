@@ -22,14 +22,16 @@ class AsaasService
      */
     public function createCustomer(User $user): array
     {
-        // Use CPF de teste válido para sandbox (CPF: 24971563792)
-        // TODO: Adicionar campo 'cpf' na tabela users e usar aqui
-        $cpfCnpj = $user->cpf ?? '24971563792';
+        // ✅ Use real user CPF (required for paid subscriptions)
+        // For sandbox testing, you can use: 24971563792
+        if (empty($user->cpf)) {
+            throw new \Exception('CPF é obrigatório para processar pagamentos. Por favor, atualize seu perfil com um CPF válido.');
+        }
 
         $payload = [
             'name' => $user->name,
             'email' => $user->email,
-            'cpfCnpj' => $cpfCnpj,
+            'cpfCnpj' => $user->cpf,
             'externalReference' => $user->uuid,
         ];
 

@@ -21,6 +21,12 @@ class PaymentGatewayService
      */
     public function createSubscriptionPayment(Subscription $subscription, string $paymentMethod): Payment
     {
+        // Para planos pagos, criar assinatura recorrente no Asaas
+        if (! $subscription->plan->isFree()) {
+            return $this->createRecurringSubscription($subscription, $paymentMethod);
+        }
+
+        // Para plano free, criar pagamento único (sem cobrança)
         $data = CreatePaymentData::from([
             'user_id' => $subscription->user_id,
             'subscription_id' => $subscription->id,
@@ -30,6 +36,73 @@ class PaymentGatewayService
         ]);
 
         return $this->createPayment($data);
+    }
+
+    /**
+     * Create a recurring subscription in Asaas (monthly billing)
+     */
+    protected function createRecurringSubscription(Subscription $subscription, string $paymentMethod): Payment
+    {
+        return DB::transaction(function () use ($subscription, $paymentMethod) {
+            $user = $subscription->user;
+
+            // 1. Criar/obter customer no Asaas
+            $customerId = $this->getOrCreateCustomer($user);
+
+            // 2. Criar assinatura recorrente no Asaas (cobranças mensais automáticas)
+            $asaasSubscription = $this->asaasService->createSubscription($customerId, [
+                'payment_method' => $paymentMethod,
+                'amount' => $subscription->plan->getAmountInReais(),
+                'description' => "Assinatura {$subscription->plan->name} - MeloSys",
+                'external_reference' => $subscription->uuid,
+            ]);
+
+            // 3. Salvar external_subscription_id na subscription
+            $subscription->update([
+                'external_subscription_id' => $asaasSubscription['id'],
+                'external_customer_id' => $customerId,
+            ]);
+
+            // 4. Criar registro do primeiro pagamento no banco
+            // O Asaas já criou a primeira cobrança automaticamente
+            $firstPayment = $asaasSubscription['payment'] ?? null;
+
+            if (! $firstPayment) {
+                // Fallback: buscar o pagamento via API
+                Log::warning('First payment not returned in subscription response, fetching manually');
+                // Por enquanto, criar um payment pendente
+                $firstPayment = [
+                    'id' => $asaasSubscription['id'] . '-initial',
+                    'status' => 'PENDING',
+                    'value' => $asaasSubscription['value'],
+                    'dueDate' => $asaasSubscription['nextDueDate'] ?? now()->format('Y-m-d'),
+                    'invoiceUrl' => $asaasSubscription['invoiceUrl'] ?? null,
+                ];
+            }
+
+            $payment = Payment::create([
+                'user_id' => $subscription->user_id,
+                'subscription_id' => $subscription->id,
+                'amount_cents' => $subscription->plan->price_cents,
+                'status' => $this->mapAsaasStatus($firstPayment['status']),
+                'payment_method' => $paymentMethod,
+                'payment_gateway' => 'asaas',
+                'external_payment_id' => $firstPayment['id'],
+                'invoice_url' => $firstPayment['invoiceUrl'] ?? null,
+                'due_date' => $firstPayment['dueDate'] ?? null,
+            ]);
+
+            // 5. Buscar dados específicos do método de pagamento (PIX QR Code, etc)
+            $this->fetchPaymentMethodData($payment);
+
+            Log::info('Recurring subscription created', [
+                'subscription_id' => $subscription->id,
+                'external_subscription_id' => $asaasSubscription['id'],
+                'payment_id' => $payment->id,
+            ]);
+
+            return $payment->fresh();
+        });
     }
 
     /**
@@ -161,6 +234,36 @@ class PaymentGatewayService
         } catch (\Exception $e) {
             Log::error('Failed to cancel payment', [
                 'payment_id' => $payment->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Cancel a recurring subscription in Asaas
+     */
+    public function cancelRecurringSubscription(Subscription $subscription): bool
+    {
+        if (! $subscription->external_subscription_id) {
+            // Não é uma subscription recorrente, nada a fazer
+            return true;
+        }
+
+        try {
+            $this->asaasService->cancelSubscription($subscription->external_subscription_id);
+
+            Log::info('Recurring subscription cancelled in Asaas', [
+                'subscription_id' => $subscription->id,
+                'external_subscription_id' => $subscription->external_subscription_id,
+            ]);
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Failed to cancel recurring subscription in Asaas', [
+                'subscription_id' => $subscription->id,
+                'external_subscription_id' => $subscription->external_subscription_id,
                 'error' => $e->getMessage(),
             ]);
 

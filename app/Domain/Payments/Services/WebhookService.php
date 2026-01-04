@@ -27,6 +27,7 @@ class WebhookService
             ]);
 
             return match ($data->event) {
+                // Eventos de pagamento único
                 'PAYMENT_CREATED' => $this->handlePaymentCreated($data),
                 'PAYMENT_UPDATED' => $this->handlePaymentUpdated($data),
                 'PAYMENT_CONFIRMED' => $this->handlePaymentConfirmed($data),
@@ -34,6 +35,12 @@ class WebhookService
                 'PAYMENT_OVERDUE' => $this->handlePaymentOverdue($data),
                 'PAYMENT_REFUNDED' => $this->handlePaymentRefunded($data),
                 'PAYMENT_DELETED' => $this->handlePaymentDeleted($data),
+
+                // Eventos de assinatura recorrente
+                'SUBSCRIPTION_CREATED' => $this->handleSubscriptionCreated($data),
+                'SUBSCRIPTION_UPDATED' => $this->handleSubscriptionUpdated($data),
+                'SUBSCRIPTION_DELETED' => $this->handleSubscriptionDeleted($data),
+
                 default => $this->handleUnknownEvent($data),
             };
         } catch (\Exception $e) {
@@ -193,6 +200,84 @@ class WebhookService
         Log::info('Payment deleted', [
             'payment_id' => $payment->id,
         ]);
+
+        return true;
+    }
+
+    /**
+     * Handle SUBSCRIPTION_CREATED event
+     */
+    protected function handleSubscriptionCreated(WebhookEventData $data): bool
+    {
+        // Assinatura recorrente criada no Asaas
+        // Já criamos a subscription no nosso banco quando usuário iniciou checkout
+        Log::info('Subscription created in Asaas', [
+            'subscription_id' => $data->subscription['id'] ?? null,
+        ]);
+
+        return true;
+    }
+
+    /**
+     * Handle SUBSCRIPTION_UPDATED event
+     */
+    protected function handleSubscriptionUpdated(WebhookEventData $data): bool
+    {
+        // Assinatura recorrente atualizada (upgrade, downgrade, etc)
+        $externalSubscriptionId = $data->subscription['id'] ?? null;
+
+        if (! $externalSubscriptionId) {
+            return false;
+        }
+
+        $subscription = Subscription::where('external_subscription_id', $externalSubscriptionId)->first();
+
+        if (! $subscription) {
+            Log::warning('Subscription not found for webhook', [
+                'external_subscription_id' => $externalSubscriptionId,
+            ]);
+
+            return false;
+        }
+
+        Log::info('Subscription updated in Asaas', [
+            'subscription_id' => $subscription->id,
+            'external_subscription_id' => $externalSubscriptionId,
+        ]);
+
+        return true;
+    }
+
+    /**
+     * Handle SUBSCRIPTION_DELETED event
+     */
+    protected function handleSubscriptionDeleted(WebhookEventData $data): bool
+    {
+        // Assinatura recorrente cancelada no Asaas
+        $externalSubscriptionId = $data->subscription['id'] ?? null;
+
+        if (! $externalSubscriptionId) {
+            return false;
+        }
+
+        $subscription = Subscription::where('external_subscription_id', $externalSubscriptionId)->first();
+
+        if (! $subscription) {
+            Log::warning('Subscription not found for deletion webhook', [
+                'external_subscription_id' => $externalSubscriptionId,
+            ]);
+
+            return false;
+        }
+
+        // Cancelar assinatura se ainda não estiver cancelada
+        if ($subscription->status !== 'cancelled') {
+            $subscription->cancel();
+
+            Log::info('Subscription cancelled via Asaas webhook', [
+                'subscription_id' => $subscription->id,
+            ]);
+        }
 
         return true;
     }

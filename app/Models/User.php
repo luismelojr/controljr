@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'uuid',
         'email',
+        'cpf',
         'google_id',
         'password',
         'phone',
