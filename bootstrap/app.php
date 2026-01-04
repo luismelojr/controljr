@@ -3,6 +3,7 @@
 use App\Domain\IncomeTransactions\Services\IncomeTransactionService;
 use App\Domain\Transactions\Services\TransactionService;
 use App\Facades\Toast;
+use Bugsnag\BugsnagLaravel\Facades\Bugsnag;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Console\Scheduling\Schedule;
@@ -46,6 +47,8 @@ return Application::configure(basePath: dirname(__DIR__))
         })->daily()->name('mark-overdue-income-transactions');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        Bugsnag::attach($exceptions);
+
         // Handle authorization exceptions with toast notifications
         $exceptions->render(function (AuthorizationException $e, $request) {
             if ($request->expectsJson()) {

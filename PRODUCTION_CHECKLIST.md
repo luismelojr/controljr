@@ -356,7 +356,7 @@ Próxima cobrança: R$ 59,90 (No dia 1 do próximo mês)
 - [x] Retry logic para webhooks falhados (Jobs com backoff)
 - [ ] Idempotency keys para evitar duplicação (Lógica de serviço)
 - [x] Logs estruturados com contexto (Tabela webhook_calls + Logs)
-- [ ] Monitoramento com Sentry/Bugsnag
+- [x] Monitoramento com Sentry/Bugsnag (Implementado Bugsnag Full Stack)
 - [x] Alertas de falhas críticas (Log::critical em falhas de Job)
 
 ---
