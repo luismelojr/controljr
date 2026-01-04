@@ -19,6 +19,7 @@ import {
     BanknoteArrowUpIcon,
     BarChart3,
     CircleAlert,
+    CreditCard,
     FileCheck,
     Home,
     LogOut,
@@ -52,6 +53,7 @@ const menuItems: MenuItemInterface[] = [
             { title: 'Relatórios', icon: BarChart3, url: route('dashboard.reports.index') },
             { title: 'Conciliação', icon: FileCheck, url: route('dashboard.reconciliation.index') },
             { title: 'Alertas', icon: CircleAlert, url: route('dashboard.alerts.index') },
+            { title: 'Minha Assinatura', icon: CreditCard, url: route('dashboard.subscription.index') },
         ],
     },
     // {

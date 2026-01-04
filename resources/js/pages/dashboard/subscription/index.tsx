@@ -1,14 +1,14 @@
 import DashboardLayout from '@/components/layouts/dashboard-layout';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { Subscription } from '@/types/subscription';
 import { Head, router } from '@inertiajs/react';
-import { CreditCard, Calendar, TrendingUp, AlertCircle, CheckCircle } from 'lucide-react';
-import { useState } from 'react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Subscription } from '@/types/subscription';
+import { AlertCircle, Calendar, CreditCard, TrendingUp } from 'lucide-react';
+import { useState } from 'react';
 
 interface Props {
     currentSubscription: Subscription | null;
@@ -43,7 +43,7 @@ export default function SubscriptionIndex({ currentSubscription, subscriptionHis
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight">Minha Assinatura</h1>
-                        <p className="text-muted-foreground mt-2">Gerencie sua assinatura e histórico de pagamentos</p>
+                        <p className="mt-2 text-muted-foreground">Gerencie sua assinatura e histórico de pagamentos</p>
                     </div>
 
                     <Button onClick={handleChangePlan}>
@@ -54,32 +54,34 @@ export default function SubscriptionIndex({ currentSubscription, subscriptionHis
 
                 {/* Current Subscription Card */}
                 {currentSubscription ? (
-                    <Card>
-                        <CardHeader>
+                    <Card className="border-primary/20 shadow-sm">
+                        <CardHeader className="pb-3">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <CreditCard className="h-5 w-5" />
-                                        Plano Atual: {currentSubscription.plan.name}
+                                    <CardTitle className="flex items-center gap-2 text-xl">
+                                        <CreditCard className="h-5 w-5 text-primary" />
+                                        {currentSubscription.plan.name}
                                     </CardTitle>
-                                    <CardDescription className="mt-2">
-                                        {currentSubscription.plan.description}
-                                    </CardDescription>
+                                    <CardDescription className="mt-1">{currentSubscription.plan.description}</CardDescription>
                                 </div>
-                                <Badge variant={currentSubscription.status_color as any}>
-                                    {currentSubscription.status_label}
-                                </Badge>
+                                <div className="flex flex-col items-end gap-2">
+                                    <Badge variant={currentSubscription.status_color as any} className="px-3 py-1 text-sm">
+                                        {currentSubscription.status_label}
+                                    </Badge>
+                                </div>
                             </div>
                         </CardHeader>
 
-                        <CardContent className="space-y-4">
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <div className="flex items-center gap-3 rounded-lg border p-4">
-                                    <Calendar className="h-8 w-8 text-primary" />
+                        <CardContent className="space-y-6">
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                <div className="flex items-center gap-4 rounded-lg border bg-card p-4 shadow-sm">
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                                        <Calendar className="h-5 w-5 text-primary" />
+                                    </div>
                                     <div>
-                                        <p className="text-sm text-muted-foreground">Data de Início</p>
+                                        <p className="text-sm font-medium text-muted-foreground">Início</p>
                                         <p className="font-semibold">
-                                            {format(parseISO(currentSubscription.started_at), "dd 'de' MMMM 'de' yyyy", {
+                                            {format(parseISO(currentSubscription.started_at), "dd 'de' MMM, yyyy", {
                                                 locale: ptBR,
                                             })}
                                         </p>
@@ -87,128 +89,140 @@ export default function SubscriptionIndex({ currentSubscription, subscriptionHis
                                 </div>
 
                                 {currentSubscription.ends_at && (
-                                    <div className="flex items-center gap-3 rounded-lg border p-4">
-                                        <Calendar className="h-8 w-8 text-primary" />
+                                    <div className="flex items-center gap-4 rounded-lg border bg-card p-4 shadow-sm">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                                            <Calendar className="h-5 w-5 text-primary" />
+                                        </div>
                                         <div>
-                                            <p className="text-sm text-muted-foreground">
-                                                {currentSubscription.on_grace_period ? 'Válido até' : 'Próxima Renovação'}
+                                            <p className="text-sm font-medium text-muted-foreground">
+                                                {currentSubscription.on_grace_period ? 'Válido até' : 'Renovação'}
                                             </p>
                                             <p className="font-semibold">
-                                                {format(parseISO(currentSubscription.ends_at), "dd 'de' MMMM 'de' yyyy", {
+                                                {format(parseISO(currentSubscription.ends_at), "dd 'de' MMM, yyyy", {
                                                     locale: ptBR,
                                                 })}
                                             </p>
                                             {currentSubscription.days_remaining > 0 && (
-                                                <p className="text-xs text-muted-foreground">
-                                                    ({currentSubscription.days_remaining} dias restantes)
+                                                <p className="mt-0.5 text-xs text-muted-foreground">
+                                                    (Faltam {currentSubscription.days_remaining} dias)
                                                 </p>
                                             )}
                                         </div>
                                     </div>
                                 )}
+
+                                <div className="flex items-center gap-4 rounded-lg border bg-card p-4 shadow-sm">
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                                        <TrendingUp className="h-5 w-5 text-primary" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-muted-foreground">Valor</p>
+                                        <p className="font-semibold">
+                                            {currentSubscription.plan.price_formatted}
+                                            <span className="text-sm font-normal text-muted-foreground">/mês</span>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
 
-                            {/* Grace Period Warning */}
+                            {/* Status Messages */}
                             {currentSubscription.on_grace_period && (
                                 <div className="flex items-start gap-3 rounded-lg border border-orange-200 bg-orange-50 p-4 dark:border-orange-900 dark:bg-orange-950">
                                     <AlertCircle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                                     <div className="flex-1">
-                                        <p className="font-semibold text-orange-900 dark:text-orange-100">
-                                            Assinatura Cancelada
-                                        </p>
+                                        <p className="font-semibold text-orange-900 dark:text-orange-100">Assinatura Cancelada</p>
                                         <p className="text-sm text-orange-800 dark:text-orange-200">
-                                            Sua assinatura foi cancelada mas você ainda tem acesso até{' '}
-                                            {format(parseISO(currentSubscription.ends_at!), "dd 'de' MMMM", {
-                                                locale: ptBR,
-                                            })}
-                                            . Você pode retomar sua assinatura a qualquer momento.
+                                            Você tem acesso até {format(parseISO(currentSubscription.ends_at!), "dd 'de' MMM", { locale: ptBR })}.
+                                            Retome sua assinatura para não perder acesso.
                                         </p>
                                     </div>
                                 </div>
                             )}
 
-                            {/* Active Subscription Info */}
-                            {currentSubscription.is_active && !currentSubscription.is_cancelled && (
-                                <div className="flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-950">
-                                    <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
-                                    <div className="flex-1">
-                                        <p className="font-semibold text-green-900 dark:text-green-100">
-                                            Assinatura Ativa
-                                        </p>
-                                        <p className="text-sm text-green-800 dark:text-green-200">
-                                            Sua assinatura está ativa e você tem acesso a todos os recursos do plano{' '}
-                                            {currentSubscription.plan.name}.
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Action Buttons */}
-                            <div className="flex gap-2">
+                            <div className="flex flex-wrap gap-3 pt-2">
                                 {currentSubscription.can_resume && (
-                                    <Button onClick={() => setShowResumeDialog(true)}>Retomar Assinatura</Button>
+                                    <Button onClick={() => setShowResumeDialog(true)} className="flex-1 md:flex-none">
+                                        Retomar Assinatura
+                                    </Button>
                                 )}
 
                                 {currentSubscription.can_cancel && (
-                                    <Button variant="destructive" onClick={() => setShowCancelDialog(true)}>
+                                    <Button
+                                        variant="outline"
+                                        className="flex-1 border-destructive/50 text-destructive hover:bg-destructive/10 md:flex-none"
+                                        onClick={() => setShowCancelDialog(true)}
+                                    >
                                         Cancelar Assinatura
                                     </Button>
                                 )}
+
+                                <Button variant="secondary" onClick={handleChangePlan} className="flex-1 md:flex-none">
+                                    Mudar de Plano
+                                </Button>
                             </div>
                         </CardContent>
                     </Card>
                 ) : (
-                    <Card>
-                        <CardHeader>
+                    <Card className="border-dashed bg-muted/30">
+                        <CardHeader className="text-center">
+                            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                                <TrendingUp className="h-6 w-6 text-primary" />
+                            </div>
                             <CardTitle>Nenhuma Assinatura Ativa</CardTitle>
-                            <CardDescription>Você está no plano gratuito</CardDescription>
+                            <CardDescription>Você está usando o plano gratuito com recursos limitados</CardDescription>
                         </CardHeader>
-                        <CardContent>
-                            <p className="mb-4 text-muted-foreground">
-                                Faça upgrade para um plano premium e tenha acesso a recursos avançados!
-                            </p>
-                            <Button onClick={handleChangePlan}>Ver Planos Disponíveis</Button>
+                        <CardContent className="flex justify-center pb-8">
+                            <Button size="lg" onClick={handleChangePlan} className="px-8">
+                                Ver Planos Premium
+                            </Button>
                         </CardContent>
                     </Card>
                 )}
 
-                {/* Subscription History */}
-                {subscriptionHistory.length > 0 && (
+                <div className="grid gap-6 md:grid-cols-2">
+                    {/* Actions Card */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Histórico de Assinaturas</CardTitle>
-                            <CardDescription>Suas assinaturas anteriores</CardDescription>
+                            <CardTitle className="text-lg">Pagamentos</CardTitle>
+                            <CardDescription>Gerencie suas cobranças</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-4">
-                                {subscriptionHistory.map((subscription) => (
-                                    <div
-                                        key={subscription.uuid}
-                                        className="flex items-center justify-between rounded-lg border p-4"
-                                    >
-                                        <div>
-                                            <p className="font-semibold">{subscription.plan.name}</p>
-                                            <p className="text-sm text-muted-foreground">
-                                                {format(parseISO(subscription.started_at), "dd/MM/yyyy", {
-                                                    locale: ptBR,
-                                                })}{' '}
-                                                -{' '}
-                                                {subscription.ends_at
-                                                    ? format(parseISO(subscription.ends_at), "dd/MM/yyyy", {
-                                                          locale: ptBR,
-                                                      })
-                                                    : 'Atual'}
-                                            </p>
-                                        </div>
-                                        <Badge variant={subscription.status_color as any}>
-                                            {subscription.status_label}
-                                        </Badge>
-                                    </div>
-                                ))}
-                            </div>
+                            <Button variant="outline" className="w-full justify-start" onClick={() => router.get(route('dashboard.payment.index'))}>
+                                <CreditCard className="mr-2 h-4 w-4" />
+                                Ver Todos os Pagamentos
+                            </Button>
                         </CardContent>
                     </Card>
-                )}
+
+                    {/* History Summary */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg">Histórico Recente</CardTitle>
+                            <CardDescription>Últimas alterações de assinatura</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {subscriptionHistory.length > 0 ? (
+                                <div className="space-y-4">
+                                    {subscriptionHistory.slice(0, 3).map((subscription) => (
+                                        <div key={subscription.uuid} className="flex items-center justify-between text-sm">
+                                            <div>
+                                                <p className="font-medium">{subscription.plan.name}</p>
+                                                <p className="text-xs text-muted-foreground">
+                                                    {format(parseISO(subscription.started_at), 'dd/MM/yyyy', { locale: ptBR })}
+                                                </p>
+                                            </div>
+                                            <Badge variant="outline" className="text-xs">
+                                                {subscription.status_label}
+                                            </Badge>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-sm text-muted-foreground">Nenhum histórico disponível.</p>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
 
             {/* Cancel Confirmation Dialog */}
