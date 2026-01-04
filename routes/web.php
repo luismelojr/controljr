@@ -60,6 +60,8 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
 
+    Route::get('/payments/{payment}/invoice', [\App\Http\Controllers\InvoiceController::class, 'download'])->name('payments.invoice');
+
     Route::as('dashboard.')->prefix('dashboard')->group(function () {
         Route::get('/', \App\Http\Controllers\Dashboard\HomeController::class)->name('home');
 
@@ -99,6 +101,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('alerts/{alert}', [\App\Http\Controllers\Dashboard\AlertsController::class, 'update'])->name('alerts.update');
         Route::delete('alerts/{alert}', [\App\Http\Controllers\Dashboard\AlertsController::class, 'destroy'])->name('alerts.destroy');
         Route::patch('alerts/{alert}/toggle-status', [\App\Http\Controllers\Dashboard\AlertsController::class, 'toggleStatus'])->name('alerts.toggle-status');
+
 
         // Reconciliation routes
         Route::get('reconciliation', [\App\Http\Controllers\Dashboard\ReconciliationController::class, 'index'])->name('reconciliation.index');

@@ -1,27 +1,14 @@
-import { router } from '@inertiajs/react';
-import { CreditCard, QrCode, Receipt, Eye, X } from 'lucide-react';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
-import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { PaymentIndexPageProps } from '@/types/payment';
+import { router } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { CreditCard, Eye, FileText, QrCode, Receipt, X } from 'lucide-react';
 import { useState } from 'react';
 
 export default function PaymentIndex({ payments }: PaymentIndexPageProps) {
@@ -142,14 +129,26 @@ export default function PaymentIndex({ payments }: PaymentIndexPageProps) {
                                                                 </>
                                                             )}
                                                             {(payment.status === 'confirmed' || payment.status === 'received') && (
-                                                                <Button
-                                                                    variant="outline"
-                                                                    size="sm"
-                                                                    onClick={() => router.visit(`/dashboard/payment/${payment.uuid}/success`)}
-                                                                >
-                                                                    <Eye className="mr-1 h-4 w-4" />
-                                                                    Ver Detalhes
-                                                                </Button>
+                                                                <>
+                                                                    <Button
+                                                                        variant="outline"
+                                                                        size="sm"
+                                                                        onClick={() => router.visit(`/dashboard/payment/${payment.uuid}/success`)}
+                                                                    >
+                                                                        <Eye className="mr-1 h-4 w-4" />
+                                                                        Ver
+                                                                    </Button>
+                                                                    <a
+                                                                        href={route('payments.invoice', { payment: payment.uuid })}
+                                                                        target="_blank"
+                                                                        rel="noreferrer"
+                                                                    >
+                                                                        <Button variant="outline" size="sm">
+                                                                            <FileText className="mr-1 h-4 w-4" />
+                                                                            Fatura
+                                                                        </Button>
+                                                                    </a>
+                                                                </>
                                                             )}
                                                         </div>
                                                     </TableCell>

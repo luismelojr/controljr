@@ -20,9 +20,9 @@ class PaymentController extends Controller
                 return [
                     'uuid' => $payment->uuid,
                     'user_name' => $payment->user->name,
-                    'amount_formatted' => $payment->value_formatted,
+                    'amount_formatted' => $payment->amount_formatted,
                     'status' => $payment->status,
-                    'billing_type' => $payment->billing_type,
+                    'billing_type' => $payment->payment_method,
                     'date' => $payment->created_at->format('d/m/Y H:i'),
                 ];
             });

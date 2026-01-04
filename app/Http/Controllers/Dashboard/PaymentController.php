@@ -26,11 +26,21 @@ class PaymentController extends Controller
     {
         $user = $request->user();
 
-        // Try to get pending subscription first (e.g. upgrades)
-        $subscription = $user->subscriptions()
-            ->where('status', 'pending')
-            ->latest()
-            ->first();
+        // Check for specific subscription via query param
+        if ($request->has('subscription')) {
+            $subscription = $user->subscriptions()
+                ->where('uuid', $request->query('subscription'))
+                ->where('status', 'pending')
+                ->first();
+        }
+
+        // If not found or not provided, try to get latest pending
+        if (! isset($subscription)) {
+            $subscription = $user->subscriptions()
+                ->where('status', 'pending')
+                ->latest()
+                ->first();
+        }
 
         // If no pending, get current active
         if (! $subscription) {

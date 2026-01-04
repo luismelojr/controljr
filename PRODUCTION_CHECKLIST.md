@@ -334,15 +334,15 @@ Próxima cobrança: R$ 59,90 (No dia 1 do próximo mês)
 
 ---
 
-### 8. ⏸️ Faturas em PDF
+### 8. 🔄 Faturas em PDF
 
 **Prioridade**: BAIXA
-**Status**: PENDENTE
+**Status**: 🔄 **PARCIAL**
 
-- [ ] Gerar PDF com dados da cobrança
-- [ ] Logo da empresa
-- [ ] Dados fiscais (CNPJ, etc)
-- [ ] Download de faturas antigas
+- [x] Gerar PDF com dados da cobrança
+- [x] Logo da empresa
+- [x] Dados fiscais (CNPJ, etc) - (Adicionado CPF do cliente)
+- [x] Download de faturas antigas
 - [ ] Envio automático por email
 
 ---

@@ -211,9 +211,23 @@ export default function SubscriptionIndex({ currentSubscription, subscriptionHis
                                                     {format(parseISO(subscription.started_at), 'dd/MM/yyyy', { locale: ptBR })}
                                                 </p>
                                             </div>
-                                            <Badge variant="outline" className="text-xs">
-                                                {subscription.status_label}
-                                            </Badge>
+                                            <div className="flex items-center gap-2">
+                                                {subscription.is_pending && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-6 px-2 text-xs text-primary hover:text-primary/80"
+                                                        onClick={() =>
+                                                            router.get(route('dashboard.payment.choose-method', { subscription: subscription.uuid }))
+                                                        }
+                                                    >
+                                                        Finalizar
+                                                    </Button>
+                                                )}
+                                                <Badge variant="outline" className="text-xs">
+                                                    {subscription.status_label}
+                                                </Badge>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>

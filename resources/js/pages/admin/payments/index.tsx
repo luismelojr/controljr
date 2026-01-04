@@ -4,14 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Head } from '@inertiajs/react';
-import { Download } from 'lucide-react';
+import { CreditCard, Download, FileText, QrCode, Receipt } from 'lucide-react';
 
 interface Payment {
     uuid: string;
     user_name: string;
     amount_formatted: string;
     status: string;
-    billing_type: string;
+    billing_type: 'pix' | 'boleto' | 'credit_card';
     date: string;
 }
 
@@ -32,6 +32,18 @@ const statusMap: Record<string, { label: string; variant: 'default' | 'success' 
     OVERDUE: { label: 'Atrasado', variant: 'destructive' },
     REFUNDED: { label: 'Reembolsado', variant: 'secondary' },
     CANCELLED: { label: 'Cancelado', variant: 'destructive' },
+};
+
+const methodLabels = {
+    pix: 'PIX',
+    boleto: 'Boleto Bancário',
+    credit_card: 'Cartão de Crédito',
+};
+
+const paymentMethodIcons = {
+    pix: QrCode,
+    boleto: Receipt,
+    credit_card: CreditCard,
 };
 
 export default function AdminPayments({ payments }: Props) {
@@ -63,22 +75,38 @@ export default function AdminPayments({ payments }: Props) {
                                     <TableHead>Valor</TableHead>
                                     <TableHead>Método</TableHead>
                                     <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">Ações</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {payments.data.map((payment) => (
-                                    <TableRow key={payment.uuid}>
-                                        <TableCell>{payment.date}</TableCell>
-                                        <TableCell className="font-medium">{payment.user_name}</TableCell>
-                                        <TableCell>{payment.amount_formatted}</TableCell>
-                                        <TableCell>{payment.billing_type}</TableCell>
-                                        <TableCell>
-                                            <Badge variant={(statusMap[payment.status]?.variant as any) || 'outline'}>
-                                                {statusMap[payment.status]?.label || payment.status}
-                                            </Badge>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                {payments.data.map((payment) => {
+                                    const Icon = paymentMethodIcons[payment.billing_type];
+                                    return (
+                                        <TableRow key={payment.uuid}>
+                                            <TableCell>{payment.date}</TableCell>
+                                            <TableCell className="font-medium">{payment.user_name}</TableCell>
+                                            <TableCell>{payment.amount_formatted}</TableCell>
+                                            <TableCell>
+                                                <div className="flex items-center gap-2">
+                                                    <Icon className={'size-4'} />
+                                                    <span>{methodLabels[payment.billing_type]}</span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge variant={(statusMap[payment.status]?.variant as any) || 'outline'}>
+                                                    {statusMap[payment.status]?.label || payment.status}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <a href={route('payments.invoice', { payment: payment.uuid })} target="_blank" rel="noreferrer">
+                                                    <Button variant="ghost" size="icon" title="Baixar Fatura">
+                                                        <FileText className="h-4 w-4" />
+                                                    </Button>
+                                                </a>
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
                             </TableBody>
                         </Table>
 

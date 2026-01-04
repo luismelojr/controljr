@@ -58,6 +58,18 @@ class SubscriptionController extends Controller
             $user = $request->user();
             $plan = SubscriptionPlan::active()->bySlug($planSlug)->firstOrFail();
 
+            // Check for existing pending subscription for THIS plan
+            $pendingSubscription = $user->subscriptions()
+                ->where('status', 'pending')
+                ->where('plan_id', $plan->id)
+                ->latest()
+                ->first();
+
+            if ($pendingSubscription) {
+                 Toast::info('Continuando assinatura pendente...');
+                 return redirect()->route('dashboard.payment.choose-method');
+            }
+
             // Create subscription
             $subscription = $this->subscriptionService->create($user, $planSlug);
 
