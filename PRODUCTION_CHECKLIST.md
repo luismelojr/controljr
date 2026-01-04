@@ -364,7 +364,7 @@ Próxima cobrança: R$ 59,90 (No dia 1 do próximo mês)
 ### 10. ⏸️ Aplicar Middleware de Features
 
 **Prioridade**: BAIXA
-**Status**: PENDENTE
+**Status**: ✅ **CONCLUÍDO**
 
 **Já existe**:
 
@@ -374,10 +374,10 @@ Próxima cobrança: R$ 59,90 (No dia 1 do próximo mês)
 
 **O que falta**:
 
-- [ ] Definir quais rotas requerem quais features
-- [ ] Aplicar middleware nas rotas protegidas
-- [ ] Página de "upgrade necessário" quando feature bloqueada
-- [ ] Verificações de limite (ex: máximo de transações)
+- [x] Definir quais rotas requerem quais features (Reports, Exports, Limits)
+- [x] Aplicar middleware nas rotas protegidas (web.php)
+- [x] Página de "upgrade necessário" quando feature bloqueada (Redireciona para Plans com Toast)
+- [x] Verificações de limite (ex: máximo de transações) (Controllers implementados)
 
 **Exemplo**:
 

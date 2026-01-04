@@ -47,7 +47,7 @@ return Application::configure(basePath: dirname(__DIR__))
         })->daily()->name('mark-overdue-income-transactions');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        Bugsnag::attach($exceptions);
+        // Bugsnag::attach($exceptions);
 
         // Handle authorization exceptions with toast notifications
         $exceptions->render(function (AuthorizationException $e, $request) {

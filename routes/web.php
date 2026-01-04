@@ -123,10 +123,12 @@ Route::middleware('auth')->group(function () {
         Route::resource('budgets', \App\Http\Controllers\Dashboard\BudgetController::class)->except(['create', 'edit', 'show']);
 
         // Report routes
-        Route::get('reports', [\App\Http\Controllers\Dashboard\ReportController::class, 'index'])->name('reports.index');
+        Route::get('reports', [\App\Http\Controllers\Dashboard\ReportController::class, 'index'])
+            ->name('reports.index')
+            ->middleware('plan.feature:advanced_reports');
 
         // Export routes
-        Route::prefix('exports')->as('exports.')->group(function () {
+        Route::prefix('exports')->as('exports.')->middleware(['plan.feature:export_data'])->group(function () {
             Route::post('/transactions', [\App\Http\Controllers\Dashboard\ExportsController::class, 'transactions'])
                 ->name('transactions');
             Route::post('/incomes', [\App\Http\Controllers\Dashboard\ExportsController::class, 'incomes'])

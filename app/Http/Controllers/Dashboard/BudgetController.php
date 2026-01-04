@@ -41,6 +41,16 @@ class BudgetController extends Controller
 
     public function store(StoreBudgetRequest $request)
     {
+        $currentCount = $request->user()->budgets()->count();
+
+        if (\App\Http\Middleware\CheckPlanFeature::hasReachedLimit($request, 'max_budgets', $currentCount)) {
+            \App\Facades\Toast::error('Você atingiu o limite de orçamentos do seu plano.')
+                ->action('Fazer Upgrade', route('dashboard.subscription.plans'))
+                ->persistent();
+
+            return back();
+        }
+
         $validated = $request->validated();
 
         $data = new CreateBudgetData(

@@ -66,6 +66,16 @@ class TransactionsController extends Controller
      */
     public function store(StoreTransactionRequest $request): RedirectResponse
     {
+        $currentCount = auth()->user()->transactions()->count();
+
+        if (\App\Http\Middleware\CheckPlanFeature::hasReachedLimit($request, 'max_transactions', $currentCount)) {
+            Toast::error('Você atingiu o limite de transações do seu plano.')
+                ->action('Fazer Upgrade', route('dashboard.subscription.plans'))
+                ->persistent();
+
+            return back();
+        }
+
         $this->createTransactionAction->execute(
             user: auth()->user(),
             data: $request->validated()
