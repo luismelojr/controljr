@@ -1,23 +1,25 @@
-import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { BudgetCard } from '@/components/budgets/budget-card';
 import { BudgetForm } from '@/components/budgets/budget-form';
+import DashboardLayout from '@/components/layouts/dashboard-layout';
+import { TagOption } from '@/components/tags/tag-input';
 import { Button } from '@/components/ui/button';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import ExportButton from '@/components/ui/export-button';
 import { Budget } from '@/types/budget';
 import { Head, router } from '@inertiajs/react';
-import { Plus, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
-import { format, addMonths, subMonths, parseISO } from 'date-fns';
+import { addMonths, format, parseISO, subMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { useState } from 'react';
 
 interface Props {
     budgets: Budget[];
     categories: { id: number; name: string }[];
     currentDate: string;
+    tags: TagOption[];
 }
 
-export default function BudgetsIndex({ budgets, categories, currentDate }: Props) {
+export default function BudgetsIndex({ budgets, categories, currentDate, tags }: Props) {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
     const [deleteBudget, setDeleteBudget] = useState<Budget | null>(null);
@@ -61,13 +63,11 @@ export default function BudgetsIndex({ budgets, categories, currentDate }: Props
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <h1 className="text-3xl font-bold tracking-tight">Orçamentos</h1>
-                        <div className="flex items-center gap-2 bg-muted rounded-md p-1">
+                        <div className="flex items-center gap-2 rounded-md bg-muted p-1">
                             <Button variant="ghost" size="icon" onClick={() => handleMonthChange('prev')}>
                                 <ChevronLeft className="h-4 w-4" />
                             </Button>
-                            <span className="min-w-[120px] text-center font-medium capitalize">
-                                {format(date, 'MMMM yyyy', { locale: ptBR })}
-                            </span>
+                            <span className="min-w-[120px] text-center font-medium capitalize">{format(date, 'MMMM yyyy', { locale: ptBR })}</span>
                             <Button variant="ghost" size="icon" onClick={() => handleMonthChange('next')}>
                                 <ChevronRight className="h-4 w-4" />
                             </Button>
@@ -83,25 +83,18 @@ export default function BudgetsIndex({ budgets, categories, currentDate }: Props
                 </div>
 
                 {budgets.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center animate-in fade-in-50">
+                    <div className="flex animate-in flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center fade-in-50">
                         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted">
                             <Plus className="h-6 w-6 text-muted-foreground" />
                         </div>
                         <h3 className="mt-4 text-lg font-semibold">Nenhum orçamento definido</h3>
-                        <p className="mb-4 mt-2 text-sm text-muted-foreground">
-                            Crie um orçamento para controlar seus gastos nesta categoria.
-                        </p>
+                        <p className="mt-2 mb-4 text-sm text-muted-foreground">Crie um orçamento para controlar seus gastos nesta categoria.</p>
                         <Button onClick={handleCreate}>Criar Orçamento</Button>
                     </div>
                 ) : (
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                         {budgets.map((budget) => (
-                            <BudgetCard
-                                key={budget.id}
-                                budget={budget}
-                                onEdit={handleEdit}
-                                onDelete={handleDelete}
-                            />
+                            <BudgetCard key={budget.id} budget={budget} onEdit={handleEdit} onDelete={handleDelete} />
                         ))}
                     </div>
                 )}
@@ -112,6 +105,7 @@ export default function BudgetsIndex({ budgets, categories, currentDate }: Props
                     categories={categories}
                     budgetToEdit={editingBudget}
                     currentDate={currentDate}
+                    tags={tags}
                 />
 
                 <ConfirmDeleteDialog

@@ -1,6 +1,7 @@
 import AppHeader from '@/components/dashboard/app-header';
 import FormCard from '@/components/dashboard/form-card';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
+import { TagOption } from '@/components/tags/tag-input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import TextAreaCustom from '@/components/ui/text-area-custom';
@@ -12,13 +13,15 @@ import { Info } from 'lucide-react';
 
 interface EditAccountProps {
     account: Account;
+    tags: TagOption[];
 }
 
-export default function EditAccount({ account }: EditAccountProps) {
+export default function EditAccount({ account, tags }: EditAccountProps) {
     const { data, setData, patch, processing, errors } = useForm({
         name: account.name,
         description: account.description || '',
         status: account.status,
+        tags: account.tags?.map((t) => ({ name: t.name, color: t.color })) || [],
     });
 
     const statusOptions = [
@@ -36,11 +39,7 @@ export default function EditAccount({ account }: EditAccountProps) {
         <DashboardLayout title="Editar Conta">
             <Head title="Editar Conta" />
             <div className="space-y-6">
-                <AppHeader
-                    title="Editar conta"
-                    description="Atualize as informações da conta"
-                    routeBack={route('dashboard.accounts.index')}
-                />
+                <AppHeader title="Editar conta" description="Atualize as informações da conta" routeBack={route('dashboard.accounts.index')} />
 
                 <FormCard>
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -48,8 +47,8 @@ export default function EditAccount({ account }: EditAccountProps) {
                         <Alert>
                             <Info className="h-4 w-4" />
                             <AlertDescription>
-                                Você pode editar apenas o nome, descrição e status da conta. Valores, parcelas e tipo de recorrência não
-                                podem ser alterados após a criação.
+                                Você pode editar apenas o nome, descrição e status da conta. Valores, parcelas e tipo de recorrência não podem ser
+                                alterados após a criação.
                             </AlertDescription>
                         </Alert>
 
@@ -107,6 +106,11 @@ export default function EditAccount({ account }: EditAccountProps) {
                             error={errors.description}
                             rows={3}
                         />
+
+                        <div className="space-y-2">
+                            <label className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Tags</label>
+                            <TagInput value={data.tags} onChange={(newTags) => setData('tags', newTags)} suggestions={tags} />
+                        </div>
 
                         {/* Status */}
                         <TextSelect

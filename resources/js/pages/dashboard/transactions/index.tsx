@@ -136,11 +136,7 @@ export default function TransactionsIndex({ transactions, categories, filters }:
             render: (transaction) => (
                 <div className="space-y-1">
                     <p className="font-medium">{formatDate(transaction.due_date)}</p>
-                    {transaction.paid_at && (
-                        <p className="text-xs text-muted-foreground">
-                            Pago em {formatDate(transaction.paid_at)}
-                        </p>
-                    )}
+                    {transaction.paid_at && <p className="text-xs text-muted-foreground">Pago em {formatDate(transaction.paid_at)}</p>}
                 </div>
             ),
         },
@@ -175,6 +171,28 @@ export default function TransactionsIndex({ transactions, categories, filters }:
                 <Badge variant="outline" className="font-normal">
                     {transaction.category?.name}
                 </Badge>
+            ),
+        },
+        {
+            key: 'tags',
+            label: 'Tags',
+            render: (transaction) => (
+                <div className="flex flex-wrap gap-1">
+                    {transaction.tags?.map((tag) => (
+                        <Badge
+                            key={tag.id}
+                            variant="secondary"
+                            className="h-5 px-1.5 py-0 text-[10px]"
+                            style={{
+                                backgroundColor: tag.color + '20',
+                                color: tag.color,
+                                borderColor: tag.color + '40',
+                            }}
+                        >
+                            {tag.name}
+                        </Badge>
+                    ))}
+                </div>
             ),
         },
         {
@@ -279,11 +297,7 @@ export default function TransactionsIndex({ transactions, categories, filters }:
 
             <div className="space-y-6">
                 {/* Header */}
-                <DataTableHeader
-                    title="Transações"
-                    description="Visualize e gerencie todas as suas transações financeiras"
-                    actions={[]}
-                />
+                <DataTableHeader title="Transações" description="Visualize e gerencie todas as suas transações financeiras" actions={[]} />
 
                 {/* Filters and Active Filters */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center">

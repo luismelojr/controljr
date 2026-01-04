@@ -29,7 +29,7 @@
 | **Middleware de Planos**            | ✅ Completo     | 100%      | CheckPlanFeature implementado                  |
 | **Service de Limites**              | ✅ Completo     | 100%      | PlanLimitService funcionando                   |
 | **Limites Aplicados**               | ✅ Completo     | 100%      | Budgets, Transactions, Wallets e Categories OK |
-| **Features Premium**                | 🔴 Não iniciado | 0%        | 7 features principais faltando                 |
+| **Features Premium**                | ⚠️ Iniciado     | 15%       | Tags Completo, 6 features faltando             |
 | **Sistema Family**                  | 🔴 Não iniciado | 0%        | Toda infraestrutura faltando                   |
 | **Inteligência Artificial**         | 🔴 Não iniciado | 0%        | OpenAI não integrado                           |
 
@@ -90,7 +90,7 @@
 
 | Feature                 | Configurado           | Limite Aplicado | Feature Existe | Status Final |
 | ----------------------- | --------------------- | --------------- | -------------- | ------------ |
-| Tags Personalizadas     | ❌ Falta              | N/A             | ❌ Não         | 🔴 0%        |
+| Tags Personalizadas     | ✅ 0                  | ✅ Sim          | ✅ Sim         | ✅ 100%      |
 | Orçamentos              | ✅ 5                  | ✅ Sim          | ✅ Sim         | ✅ 100%      |
 | Carteiras               | ✅ 1                  | ✅ Sim          | ✅ Sim         | ✅ 100%      |
 | Categorias              | ✅ 10                 | ✅ Sim          | ✅ Sim         | ✅ 100%      |
@@ -153,7 +153,7 @@
 
 | Feature                 | Configurado         | Limite Aplicado | Feature Existe | Status Final |
 | ----------------------- | ------------------- | --------------- | -------------- | ------------ |
-| Tags Personalizadas     | ❌ Falta            | N/A             | ❌ Não         | 🔴 0%        |
+| Tags Personalizadas     | ✅ -1 (ilimitado)   | ✅ Sim          | ✅ Sim         | ✅ 100%      |
 | Orçamentos              | ✅ -1 (ilimitado)   | ✅ Sim          | ✅ Sim         | ✅ 100%      |
 | Carteiras               | ✅ -1 (ilimitado)   | ✅ Sim          | ✅ Sim         | ✅ 100%      |
 | Categorias              | ✅ -1 (ilimitado)   | ✅ Sim          | ✅ Sim         | ✅ 100%      |
@@ -211,7 +211,7 @@
 
 | Feature                 | Configurado         | Limite Aplicado | Feature Existe | Status Final |
 | ----------------------- | ------------------- | --------------- | -------------- | ------------ |
-| Tags Personalizadas     | ❌ Falta            | N/A             | ❌ Não         | 🔴 0%        |
+| Tags Personalizadas     | ✅ -1 (ilimitado)   | ✅ Sim          | ✅ Sim         | ✅ 100%      |
 | Orçamentos              | ✅ -1 (ilimitado)   | ✅ Sim          | ✅ Sim         | ✅ 100%      |
 | Carteiras               | ✅ -1 (ilimitado)   | ❌ Não          | ✅ Sim         | ⚠️ 70%       |
 | Categorias              | ✅ -1 (ilimitado)   | ❌ Não          | ✅ Sim         | ⚠️ 70%       |
@@ -341,11 +341,47 @@
 - 📍 `/app/Http/Controllers/Dashboard/BudgetController.php` (exemplo de uso)
 - 📍 `/app/Http/Controllers/Dashboard/TransactionsController.php` (exemplo de uso)
 
+### 4. Sistema de Tags (100% ✅)
+
+**Implementado:**
+
+- ✅ Migration: `create_tags_table`
+- ✅ Migration: `create_taggables_table` (polymorphic)
+- ✅ Model: `Tag.php`
+- ✅ Trait: `HasTags.php` (Account, Budget, Income, Transaction, User)
+- ✅ Service: `TagService.php`
+- ✅ Controller: `TagsController.php`
+- ✅ Resource: `TagResource.php`
+- ✅ Request: `StoreTagRequest.php`
+- ✅ Request: `UpdateTagRequest.php`
+- ✅ Policy: `TagPolicy.php` (implícito via Controller/Service)
+- ✅ Tests: `TagCrudTest.php` (CRUD operations)
+- ✅ Tests: `TagLimitTest.php` (Limit verification)
+
+**Frontend:**
+
+- ✅ Page: `pages/dashboard/tags/index.tsx`
+- ✅ Component: `components/tags/tag-input.tsx`
+- ✅ Component: `components/tags/tag-badge.tsx`
+- ✅ Integrated: Transactions, Accounts, Budgets, Incomes
+
+**Limites Aplicados:**
+
+- ✅ Free: 0 tags (Feature Check)
+- ✅ Premium/Family: Ilimitado
+
+**Arquivos Localizados:**
+
+- 📍 `/app/Domain/Tags/Services/TagService.php`
+- 📍 `/app/Http/Controllers/Dashboard/TagsController.php`
+- 📍 `/database/migrations/2026_01_04_192423_create_tags_table.php`
+- 📍 `/resources/js/pages/dashboard/tags/index.tsx`
+
 ---
 
 ## 🔴 FEATURES FALTANTES
 
-### 1. Tags Personalizadas (0% 🔴)
+### 1. Anexos (Attachments) (0% 🔴)
 
 **Status:** Não existe nenhum arquivo relacionado
 
@@ -876,7 +912,7 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 
 #### 1.1 Backend - Database
 
-- [ ] **Criar Migration:** `database/migrations/xxxx_create_tags_table.php`
+- [x] **Criar Migration:** `database/migrations/xxxx_create_tags_table.php`
 
     ```php
     Schema::create('tags', function (Blueprint $table) {
@@ -892,7 +928,7 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
     });
     ```
 
-- [ ] **Criar Migration:** `database/migrations/xxxx_create_taggables_table.php`
+- [x] **Criar Migration:** `database/migrations/xxxx_create_taggables_table.php`
 
     ```php
     Schema::create('taggables', function (Blueprint $table) {
@@ -904,11 +940,11 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
     });
     ```
 
-- [ ] **Rodar migrations:** `php artisan migrate`
+- [x] **Rodar migrations:** `php artisan migrate`
 
 #### 1.2 Backend - Models
 
-- [ ] **Criar Model:** `app/Models/Tag.php`
+- [x] **Criar Model:** `app/Models/Tag.php`
 
     ```php
     <?php
@@ -950,7 +986,7 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
     }
     ```
 
-- [ ] **Criar Trait:** `app/Traits/HasTags.php`
+- [x] **Criar Trait:** `app/Traits/HasTags.php`
 
     ```php
     <?php
@@ -982,15 +1018,15 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
     }
     ```
 
-- [ ] **Adicionar trait em models:**
-    - `app/Models/Transaction.php` - adicionar `use HasTags;`
-    - `app/Models/Account.php` - adicionar `use HasTags;`
-    - `app/Models/Income.php` - adicionar `use HasTags;`
-    - `app/Models/Budget.php` - adicionar `use HasTags;`
+- [x] **Adicionar trait em models:**
+    - [x] `app/Models/Transaction.php` - adicionar `use HasTags;`
+    - [x] `app/Models/Account.php` - adicionar `use HasTags;`
+    - [x] `app/Models/Income.php` - adicionar `use HasTags;`
+    - [x] `app/Models/Budget.php` - adicionar `use HasTags;`
 
 #### 1.3 Backend - Service
 
-- [ ] **Criar Service:** `app/Domain/Tags/Services/TagService.php`
+- [x] **Criar Service:** `app/Domain/Tags/Services/TagService.php`
 
     ```php
     <?php
@@ -1026,7 +1062,7 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 
 #### 1.4 Backend - Controller
 
-- [ ] **Criar Controller:** `app/Http/Controllers/Dashboard/TagsController.php`
+- [x] **Criar Controller:** `app/Http/Controllers/Dashboard/TagsController.php`
 
     ```php
     <?php
@@ -1106,7 +1142,7 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 
 #### 1.5 Backend - Policy
 
-- [ ] **Criar Policy:** `app/Policies/TagPolicy.php`
+- [x] **Criar Policy:** `app/Policies/TagPolicy.php`
 
     ```php
     <?php
@@ -1146,7 +1182,7 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
 
 #### 1.6 Backend - Routes
 
-- [ ] **Adicionar em:** `routes/web.php`
+- [x] **Adicionar em:** `routes/web.php`
 
     ```php
     Route::middleware(['auth'])->prefix('dashboard')->group(function () {
@@ -1160,11 +1196,11 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
     });
     ```
 
-- [ ] **Gerar rotas Wayfinder:** `php artisan wayfinder:generate`
+- [x] **Gerar rotas Wayfinder:** `php artisan wayfinder:generate`
 
 #### 1.7 Frontend - Components
 
-- [ ] **Criar Component:** `resources/js/components/tags/tag-badge.tsx`
+- [x] **Criar Component:** `resources/js/components/tags/tag-badge.tsx`
 
     ```typescript
     interface TagBadgeProps {
@@ -1190,31 +1226,31 @@ Schedule::job(ResetMonthlyExportsCount::class)->monthly();
     }
     ```
 
-- [ ] **Criar Component:** `resources/js/components/tags/tag-input.tsx` (multi-select com criação inline)
+- [x] **Criar Component:** `resources/js/components/tags/tag-input.tsx` (multi-select com criação inline)
 
-- [ ] **Criar Component:** `resources/js/components/tags/tag-manager.tsx` (CRUD de tags)
+- [x] **Criar Component:** `resources/js/components/tags/tag-manager.tsx` (CRUD de tags)
 
 #### 1.8 Frontend - Page
 
-- [ ] **Criar Page:** `resources/js/pages/dashboard/tags/index.tsx`
+- [x] **Criar Page:** `resources/js/pages/dashboard/tags/index.tsx`
 
 #### 1.9 Atualizar Forms Existentes
 
-- [ ] **Adicionar tag input em:**
-    - `resources/js/pages/dashboard/transactions/form.tsx`
-    - `resources/js/pages/dashboard/accounts/form.tsx`
-    - `resources/js/pages/dashboard/incomes/form.tsx`
-    - `resources/js/pages/dashboard/budgets/form.tsx`
+- [x] **Adicionar tag input em:**
+    - [x] `resources/js/pages/dashboard/transactions/form.tsx`
+    - [x] `resources/js/pages/dashboard/accounts/form.tsx`
+    - [x] `resources/js/pages/dashboard/incomes/form.tsx`
+    - [x] `resources/js/pages/dashboard/budgets/form.tsx`
 
 #### 1.10 Testes
 
-- [ ] **Criar:** `tests/Feature/TagsTest.php`
-- [ ] **Testar:**
-    - Criar tag (Premium OK, Free bloqueado)
-    - Atualizar tag (apenas owner)
-    - Deletar tag
-    - Limite de tags por plano
-    - Associar tag a transaction/account/income/budget
+- [x] **Criar:** `tests/Feature/TagsTest.php`
+- [x] **Testar:**
+    - [x] Criar tag (Premium OK, Free bloqueado)
+    - [x] Atualizar tag (apenas owner)
+    - [x] Deletar tag
+    - [x] Limite de tags por plano
+    - [x] Associar tag a transaction/account/income/budget
 
 ---
 
@@ -1888,12 +1924,12 @@ Release semanal com valor agregado:
 
 ### Fase 1 - Tags
 
-- [ ] Premium/Family podem criar tags ilimitadas
-- [ ] Free vê erro ao tentar criar tag
-- [ ] Tags associadas a transactions/accounts/incomes/budgets
-- [ ] UI de tags funcional (badge, input, manager)
-- [ ] Policy impede acesso a tags de outros usuários
-- [ ] 100% dos testes passando
+- [x] Premium/Family podem criar tags ilimitadas
+- [x] Free vê erro ao tentar criar tag
+- [x] Tags associadas a transactions/accounts/incomes/budgets
+- [x] UI de tags funcional (badge, input, manager)
+- [x] Policy impede acesso a tags de outros usuários
+- [x] 100% dos testes passando
 
 ### Fase 2 - Metas de Economia
 

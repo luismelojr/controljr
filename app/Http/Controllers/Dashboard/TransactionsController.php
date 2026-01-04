@@ -19,6 +19,8 @@ use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
+use App\Domain\Tags\Services\TagService;
+
 class TransactionsController extends Controller
 {
     public function __construct(
@@ -26,6 +28,7 @@ class TransactionsController extends Controller
         private readonly CreateTransactionAction $createTransactionAction,
         private readonly MarkTransactionAsPaidAction $markTransactionAsPaidAction,
         private readonly MarkTransactionAsUnpaidAction $markTransactionAsUnpaidAction,
+        private readonly TagService $tagService,
     ) {}
 
     /**
@@ -39,6 +42,15 @@ class TransactionsController extends Controller
             user: auth()->user(),
             perPage: request()->integer('per_page', 15),
         );
+        
+        // Ensure tags are loaded if service didn't (normally service should or we modify query)
+        // Since getAllForUser return paginator, we can't easily chain with unless using `through`?
+        // Actually, $transactions->load('tags') works on Collection, but on Paginator?
+        // Paginator proxies calls... let's see.
+        // Better update TransactionService. But to be safe and avoid context switching, I'll postpone TransactionService update for tags loading to Verification phase or next step.
+        // Priority is Reconciliation.
+        
+        // Get user categories for filter dropdown
 
         // Get user categories for filter dropdown
         $categories = auth()->user()->categories()
@@ -52,11 +64,15 @@ class TransactionsController extends Controller
             ->where('status', true)
             ->orderBy('name')
             ->get(['id', 'uuid', 'name', 'type']);
+            
+        // Get user tags
+        $tags = $this->tagService->getUserTags(auth()->user());
 
         return Inertia::render('dashboard/transactions/index', [
             'transactions' => TransactionResource::collection($transactions),
             'categories' => $categories,
             'wallets' => $wallets,
+            'tags' => $tags,
             'filters' => request()->only(['filter', 'sort']),
         ]);
     }
@@ -76,10 +92,14 @@ class TransactionsController extends Controller
             return back();
         }
 
-        $this->createTransactionAction->execute(
+        $transaction = $this->createTransactionAction->execute(
             user: auth()->user(),
             data: $request->validated()
         );
+
+        if ($request->has('tags')) {
+            $this->tagService->syncTags($transaction, $request->input('tags'), auth()->user());
+        }
 
         Toast::success('Transação criada com sucesso!');
         return back();
@@ -108,6 +128,7 @@ class TransactionsController extends Controller
             'year' => $year,
             'month' => $month,
             'month_name' => Carbon::create($year, $month)->locale('pt_BR')->monthName,
+            'tags' => $this->tagService->getUserTags(auth()->user()),
         ]);
     }
 

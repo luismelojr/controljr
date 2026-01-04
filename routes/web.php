@@ -72,6 +72,11 @@ Route::middleware('auth')->group(function () {
         Route::resource('categories', \App\Http\Controllers\Dashboard\CategoriesController::class)->except(['show']);
         Route::patch('categories/{category}/toggle-status', [\App\Http\Controllers\Dashboard\CategoriesController::class, 'updateStatus'])->name('categories.toggle-status');
 
+        // Tags routes
+        Route::middleware('plan.feature:max_tags')->group(function () {
+            Route::resource('tags', \App\Http\Controllers\Dashboard\TagsController::class)->except(['show', 'create', 'edit']);
+        });
+
         // Account routes
         Route::resource('accounts', \App\Http\Controllers\Dashboard\AccountsController::class);
         Route::patch('accounts/{account}/toggle-status', [\App\Http\Controllers\Dashboard\AccountsController::class, 'updateStatus'])->name('accounts.toggle-status');

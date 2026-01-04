@@ -24,7 +24,7 @@ class TransactionService
     {
         $baseQuery = Transaction::query()
             ->where('user_id', $user->id)
-            ->with(['account', 'wallet', 'category']);
+            ->with(['account', 'wallet', 'category', 'tags']);
 
         return QueryBuilder::for($baseQuery)
             ->allowedFilters([
@@ -66,7 +66,7 @@ class TransactionService
             ->where('user_id', $user->id)
             ->whereYear('due_date', $year)
             ->whereMonth('due_date', $month)
-            ->with(['account', 'wallet', 'category'])
+            ->with(['account', 'wallet', 'category', 'tags'])
             ->orderBy('due_date')
             ->get();
     }

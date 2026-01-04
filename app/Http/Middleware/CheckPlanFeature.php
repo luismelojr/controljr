@@ -38,8 +38,10 @@ class CheckPlanFeature
 
         // If feature is disabled (value is false or 0)
         if ($featureLimit === false || $featureLimit === 0) {
-            Toast::error('Este recurso não está disponível no seu plano atual')
-                ->persistent();
+            Toast::create('Este recurso não está disponível no seu plano atual')
+                ->error()
+                ->persistent()
+                ->flash();
 
             return redirect()->route('dashboard.subscription.plans');
         }

@@ -1,22 +1,17 @@
 import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import TextMoney from '@/components/ui/text-money';
 import TextSelect from '@/components/ui/text-select';
+import { Budget } from '@/types/budget';
 import { useForm } from '@inertiajs/react';
 import { useEffect } from 'react';
-import { Budget } from '@/types/budget';
 
 interface Category {
     id: number;
     name: string;
 }
+
+import { TagInput, TagOption } from '@/components/tags/tag-input';
 
 interface BudgetFormProps {
     open: boolean;
@@ -24,14 +19,16 @@ interface BudgetFormProps {
     categories: Category[];
     budgetToEdit?: Budget | null;
     currentDate: string;
+    tags: TagOption[];
 }
 
-export function BudgetForm({ open, onOpenChange, categories, budgetToEdit, currentDate }: BudgetFormProps) {
-    const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm({
+export function BudgetForm({ open, onOpenChange, categories, budgetToEdit, currentDate, tags }: BudgetFormProps) {
+    const { data, setData, post, put, processing, errors, clearErrors } = useForm({
         category_id: '',
         amount: 0,
         period: currentDate,
         recurrence: 'monthly',
+        tags: [],
     });
 
     useEffect(() => {
@@ -39,16 +36,17 @@ export function BudgetForm({ open, onOpenChange, categories, budgetToEdit, curre
             setData({
                 category_id: budgetToEdit.category_id.toString(),
                 amount: budgetToEdit.amount,
-                period: currentDate, // Keep current period
-                recurrence: 'monthly', // Default for now
+                period: currentDate,
+                recurrence: 'monthly',
+                tags: budgetToEdit.tags?.map((t) => ({ name: t.name, color: t.color })) || [],
             });
         } else if (open) {
-            // Explicitly reset form when opening for creation
             setData({
                 category_id: '',
                 amount: 0,
                 period: currentDate,
                 recurrence: 'monthly',
+                tags: [],
             });
         }
         clearErrors();
@@ -78,9 +76,7 @@ export function BudgetForm({ open, onOpenChange, categories, budgetToEdit, curre
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>{budgetToEdit ? 'Editar Orçamento' : 'Novo Orçamento'}</DialogTitle>
-                    <DialogDescription>
-                        Defina um limite de gastos para uma categoria neste mês.
-                    </DialogDescription>
+                    <DialogDescription>Defina um limite de gastos para uma categoria neste mês.</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4 py-4">
                     <TextSelect
@@ -90,7 +86,7 @@ export function BudgetForm({ open, onOpenChange, categories, budgetToEdit, curre
                         value={data.category_id}
                         onValueChange={(val) => setData('category_id', val)}
                         error={errors.category_id}
-                        disabled={!!budgetToEdit} // Prevent changing category on edit
+                        disabled={!!budgetToEdit}
                         placeholder="Selecione uma categoria"
                     />
 
@@ -102,6 +98,11 @@ export function BudgetForm({ open, onOpenChange, categories, budgetToEdit, curre
                         onChange={(val) => setData('amount', val)}
                         error={errors.amount}
                     />
+
+                    <div className="space-y-2">
+                        <label className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Tags</label>
+                        <TagInput value={data.tags} onChange={(newTags) => setData('tags', newTags)} suggestions={tags} />
+                    </div>
 
                     <DialogFooter>
                         <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

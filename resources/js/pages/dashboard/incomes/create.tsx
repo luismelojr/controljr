@@ -7,20 +7,23 @@ import TextAreaCustom from '@/components/ui/text-area-custom';
 import TextInput from '@/components/ui/text-input';
 import TextMoney from '@/components/ui/text-money';
 import TextSelect from '@/components/ui/text-select';
-import { IncomeFormData } from '@/types/income';
 import { Category } from '@/types/category';
+import { IncomeFormData } from '@/types/income';
 import { WalletInterface } from '@/types/wallet';
 import { Head, router, useForm } from '@inertiajs/react';
 import { Info } from 'lucide-react';
 import { useMemo } from 'react';
 
+import { TagInput, TagOption } from '@/components/tags/tag-input';
+
 interface CreateIncomeProps {
     categories: Category[];
     wallets: WalletInterface[];
+    tags: TagOption[];
 }
 
-export default function CreateIncome({ categories, wallets }: CreateIncomeProps) {
-    const { data, setData, post, processing, errors } = useForm<IncomeFormData>({
+export default function CreateIncome({ categories, wallets, tags }: CreateIncomeProps) {
+    const { data, setData, post, processing, errors } = useForm<IncomeFormData & { tags: any[] }>({
         wallet_id: '',
         category_id: '',
         name: '',
@@ -29,6 +32,7 @@ export default function CreateIncome({ categories, wallets }: CreateIncomeProps)
         recurrence_type: '',
         installments: '',
         start_date: new Date().toISOString().split('T')[0],
+        tags: [],
     });
 
     // Opções de categorias
@@ -68,11 +72,7 @@ export default function CreateIncome({ categories, wallets }: CreateIncomeProps)
         <DashboardLayout title="Nova Receita">
             <Head title="Nova Receita" />
             <div className="space-y-6">
-                <AppHeader
-                    title="Nova receita"
-                    description="Cadastre uma nova fonte de renda"
-                    routeBack={route('dashboard.incomes.index')}
-                />
+                <AppHeader title="Nova receita" description="Cadastre uma nova fonte de renda" routeBack={route('dashboard.incomes.index')} />
 
                 <FormCard>
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -99,10 +99,9 @@ export default function CreateIncome({ categories, wallets }: CreateIncomeProps)
                             rows={3}
                         />
 
-                        {/* Categoria */}
                         <TextSelect
-                            label="Categoria"
                             id="category_id"
+                            label="Categoria"
                             placeholder="Selecione a categoria"
                             options={categoryOptions}
                             value={data.category_id}
@@ -110,6 +109,12 @@ export default function CreateIncome({ categories, wallets }: CreateIncomeProps)
                             error={errors.category_id}
                             required
                         />
+
+                        {/* Tags */}
+                        <div className="space-y-2">
+                            <label className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Tags</label>
+                            <TagInput value={data.tags} onChange={(newTags) => setData('tags', newTags)} suggestions={tags} />
+                        </div>
 
                         {/* Carteira */}
                         <TextSelect
@@ -183,8 +188,8 @@ export default function CreateIncome({ categories, wallets }: CreateIncomeProps)
                         <Alert className="border-green-600/20 bg-green-50 dark:bg-green-950/20">
                             <Info className="h-4 w-4 text-green-600" />
                             <AlertDescription className="text-green-900 dark:text-green-100">
-                                As transações de recebimento serão geradas automaticamente com base no tipo de recorrência selecionado.
-                                Para receitas recorrentes, sempre manteremos 12 meses futuros.
+                                As transações de recebimento serão geradas automaticamente com base no tipo de recorrência selecionado. Para receitas
+                                recorrentes, sempre manteremos 12 meses futuros.
                             </AlertDescription>
                         </Alert>
 

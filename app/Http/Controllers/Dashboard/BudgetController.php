@@ -14,10 +14,13 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
 
+use App\Domain\Tags\Services\TagService;
+
 class BudgetController extends Controller
 {
     public function __construct(
-        protected BudgetService $budgetService
+        protected BudgetService $budgetService,
+        protected TagService $tagService,
     ) {}
 
     public function index(Request $request)
@@ -36,6 +39,7 @@ class BudgetController extends Controller
             'budgets' => $budgets,
             'categories' => $categories,
             'currentDate' => $date->format('Y-m-d'),
+            'tags' => $this->tagService->getUserTags($request->user()),
         ]);
     }
 
@@ -60,7 +64,11 @@ class BudgetController extends Controller
             recurrence: $validated['recurrence'] ?? 'monthly',
         );
 
-        $this->budgetService->create($request->user(), $data);
+        $budget = $this->budgetService->create($request->user(), $data);
+
+        if ($request->has('tags')) {
+            $this->tagService->syncTags($budget, $request->input('tags'), $request->user());
+        }
 
         return redirect()->back()->with('success', 'Orçamento criado com sucesso!');
     }
@@ -76,6 +84,10 @@ class BudgetController extends Controller
         );
 
         $this->budgetService->update($budget, $data);
+
+        if ($request->has('tags')) {
+            $this->tagService->syncTags($budget, $request->input('tags'), $request->user());
+        }
 
         return redirect()->back()->with('success', 'Orçamento atualizado com sucesso!');
     }

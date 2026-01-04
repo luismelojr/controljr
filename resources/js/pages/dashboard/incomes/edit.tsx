@@ -1,6 +1,7 @@
 import AppHeader from '@/components/dashboard/app-header';
 import FormCard from '@/components/dashboard/form-card';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
+import { TagOption } from '@/components/tags/tag-input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import TextAreaCustom from '@/components/ui/text-area-custom';
@@ -12,13 +13,15 @@ import { Info } from 'lucide-react';
 
 interface EditIncomeProps {
     income: Income;
+    tags: TagOption[];
 }
 
-export default function EditIncome({ income }: EditIncomeProps) {
+export default function EditIncome({ income, tags }: EditIncomeProps) {
     const { data, setData, patch, processing, errors } = useForm({
         name: income.name,
         notes: income.notes || '',
         status: income.status,
+        tags: income.tags?.map((t) => ({ name: t.name, color: t.color })) || [],
     });
 
     const statusOptions = [
@@ -36,11 +39,7 @@ export default function EditIncome({ income }: EditIncomeProps) {
         <DashboardLayout title="Editar Receita">
             <Head title="Editar Receita" />
             <div className="space-y-6">
-                <AppHeader
-                    title="Editar receita"
-                    description="Atualize as informações da receita"
-                    routeBack={route('dashboard.incomes.index')}
-                />
+                <AppHeader title="Editar receita" description="Atualize as informações da receita" routeBack={route('dashboard.incomes.index')} />
 
                 <FormCard>
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -48,8 +47,8 @@ export default function EditIncome({ income }: EditIncomeProps) {
                         <Alert className="border-green-600/20 bg-green-50 dark:bg-green-950/20">
                             <Info className="h-4 w-4 text-green-600" />
                             <AlertDescription className="text-green-900 dark:text-green-100">
-                                Você pode editar apenas o nome, observações e status da receita. Valores, parcelas e tipo de recorrência não
-                                podem ser alterados após a criação.
+                                Você pode editar apenas o nome, observações e status da receita. Valores, parcelas e tipo de recorrência não podem ser
+                                alterados após a criação.
                             </AlertDescription>
                         </Alert>
 
@@ -80,9 +79,7 @@ export default function EditIncome({ income }: EditIncomeProps) {
                                 </div>
                                 <div>
                                     <p className="text-sm text-muted-foreground">Data de Início</p>
-                                    <p className="font-medium">
-                                        {new Date(income.start_date).toLocaleDateString('pt-BR')}
-                                    </p>
+                                    <p className="font-medium">{new Date(income.start_date).toLocaleDateString('pt-BR')}</p>
                                 </div>
                             </div>
                         </div>
@@ -109,6 +106,11 @@ export default function EditIncome({ income }: EditIncomeProps) {
                             error={errors.notes}
                             rows={3}
                         />
+
+                        <div className="space-y-2">
+                            <label className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Tags</label>
+                            <TagInput value={data.tags} onChange={(newTags) => setData('tags', newTags)} suggestions={tags} />
+                        </div>
 
                         {/* Status */}
                         <TextSelect

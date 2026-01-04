@@ -27,6 +27,11 @@ export interface Account {
     paid_transactions_count?: number;
     created_at: string;
     updated_at: string;
+    tags?: Array<{
+        id: number;
+        name: string;
+        color: string;
+    }>;
 }
 
 /**

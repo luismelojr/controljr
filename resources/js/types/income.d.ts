@@ -27,6 +27,12 @@ export interface Income {
     received_transactions_count?: number;
     created_at: string;
     updated_at: string;
+    // Adjusting based on standard resource type structure
+    tags?: Array<{
+        id: number;
+        name: string;
+        color: string;
+    }>;
 }
 
 /**

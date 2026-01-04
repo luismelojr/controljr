@@ -19,10 +19,13 @@ use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
+use App\Domain\Tags\Services\TagService;
+
 class AccountsController extends Controller
 {
     public function __construct(
-        private AccountService $accountService
+        private AccountService $accountService,
+        private TagService $tagService,
     ) {}
 
     /**
@@ -68,6 +71,7 @@ class AccountsController extends Controller
         return Inertia::render('dashboard/accounts/create', [
             'wallets' => WalletResource::collection($wallets),
             'categories' => CategoryResource::collection($categories),
+            'tags' => $this->tagService->getUserTags(auth()->user()),
         ]);
     }
 
@@ -81,7 +85,11 @@ class AccountsController extends Controller
         try {
             $data = CreateAccountData::fromRequest($request);
 
-            $this->accountService->create($data, auth()->user());
+            $account = $this->accountService->create($data, auth()->user());
+
+            if ($request->has('tags')) {
+                $this->tagService->syncTags($account, $request->input('tags'), auth()->user());
+            }
 
             Toast::success('Conta criada com sucesso! As transações foram geradas automaticamente.');
 
@@ -116,6 +124,7 @@ class AccountsController extends Controller
 
         return Inertia::render('dashboard/accounts/edit', [
             'account' => new AccountResource($account),
+            'tags' => $this->tagService->getUserTags(auth()->user()),
         ]);
     }
 
@@ -130,6 +139,10 @@ class AccountsController extends Controller
             $data = UpdateAccountData::fromRequest($request);
 
             $this->accountService->update($account, $data);
+
+            if ($request->has('tags')) {
+                $this->tagService->syncTags($account, $request->input('tags'), auth()->user());
+            }
 
             Toast::success('Conta atualizada com sucesso!');
 

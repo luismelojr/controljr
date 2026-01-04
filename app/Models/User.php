@@ -57,6 +57,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the tags for the user.
+     */
+    public function tags()
+    {
+        return $this->hasMany(Tag::class);
+    }
+
+    /**
      * Get the wallets for the user.
      */
     public function wallets()

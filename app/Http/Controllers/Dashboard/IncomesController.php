@@ -19,10 +19,13 @@ use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
+use App\Domain\Tags\Services\TagService;
+
 class IncomesController extends Controller
 {
     public function __construct(
-        private IncomeService $incomeService
+        private IncomeService $incomeService,
+        private TagService $tagService,
     ) {}
 
     /**
@@ -72,6 +75,7 @@ class IncomesController extends Controller
         return Inertia::render('dashboard/incomes/create', [
             'categories' => CategoryResource::collection($categories),
             'wallets' => WalletResource::collection($wallets),
+            'tags' => $this->tagService->getUserTags(auth()->user()),
         ]);
     }
 
@@ -85,7 +89,11 @@ class IncomesController extends Controller
         try {
             $data = CreateIncomeData::fromRequest($request);
 
-            $this->incomeService->create($data, auth()->user());
+            $income = $this->incomeService->create($data, auth()->user());
+
+            if ($request->has('tags')) {
+                $this->tagService->syncTags($income, $request->input('tags'), auth()->user());
+            }
 
             Toast::success('Receita criada com sucesso! As transações foram geradas automaticamente.');
 
@@ -120,6 +128,7 @@ class IncomesController extends Controller
 
         return Inertia::render('dashboard/incomes/edit', [
             'income' => new IncomeResource($income),
+            'tags' => $this->tagService->getUserTags(auth()->user()),
         ]);
     }
 
@@ -134,6 +143,10 @@ class IncomesController extends Controller
             $data = UpdateIncomeData::fromRequest($request);
 
             $this->incomeService->update($income, $data);
+
+            if ($request->has('tags')) {
+                $this->tagService->syncTags($income, $request->input('tags'), auth()->user());
+            }
 
             Toast::success('Receita atualizada com sucesso!');
 

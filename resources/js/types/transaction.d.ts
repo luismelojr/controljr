@@ -22,6 +22,11 @@ export interface Transaction {
     account?: Account;
     wallet?: WalletInterface;
     category?: Category;
+    tags?: Array<{
+        id: number;
+        name: string;
+        color: string;
+    }>;
     created_at: string;
     updated_at: string;
 }
