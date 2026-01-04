@@ -20,7 +20,8 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'phone' => Helpers::formatPhone($this->phone ?? ''),
-            'status' => $this->status
+            'status' => $this->status,
+            'subscription' => new SubscriptionResource($this->currentSubscription),
         ];
     }
 }

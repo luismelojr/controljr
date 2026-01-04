@@ -1,3 +1,4 @@
+import { SubscriptionAlertCard } from '@/components/dashboard/subscription-alert-card';
 import { MeloSysLogo } from '@/components/ui/melosys-logo';
 import {
     Sidebar,
@@ -12,7 +13,19 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { router, usePage } from '@inertiajs/react';
-import { ArrowLeftRightIcon, BanknoteArrowDownIcon, BanknoteArrowUpIcon, BarChart3, CircleAlert, FileCheck, Home, LogOut, PieChart, Tag, Wallet } from 'lucide-react';
+import {
+    ArrowLeftRightIcon,
+    BanknoteArrowDownIcon,
+    BanknoteArrowUpIcon,
+    BarChart3,
+    CircleAlert,
+    FileCheck,
+    Home,
+    LogOut,
+    PieChart,
+    Tag,
+    Wallet,
+} from 'lucide-react';
 
 interface MenuItemInterface {
     title: string;
@@ -118,6 +131,7 @@ export function AppSidebar() {
                         </SidebarGroupContent>
                     </SidebarGroup>
                 ))}
+                <SubscriptionAlertCard />
             </SidebarContent>
 
             <SidebarFooter className="border-t p-3">

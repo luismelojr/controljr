@@ -1,3 +1,4 @@
+import { Subscription } from '@/types/subscription';
 import { ToastInterface } from '@/types/toast';
 import { Config as ZiggyConfig } from 'ziggy-js';
 
@@ -25,6 +26,7 @@ export interface User {
     email: string;
     phone: string;
     status: boolean;
+    subscription?: Subscription;
     [key: string]: unknown; // This allows for additional properties...
 }
 
