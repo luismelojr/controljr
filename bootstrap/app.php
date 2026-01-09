@@ -34,6 +34,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'plan.feature' => \App\Http\Middleware\CheckPlanFeature::class,
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            '/webhook/asaas',
+        ]);
     })
     ->withSchedule(function (Schedule $schedule): void {
         // Mark overdue transactions (expenses) - runs daily at midnight
