@@ -61,7 +61,7 @@ class SubscriptionController extends Controller
             // Check for existing pending subscription for THIS plan
             $pendingSubscription = $user->subscriptions()
                 ->where('status', 'pending')
-                ->where('plan_id', $plan->id)
+                ->where('subscription_plan_id', $plan->id)
                 ->latest()
                 ->first();
 
