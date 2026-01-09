@@ -25,7 +25,7 @@ class AttachmentService
         $path = "attachments/{$folder}/{$user->id}";
 
         // Store file
-        $filePath = Storage::disk('private')->putFileAs($path, $file, $fileName);
+        $filePath = Storage::disk('r2')->putFileAs($path, $file, $fileName);
 
         // Create attachment record
         return Attachment::create([

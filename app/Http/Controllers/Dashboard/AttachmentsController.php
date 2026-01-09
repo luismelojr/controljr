@@ -82,12 +82,12 @@ class AttachmentsController extends Controller
     {
         $this->authorize('view', $attachment);
 
-        if (!Storage::disk('private')->exists($attachment->file_path)) {
+        if (!Storage::disk('r2')->exists($attachment->file_path)) {
             Toast::error('Arquivo não encontrado.');
             return back();
         }
 
-        return Storage::disk('private')->download(
+        return Storage::disk('r2')->download(
             $attachment->file_path,
             $attachment->original_name
         );

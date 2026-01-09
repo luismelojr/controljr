@@ -17,6 +17,7 @@
         "laravel/socialite": "^5.23",
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.11",
+        "league/flysystem-aws-s3-v3": "^3.30",
         "maatwebsite/excel": "^3.1",
         "resend/resend-laravel": "^0.23.0",
         "spatie/laravel-data": "^4.18",
