@@ -12,7 +12,8 @@ use Inertia\Inertia;
 class ReconciliationController extends Controller
 {
     public function __construct(
-        protected ReconciliationService $reconciliationService
+        protected ReconciliationService $reconciliationService,
+        protected \App\Domain\Tags\Services\TagService $tagService
     ) {}
 
     public function index()
@@ -33,6 +34,7 @@ class ReconciliationController extends Controller
         return Inertia::render('dashboard/reconciliation/index', [
             'categories' => $categories,
             'wallets' => $wallets,
+            'tags' => $this->tagService->getUserTags(auth()->user()),
         ]);
     }
 
@@ -49,6 +51,7 @@ class ReconciliationController extends Controller
                 'transactions' => $results,
                 'categories' => \App\Models\Category::all(), // Re-passing props might be needed or handled by share
                 'wallets' => \App\Models\Wallet::all(),
+                'tags' => $this->tagService->getUserTags($request->user()),
             ]);
         } catch (\Exception $e) {
             \Log::error('OFX Import Error: ' . $e->getMessage());

@@ -46,7 +46,7 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
-                'user' => $request->user() ? new UserResource($request->user()) : null,
+                'user' => $request->user() ? new UserResource($request->user()->load('currentSubscription.plan')) : null,
             ],
             'toasts' => Toast::all(),
             'unreadNotificationsCount' => fn () => $request->user()

@@ -5,6 +5,9 @@ namespace App\Models;
 use App\Enums\AccountStatusEnum;
 use App\Enums\RecurrenceTypeEnum;
 use App\Traits\HasUuidCustom;
+use App\Traits\HasMoneyAccessors;
+use App\Traits\HasTags;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Account extends Model
 {
     /** @use HasFactory<\Database\Factories\AccountFactory> */
-    use HasFactory, HasUuidCustom;
+    use HasFactory, HasUuidCustom, HasMoneyAccessors, HasTags;
 
     protected $fillable = [
         'uuid',
@@ -42,21 +45,15 @@ class Account extends Model
     }
 
     /**
-     * Set total amount - converts reais to cents for storage
+     * Interact with the account's total amount.
+     * Uses HasMoneyAccessors trait for consistent money conversion
      */
-    public function setTotalAmountAttribute($value): void
+    protected function totalAmount(): Attribute
     {
-        // Convert reais to cents (145.25 -> 14525)
-        $this->attributes['total_amount'] = (int) round($value * 100);
-    }
-
-    /**
-     * Get total amount - converts cents to reais for display
-     */
-    public function getTotalAmountAttribute($value): float
-    {
-        // Convert cents to reais (14525 -> 145.25)
-        return round($value / 100, 2);
+        return Attribute::make(
+            get: fn ($value) => $this->centsToBRL($value),
+            set: fn ($value) => $this->brlToCents($value),
+        );
     }
 
     /**

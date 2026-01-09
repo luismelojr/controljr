@@ -1,17 +1,11 @@
-import { Button } from "@/components/ui/button";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useForm } from "@inertiajs/react";
-import { useEffect } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { TagInput, TagOption } from '@/components/tags/tag-input';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useForm } from '@inertiajs/react';
+import { useEffect } from 'react';
 
 interface CreateTransactionDialogProps {
     open: boolean;
@@ -24,6 +18,7 @@ interface CreateTransactionDialogProps {
     } | null;
     categories: Array<{ id: number; name: string }>;
     wallets: Array<{ id: number; name: string }>;
+    tags: TagOption[];
     onSuccess: () => void;
 }
 
@@ -33,28 +28,40 @@ export function CreateTransactionDialog({
     initialData,
     categories = [],
     wallets = [],
+    tags = [],
     onSuccess,
 }: CreateTransactionDialogProps) {
-    const { data, setData, post, processing, errors, reset } = useForm({
-        amount: "",
-        due_date: "",
-        category_id: "",
-        wallet_id: "",
-        external_id: "",
+    const { data, setData, post, processing, errors, reset } = useForm<{
+        amount: string;
+        due_date: string;
+        category_id: string;
+        wallet_id: string;
+        external_id: string;
+        is_reconciled: boolean;
+        status: string;
+        paid_at: string;
+        tags: TagOption[];
+    }>({
+        amount: '',
+        due_date: '',
+        category_id: '',
+        wallet_id: '',
+        external_id: '',
         is_reconciled: true,
-        status: "paid", // Since it comes from bank, it is paid
-        paid_at: "",
+        status: 'paid', // Since it comes from bank, it is paid
+        paid_at: '',
+        tags: [],
     });
 
     useEffect(() => {
         if (open && initialData) {
-            setData({
-                ...data,
+            setData((prev) => ({
+                ...prev,
                 amount: Math.abs(initialData.amount).toString(),
                 due_date: initialData.date,
                 paid_at: initialData.date,
                 external_id: initialData.external_id,
-            });
+            }));
         }
     }, [open, initialData]);
 
@@ -74,52 +81,31 @@ export function CreateTransactionDialog({
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Nova Transação</DialogTitle>
-                    <DialogDescription>
-                        Confirme os dados para criar e conciliar esta transação.
-                    </DialogDescription>
+                    <DialogDescription>Confirme os dados para criar e conciliar esta transação.</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="grid gap-4 py-4">
                     <div className="grid gap-2">
                         <Label htmlFor="description">Descrição (do Banco)</Label>
-                        <Input
-                            id="description"
-                            value={initialData?.description || ""}
-                            disabled
-                            className="bg-muted"
-                        />
+                        <Input id="description" value={initialData?.description || ''} disabled className="bg-muted" />
                         <p className="text-xs text-muted-foreground">Esta descrição vem do extrato bancário</p>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
                             <Label htmlFor="amount">Valor</Label>
-                            <Input
-                                id="amount"
-                                type="number"
-                                step="0.01"
-                                value={data.amount}
-                                onChange={(e) => setData("amount", e.target.value)}
-                            />
+                            <Input id="amount" type="number" step="0.01" value={data.amount} onChange={(e) => setData('amount', e.target.value)} />
                             {errors.amount && <span className="text-xs text-red-500">{errors.amount}</span>}
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="date">Data</Label>
-                            <Input
-                                id="date"
-                                type="date"
-                                value={data.due_date}
-                                onChange={(e) => setData("due_date", e.target.value)}
-                            />
-                             {errors.due_date && <span className="text-xs text-red-500">{errors.due_date}</span>}
+                            <Input id="date" type="date" value={data.due_date} onChange={(e) => setData('due_date', e.target.value)} />
+                            {errors.due_date && <span className="text-xs text-red-500">{errors.due_date}</span>}
                         </div>
                     </div>
 
                     <div className="grid gap-2">
                         <Label htmlFor="category">Categoria</Label>
-                        <Select
-                            value={data.category_id}
-                            onValueChange={(val) => setData("category_id", val)}
-                        >
+                        <Select value={data.category_id} onValueChange={(val) => setData('category_id', val)}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Selecione..." />
                             </SelectTrigger>
@@ -136,10 +122,7 @@ export function CreateTransactionDialog({
 
                     <div className="grid gap-2">
                         <Label htmlFor="wallet">Carteira</Label>
-                        <Select
-                            value={data.wallet_id}
-                            onValueChange={(val) => setData("wallet_id", val)}
-                        >
+                        <Select value={data.wallet_id} onValueChange={(val) => setData('wallet_id', val)}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Selecione..." />
                             </SelectTrigger>
@@ -154,9 +137,19 @@ export function CreateTransactionDialog({
                         {errors.wallet_id && <span className="text-xs text-red-500">{errors.wallet_id}</span>}
                     </div>
 
+                    <div className="grid gap-2">
+                        <Label>Tags</Label>
+                        <TagInput
+                            suggestions={tags}
+                            value={data.tags}
+                            onChange={(newTags) => setData('tags', newTags)}
+                            placeholder="Adicionar tags..."
+                        />
+                    </div>
+
                     <DialogFooter>
                         <Button type="submit" disabled={processing}>
-                            {processing ? "Salvando..." : "Salvar e Conciliar"}
+                            {processing ? 'Salvando...' : 'Salvar e Conciliar'}
                         </Button>
                     </DialogFooter>
                 </form>
@@ -164,4 +157,3 @@ export function CreateTransactionDialog({
         </Dialog>
     );
 }
-

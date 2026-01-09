@@ -81,7 +81,7 @@ class BudgetService
         // If we want recurrence, we should have a job that copies budgets to next month.
         // For this MVP, let's assume the user creates budgets for the month.
         
-        $budgets = Budget::with('category')
+        $budgets = Budget::with(['category', 'tags'])
             ->where('user_id', $user->id)
             ->where('period', $startOfMonth->format('Y-m-d'))
             ->get();

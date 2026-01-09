@@ -7,11 +7,17 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\GoogleLoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\WebhookController;
 use Inertia\Inertia;
 
 use App\Http\Controllers\LandingPageController;
 
 Route::get('/', LandingPageController::class)->name('home');
+
+// Webhook routes (public, no auth)
+Route::post('/webhook/asaas', [WebhookController::class, 'asaas'])->name('webhook.asaas');
+Route::get('/webhook/health', [WebhookController::class, 'healthCheck'])->name('webhook.health');
+Route::post('/webhook/test', [WebhookController::class, 'test'])->name('webhook.test');
 
 Route::prefix('toast-test')->group(function () {
     Route::get('/', [ToastTestController::class, 'index'])->name('toast-test.index');
@@ -54,6 +60,8 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
 
+    Route::get('/payments/{payment}/invoice', [\App\Http\Controllers\InvoiceController::class, 'download'])->name('payments.invoice');
+
     Route::as('dashboard.')->prefix('dashboard')->group(function () {
         Route::get('/', \App\Http\Controllers\Dashboard\HomeController::class)->name('home');
 
@@ -63,6 +71,11 @@ Route::middleware('auth')->group(function () {
         // Category routes
         Route::resource('categories', \App\Http\Controllers\Dashboard\CategoriesController::class)->except(['show']);
         Route::patch('categories/{category}/toggle-status', [\App\Http\Controllers\Dashboard\CategoriesController::class, 'updateStatus'])->name('categories.toggle-status');
+
+        // Tags routes
+        Route::middleware('plan.feature:max_tags')->group(function () {
+            Route::resource('tags', \App\Http\Controllers\Dashboard\TagsController::class)->except(['show', 'create', 'edit']);
+        });
 
         // Account routes
         Route::resource('accounts', \App\Http\Controllers\Dashboard\AccountsController::class);
@@ -94,6 +107,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('alerts/{alert}', [\App\Http\Controllers\Dashboard\AlertsController::class, 'destroy'])->name('alerts.destroy');
         Route::patch('alerts/{alert}/toggle-status', [\App\Http\Controllers\Dashboard\AlertsController::class, 'toggleStatus'])->name('alerts.toggle-status');
 
+
         // Reconciliation routes
         Route::get('reconciliation', [\App\Http\Controllers\Dashboard\ReconciliationController::class, 'index'])->name('reconciliation.index');
         Route::post('reconciliation/upload', [\App\Http\Controllers\Dashboard\ReconciliationController::class, 'upload'])->name('reconciliation.upload');
@@ -106,14 +120,36 @@ Route::middleware('auth')->group(function () {
         Route::delete('notifications/{notification}', [\App\Http\Controllers\Dashboard\NotificationsController::class, 'destroy'])->name('notifications.destroy');
         Route::delete('notifications', [\App\Http\Controllers\Dashboard\NotificationsController::class, 'deleteAllRead'])->name('notifications.delete-all-read');
 
+        // User Profile routes
+        Route::get('profile', [\App\Http\Controllers\Dashboard\UserProfileController::class, 'edit'])->name('profile.edit');
+        Route::post('profile', [\App\Http\Controllers\Dashboard\UserProfileController::class, 'update'])->name('profile.update');
+        Route::post('profile/cpf', [\App\Http\Controllers\Dashboard\UserProfileController::class, 'updateCpf'])->name('profile.cpf.update');
+        Route::get('profile/cpf/check', [\App\Http\Controllers\Dashboard\UserProfileController::class, 'hasCpf'])->name('profile.cpf.check');
+
         // Budget routes
         Route::resource('budgets', \App\Http\Controllers\Dashboard\BudgetController::class)->except(['create', 'edit', 'show']);
 
         // Report routes
-        Route::get('reports', [\App\Http\Controllers\Dashboard\ReportController::class, 'index'])->name('reports.index');
+        Route::get('reports', [\App\Http\Controllers\Dashboard\ReportController::class, 'index'])
+            ->name('reports.index')
+            ->middleware('plan.feature:advanced_reports');
+
+        // Savings Goals routes
+        Route::middleware('plan.feature:max_savings_goals')->group(function () {
+             Route::resource('savings-goals', \App\Http\Controllers\Dashboard\SavingsGoalsController::class)->except(['create', 'edit', 'show']);
+             Route::post('savings-goals/{savingsGoal}/contribute', [\App\Http\Controllers\Dashboard\SavingsGoalsController::class, 'addContribution'])->name('savings-goals.contribute');
+        });
+
+        // Attachment routes
+        Route::middleware('plan.feature:max_attachments')->group(function () {
+            Route::post('attachments', [\App\Http\Controllers\Dashboard\AttachmentsController::class, 'store'])->name('attachments.store');
+            Route::get('attachments/{attachment}/download', [\App\Http\Controllers\Dashboard\AttachmentsController::class, 'download'])->name('attachments.download');
+            Route::delete('attachments/{attachment}', [\App\Http\Controllers\Dashboard\AttachmentsController::class, 'destroy'])->name('attachments.destroy');
+            Route::get('attachments/stats', [\App\Http\Controllers\Dashboard\AttachmentsController::class, 'stats'])->name('attachments.stats');
+        });
 
         // Export routes
-        Route::prefix('exports')->as('exports.')->group(function () {
+        Route::prefix('exports')->as('exports.')->middleware(['plan.feature:export_data'])->group(function () {
             Route::post('/transactions', [\App\Http\Controllers\Dashboard\ExportsController::class, 'transactions'])
                 ->name('transactions');
             Route::post('/incomes', [\App\Http\Controllers\Dashboard\ExportsController::class, 'incomes'])
@@ -123,5 +159,55 @@ Route::middleware('auth')->group(function () {
             Route::post('/budgets', [\App\Http\Controllers\Dashboard\ExportsController::class, 'budgets'])
                 ->name('budgets');
         });
+
+        // Subscription routes
+        Route::prefix('subscription')->as('subscription.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Dashboard\SubscriptionController::class, 'index'])
+                ->name('index');
+            Route::get('/plans', [\App\Http\Controllers\Dashboard\SubscriptionController::class, 'plans'])
+                ->name('plans');
+            Route::post('/subscribe/{planSlug}', [\App\Http\Controllers\Dashboard\SubscriptionController::class, 'subscribe'])
+                ->name('subscribe');
+            Route::delete('/cancel', [\App\Http\Controllers\Dashboard\SubscriptionController::class, 'cancel'])
+                ->name('cancel');
+            Route::post('/resume', [\App\Http\Controllers\Dashboard\SubscriptionController::class, 'resume'])
+                ->name('resume');
+            Route::post('/upgrade/{planSlug}', [\App\Http\Controllers\Dashboard\SubscriptionController::class, 'upgrade'])
+                ->name('upgrade');
+            Route::post('/downgrade/{planSlug}', [\App\Http\Controllers\Dashboard\SubscriptionController::class, 'downgrade'])
+                ->name('downgrade');
+            Route::get('/preview/{planSlug}', [\App\Http\Controllers\Dashboard\SubscriptionController::class, 'previewChange'])
+                ->name('preview');
+        });
+
+        // Payment routes
+        Route::prefix('payment')->as('payment.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Dashboard\PaymentController::class, 'index'])
+                ->name('index');
+            Route::get('/choose-method', [\App\Http\Controllers\Dashboard\PaymentController::class, 'choosePaymentMethod'])
+                ->name('choose-method');
+            Route::post('/create', [\App\Http\Controllers\Dashboard\PaymentController::class, 'createPayment'])
+                ->name('create');
+            Route::get('/{payment:uuid}', [\App\Http\Controllers\Dashboard\PaymentController::class, 'show'])
+                ->name('show');
+            Route::get('/{payment:uuid}/success', [\App\Http\Controllers\Dashboard\PaymentController::class, 'success'])
+                ->name('success');
+            Route::get('/{payment:uuid}/check-status', [\App\Http\Controllers\Dashboard\PaymentController::class, 'checkStatus'])
+                ->name('check-status');
+            Route::delete('/{payment:uuid}/cancel', [\App\Http\Controllers\Dashboard\PaymentController::class, 'cancel'])
+                ->name('cancel');
+        });
+    });
+
+    // Admin Routes
+    Route::middleware(['admin'])->prefix('admin')->as('admin.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/subscriptions', [\App\Http\Controllers\Admin\SubscriptionController::class, 'index'])->name('subscriptions.index');
+        Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/webhooks', [\App\Http\Controllers\Admin\WebhookController::class, 'index'])->name('webhooks.index');
+        
+        // Export Routes
+        Route::get('/export/subscriptions', [\App\Http\Controllers\Admin\ExportController::class, 'subscriptions'])->name('export.subscriptions');
+        Route::get('/export/payments', [\App\Http\Controllers\Admin\ExportController::class, 'payments'])->name('export.payments');
     });
 });

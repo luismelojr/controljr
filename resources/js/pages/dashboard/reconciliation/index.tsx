@@ -1,12 +1,12 @@
-import { Head, usePage, useForm } from '@inertiajs/react';
-import { useState, useEffect } from 'react';
+import { CreateTransactionDialog } from '@/components/dashboard/create-transaction-dialog';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
+import { TagOption } from '@/components/tags/tag-input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Upload, CheckCircle, XCircle } from 'lucide-react';
-import { router } from '@inertiajs/react';
-import { CreateTransactionDialog } from '@/components/dashboard/create-transaction-dialog';
+import { router, useForm, usePage } from '@inertiajs/react'; // ensure router is imported if used directly, or use useForm helpers
+import { CheckCircle, Upload, XCircle } from 'lucide-react';
+import { useState } from 'react';
 
 interface BankTransaction {
     bank_date: string;
@@ -15,7 +15,7 @@ interface BankTransaction {
     external_id: string;
     suggested_match: {
         id: number;
-        amount: number; // Note: this might come as number from JSON
+        amount: number;
         description?: string;
         category?: { name: string };
         wallet?: { name: string };
@@ -24,22 +24,28 @@ interface BankTransaction {
     status: 'match_found' | 'new_entry' | 'reconciled';
 }
 
-export default function ReconciliationIndex() {
+interface Props {
+    categories: Array<{ id: number; name: string }>;
+    wallets: Array<{ id: number; name: string }>;
+    tags: TagOption[];
+}
+
+export default function ReconciliationIndex({ categories, wallets, tags }: Props) {
     const { props } = usePage();
-    const categories = (props as any).categories || [];
-    const wallets = (props as any).wallets || [];
-    
+
     const { data, setData, post, processing, errors } = useForm({
         file: null as File | null,
     });
 
     // Update local state when props change (after upload)
     const [localTransactions, setLocalTransactions] = useState<BankTransaction[]>([]);
-    
-    // If transactions come from props (after upload), use them
-    if ((props as any).transactions && localTransactions.length === 0 && (props as any).transactions.length > 0) {
-         setLocalTransactions((props as any).transactions);
-    }
+
+    // Better approach: initialize state from props if available
+    useState(() => {
+        if ((props as any).transactions) {
+            setLocalTransactions((props as any).transactions);
+        }
+    });
 
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState<{
@@ -56,14 +62,13 @@ export default function ReconciliationIndex() {
         }
     };
 
-    const handleUpload = () => {
+    const handleUpload = (e: React.FormEvent) => {
+        e.preventDefault();
         if (!data.file) return;
 
         post(route('dashboard.reconciliation.upload'), {
             forceFormData: true,
             onSuccess: (page) => {
-                // The page will reload with new props.transactions
-                // We can also set local state if we want to manipulate it client-side
                 const newTransactions = (page.props as any).transactions;
                 if (newTransactions) {
                     setLocalTransactions(newTransactions);
@@ -75,26 +80,29 @@ export default function ReconciliationIndex() {
     const handleReconcile = (transaction: BankTransaction, index: number) => {
         if (!transaction.suggested_match) return;
 
-        router.post(route('dashboard.reconciliation.reconcile', transaction.suggested_match.id), {
-            external_id: transaction.external_id
-        }, {
-            preserveScroll: true,
-            onSuccess: () => {
-                const newTransactions = [...localTransactions];
-                newTransactions[index].status = 'reconciled';
-                setLocalTransactions(newTransactions);
-                // Success toast will be shown automatically by CustomToast via Inertia flash messages
-            }
-        });
+        router.post(
+            route('dashboard.reconciliation.reconcile', transaction.suggested_match.id),
+            {
+                external_id: transaction.external_id,
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    const newTransactions = [...localTransactions];
+                    newTransactions[index].status = 'reconciled';
+                    setLocalTransactions(newTransactions);
+                },
+            },
+        );
     };
 
     const handleOpenCreate = (tx: BankTransaction, index: number) => {
         setSelectedTransaction({
-            amount: tx.bank_amount, // Amount from bank (negative for expense)
+            amount: tx.bank_amount,
             date: tx.bank_date,
             description: tx.bank_description,
             external_id: tx.external_id,
-            index: index
+            index: index,
         });
         setCreateDialogOpen(true);
     };
@@ -104,13 +112,14 @@ export default function ReconciliationIndex() {
             const newTransactions = [...localTransactions];
             newTransactions[selectedTransaction.index].status = 'reconciled';
             setLocalTransactions(newTransactions);
+            setCreateDialogOpen(false); // Close dialog
         }
     };
 
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('pt-BR', {
             style: 'currency',
-            currency: 'BRL'
+            currency: 'BRL',
         }).format(value);
     };
 
@@ -121,7 +130,6 @@ export default function ReconciliationIndex() {
     return (
         <DashboardLayout title="Conciliação Bancária" subtitle="Importe seu extrato e confira suas transações">
             <div className="space-y-6">
-
                 <Card>
                     <CardHeader>
                         <CardTitle>Importar Extrato</CardTitle>
@@ -132,13 +140,7 @@ export default function ReconciliationIndex() {
                             type="file"
                             accept=".ofx,.txt,.xml"
                             onChange={handleFileChange}
-                            className="block w-full text-sm text-slate-500
-                                file:mr-4 file:py-2 file:px-4
-                                file:rounded-full file:border-0
-                                file:text-sm file:font-semibold
-                                file:bg-violet-50 file:text-violet-700
-                                hover:file:bg-violet-100
-                            "
+                            className="block w-full text-sm text-slate-500 file:mr-4 file:rounded-full file:border-0 file:bg-violet-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-violet-700 hover:file:bg-violet-100"
                         />
                         <Button onClick={handleUpload} disabled={!data.file || processing}>
                             {processing ? <Upload className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
@@ -174,19 +176,17 @@ export default function ReconciliationIndex() {
                                             <TableCell>
                                                 {tx.suggested_match ? (
                                                     <div className="flex flex-col text-sm">
-                                                        <span className="font-semibold flex items-center gap-2">
+                                                        <span className="flex items-center gap-2 font-semibold">
                                                             <CheckCircle className="h-3 w-3 text-green-500" />
                                                             Match Encontrado
                                                         </span>
-                                                        <span className="text-muted-foreground text-xs">
+                                                        <span className="text-xs text-muted-foreground">
                                                             {tx.suggested_match.wallet?.name} - {tx.suggested_match.category?.name}
                                                         </span>
-                                                        <span className="text-xs">
-                                                            Venc: {formatDate(tx.suggested_match.due_date)}
-                                                        </span>
+                                                        <span className="text-xs">Venc: {formatDate(tx.suggested_match.due_date)}</span>
                                                     </div>
                                                 ) : (
-                                                    <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                                         <XCircle className="h-3 w-3" />
                                                         Nenhum match
                                                     </div>
@@ -194,7 +194,7 @@ export default function ReconciliationIndex() {
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 {tx.status === 'reconciled' ? (
-                                                    <span className="text-green-600 font-medium flex items-center justify-end gap-1">
+                                                    <span className="flex items-center justify-end gap-1 font-medium text-green-600">
                                                         <CheckCircle className="h-4 w-4" /> Conciliado
                                                     </span>
                                                 ) : tx.suggested_match ? (
@@ -214,17 +214,17 @@ export default function ReconciliationIndex() {
                         </CardContent>
                     </Card>
                 )}
-                
-                <CreateTransactionDialog 
-                    open={createDialogOpen} 
+
+                <CreateTransactionDialog
+                    open={createDialogOpen}
                     onOpenChange={setCreateDialogOpen}
                     initialData={selectedTransaction}
                     categories={categories}
                     wallets={wallets}
+                    tags={tags}
                     onSuccess={handleCreateSuccess}
                 />
             </div>
         </DashboardLayout>
     );
 }
-

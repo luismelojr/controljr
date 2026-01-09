@@ -1,5 +1,6 @@
 import { DataTable, DataTableHeader, DataTablePagination } from '@/components/datatable';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
+import { TagBadge } from '@/components/tags/tag-badge';
 import { Badge } from '@/components/ui/badge';
 import ExportButton from '@/components/ui/export-button';
 import { Button } from '@/components/ui/button';
@@ -57,6 +58,19 @@ export default function AccountsIndex({ accounts }: AccountsIndexProps) {
                 <Badge variant="outline" className="font-normal">
                     {account.category?.name}
                 </Badge>
+            ),
+        },
+        {
+            key: 'tags',
+            label: 'Tags',
+            render: (account) => (
+                <div className="flex flex-wrap gap-1">
+                    {account.tags && account.tags.length > 0 ? (
+                        account.tags.map((tag) => <TagBadge key={tag.id} name={tag.name} color={tag.color} />)
+                    ) : (
+                        <span className="text-xs text-muted-foreground">-</span>
+                    )}
+                </div>
             ),
         },
         {

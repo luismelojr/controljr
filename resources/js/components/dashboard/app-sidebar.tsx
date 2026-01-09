@@ -1,3 +1,4 @@
+import { SubscriptionAlertCard } from '@/components/dashboard/subscription-alert-card';
 import { MeloSysLogo } from '@/components/ui/melosys-logo';
 import {
     Sidebar,
@@ -12,7 +13,24 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { router, usePage } from '@inertiajs/react';
-import { ArrowLeftRightIcon, BanknoteArrowDownIcon, BanknoteArrowUpIcon, BarChart3, CircleAlert, FileCheck, Home, LogOut, PieChart, Tag, Wallet } from 'lucide-react';
+import {
+    ArrowLeftRightIcon,
+    BanknoteArrowDownIcon,
+    BanknoteArrowUpIcon,
+    BarChart3,
+    CircleAlert,
+    CreditCard,
+    FileCheck,
+    Home,
+    LogOut,
+    PieChart,
+    Tag,
+    Tags,
+    Target,
+    Users,
+    Wallet,
+    Webhook,
+} from 'lucide-react';
 
 interface MenuItemInterface {
     title: string;
@@ -23,33 +41,6 @@ interface MenuItemInterface {
         badge?: number;
     }[];
 }
-
-const menuItems: MenuItemInterface[] = [
-    {
-        title: 'Menu',
-        items: [
-            { title: 'Dashboard', icon: Home, url: route('dashboard.home') },
-            { title: 'Carteiras', icon: Wallet, url: route('dashboard.wallets.index') },
-            { title: 'Categorias', icon: Tag, url: route('dashboard.categories.index') },
-            { title: 'Contas', icon: BanknoteArrowDownIcon, url: route('dashboard.accounts.index') },
-            { title: 'Receitas', icon: BanknoteArrowUpIcon, url: route('dashboard.incomes.index') },
-            { title: 'Transações Contas', icon: ArrowLeftRightIcon, url: route('dashboard.transactions.index') },
-            { title: 'Transações Receitas', icon: ArrowLeftRightIcon, url: route('dashboard.income-transactions.index') },
-            { title: 'Orçamentos', icon: PieChart, url: route('dashboard.budgets.index') },
-            { title: 'Relatórios', icon: BarChart3, url: route('dashboard.reports.index') },
-            { title: 'Conciliação', icon: FileCheck, url: route('dashboard.reconciliation.index') },
-            { title: 'Alertas', icon: CircleAlert, url: route('dashboard.alerts.index') },
-        ],
-    },
-    // {
-    //     title: 'Help & Settings',
-    //     items: [
-    //         { title: 'Settings', icon: Settings, url: '#' },
-    //         { title: 'Feedback', icon: HelpCircle, url: '#' },
-    //         { title: 'Help & Center', icon: HelpCircle, url: '#' },
-    //     ],
-    // },
-];
 
 /**
  * Verifica se uma rota está ativa baseado na URL atual
@@ -79,18 +70,59 @@ function isActiveRoute(itemUrl: string, currentUrl: string): boolean {
 
 export function AppSidebar() {
     const { url } = usePage();
+    const { auth } = usePage<any>().props;
+
+    const baseMenuItems: MenuItemInterface[] = [
+        {
+            title: 'Menu',
+            items: [
+                { title: 'Dashboard', icon: Home, url: route('dashboard.home') },
+                { title: 'Carteiras', icon: Wallet, url: route('dashboard.wallets.index') },
+                { title: 'Categorias', icon: Tag, url: route('dashboard.categories.index') },
+                { title: 'Tags', icon: Tags, url: route('dashboard.tags.index') },
+                { title: 'Metas de Economia', icon: Target, url: route('dashboard.savings-goals.index') },
+                { title: 'Contas', icon: BanknoteArrowDownIcon, url: route('dashboard.accounts.index') },
+                { title: 'Receitas', icon: BanknoteArrowUpIcon, url: route('dashboard.incomes.index') },
+                { title: 'Transações Contas', icon: ArrowLeftRightIcon, url: route('dashboard.transactions.index') },
+                { title: 'Transações Receitas', icon: ArrowLeftRightIcon, url: route('dashboard.income-transactions.index') },
+                { title: 'Orçamentos', icon: PieChart, url: route('dashboard.budgets.index') },
+                { title: 'Relatórios', icon: BarChart3, url: route('dashboard.reports.index') },
+                { title: 'Conciliação', icon: FileCheck, url: route('dashboard.reconciliation.index') },
+                { title: 'Alertas', icon: CircleAlert, url: route('dashboard.alerts.index') },
+                { title: 'Minha Assinatura', icon: CreditCard, url: route('dashboard.subscription.index') },
+                { title: 'Meu Perfil', icon: Users, url: route('dashboard.profile.edit') },
+            ],
+        },
+    ];
+
+    const menuItems = [...baseMenuItems];
+
+    if (auth.user?.is_admin) {
+        menuItems.push({
+            title: 'Admin',
+            items: [
+                { title: 'Painel Admin', icon: BarChart3, url: route('admin.dashboard') },
+                { title: 'Assinaturas', icon: Users, url: route('admin.subscriptions.index') },
+                { title: 'Pagamentos', icon: BanknoteArrowUpIcon, url: route('admin.payments.index') },
+                { title: 'Webhooks', icon: Webhook, url: route('admin.webhooks.index') },
+            ],
+        });
+    }
 
     const handleLogout = () => {
         router.post(route('logout'));
     };
 
     return (
-        <Sidebar>
-            <SidebarHeader className="border-b px-6 py-4">
-                <MeloSysLogo showText />
+        <Sidebar collapsible="icon">
+            <SidebarHeader className="border-b px-6 py-4 group-data-[collapsible=icon]:px-2">
+                <div className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
+                    <MeloSysLogo className="h-8 w-8" />
+                    <span className="text-lg font-semibold group-data-[collapsible=icon]:hidden">MeloSys</span>
+                </div>
             </SidebarHeader>
 
-            <SidebarContent className="px-3 py-4">
+            <SidebarContent className="px-3 py-4 group-data-[collapsible=icon]:px-0">
                 {menuItems.map((section) => (
                     <SidebarGroup key={section.title}>
                         <SidebarGroupLabel className="px-3 text-xs font-medium text-muted-foreground">{section.title}</SidebarGroupLabel>
@@ -118,6 +150,7 @@ export function AppSidebar() {
                         </SidebarGroupContent>
                     </SidebarGroup>
                 ))}
+                <SubscriptionAlertCard />
             </SidebarContent>
 
             <SidebarFooter className="border-t p-3">

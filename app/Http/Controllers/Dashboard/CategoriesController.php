@@ -56,6 +56,18 @@ class CategoriesController extends Controller
     {
         $this->authorize('create', Category::class);
 
+        $currentCount = $request->user()->categories()->count();
+
+        if (\App\Http\Middleware\CheckPlanFeature::hasReachedLimit($request, 'max_categories', $currentCount)) {
+            Toast::create('Você atingiu o limite de categorias do seu plano.')
+                ->error()
+                ->action('Fazer Upgrade', route('dashboard.subscription.plans'))
+                ->persistent()
+                ->flash();
+
+            return back();
+        }
+
         $data = CreateCategoryData::fromRequest($request);
 
         $this->categoryService->create($data, auth()->user());

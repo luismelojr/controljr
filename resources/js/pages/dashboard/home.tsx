@@ -1,13 +1,15 @@
+import { AccountsEnding } from '@/components/dashboard/accounts-ending';
+import { BalanceCard } from '@/components/dashboard/balance-card';
+import { GoalsWidget } from '@/components/dashboard/goals-widget';
+import { NotificationsList } from '@/components/dashboard/notifications-list';
+import { StatsCard } from '@/components/dashboard/stats-card';
+import { UpcomingTransactionsList } from '@/components/dashboard/upcoming-transactions-list';
+import { WalletsSummaryList } from '@/components/dashboard/wallets-summary-list';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
 import CustomToast from '@/components/ui/custom-toast';
-import { BalanceCard } from '@/components/dashboard/balance-card';
-import { StatsCard } from '@/components/dashboard/stats-card';
-import { AccountsEnding } from '@/components/dashboard/accounts-ending';
-import { UpcomingTransactionsList } from '@/components/dashboard/upcoming-transactions-list';
-import { NotificationsList } from '@/components/dashboard/notifications-list';
-import { WalletsSummaryList } from '@/components/dashboard/wallets-summary-list';
+import { formatCurrency } from '@/lib/format';
 import { PageProps } from '@/types';
-import { usePage, router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 
 interface DashboardData {
     total_balance: number;
@@ -54,6 +56,7 @@ interface DashboardData {
         type: string;
         created_at: string;
     }>;
+    active_goals: SavingsGoal[];
 }
 
 export default function Home() {
@@ -61,17 +64,14 @@ export default function Home() {
 
     const firstName = auth.user?.name ? auth.user.name.split(' ')[0] : 'User';
 
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-        }).format(value);
-    };
-
     const handleMarkAsPaid = (transactionId: string) => {
-        router.patch(route('dashboard.transactions.mark-as-paid', { transaction: transactionId }), {}, {
-            preserveScroll: true,
-        });
+        router.patch(
+            route('dashboard.transactions.mark-as-paid', { transaction: transactionId }),
+            {},
+            {
+                preserveScroll: true,
+            },
+        );
     };
 
     return (
@@ -124,10 +124,10 @@ export default function Home() {
                         />
 
                         {/* Wallets Summary */}
-                        <WalletsSummaryList
-                            wallets={dashboardData.wallets_summary}
-                            formatCurrency={formatCurrency}
-                        />
+                        <WalletsSummaryList wallets={dashboardData.wallets_summary} formatCurrency={formatCurrency} />
+
+                        {/* active_goals comes from dashboardData now */}
+                        <GoalsWidget goals={dashboardData.active_goals} />
                     </div>
                 </div>
             </div>

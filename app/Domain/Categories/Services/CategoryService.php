@@ -4,6 +4,7 @@ namespace App\Domain\Categories\Services;
 
 use App\Domain\Categories\DTO\CreateCategoryData;
 use App\Domain\Categories\DTO\UpdateCategoryData;
+use App\Exceptions\CategoryException;
 use App\Models\Category;
 use App\Models\User;
 use App\QueryFilters\CategoryNameFilter;
@@ -55,11 +56,13 @@ class CategoryService
     /**
      * Update an existing category.
      * Only allows updating non-default categories.
+     *
+     * @throws CategoryException
      */
     public function update(Category $category, UpdateCategoryData $data): Category
     {
         if ($category->is_default) {
-            throw new \Exception('Categorias padrão não podem ser editadas.');
+            throw CategoryException::cannotModifyDefault();
         }
 
         $category->update($data->toArray());
@@ -70,11 +73,13 @@ class CategoryService
     /**
      * Delete a category.
      * Only allows deleting non-default categories.
+     *
+     * @throws CategoryException
      */
     public function delete(Category $category): bool
     {
         if ($category->is_default) {
-            throw new \Exception('Categorias padrão não podem ser excluídas.');
+            throw CategoryException::cannotModifyDefault();
         }
 
         return $category->delete();
@@ -83,11 +88,13 @@ class CategoryService
     /**
      * Toggle category status.
      * Only allows toggling non-default categories.
+     *
+     * @throws CategoryException
      */
     public function toggleStatus(Category $category): Category
     {
         if ($category->is_default) {
-            throw new \Exception('Categorias padrão não podem ter o status alterado.');
+            throw CategoryException::cannotModifyDefault();
         }
 
         $category->update(['status' => !$category->status]);

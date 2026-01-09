@@ -4,15 +4,18 @@ namespace App\Models;
 
 use App\Enums\TransactionStatusEnum;
 use App\Traits\HasUuidCustom;
+use App\Traits\HasMoneyAccessors;
+use App\Traits\HasTags;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Transaction extends Model
 {
     /** @use HasFactory<\Database\Factories\TransactionFactory> */
-    use HasFactory, HasUuidCustom;
+    use HasFactory, HasUuidCustom, HasMoneyAccessors, HasTags;
 
     protected $fillable = [
         'uuid',
@@ -43,12 +46,13 @@ class Transaction extends Model
 
     /**
      * Interact with the transaction's amount.
+     * Uses HasMoneyAccessors trait for consistent money conversion
      */
     protected function amount(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => round($value / 100, 2),
-            set: fn ($value) => (int) round($value * 100),
+            get: fn ($value) => $this->centsToBRL($value),
+            set: fn ($value) => $this->brlToCents($value),
         );
     }
 
@@ -85,6 +89,14 @@ class Transaction extends Model
     }
 
     /**
+     * Attachments relationship
+     */
+    public function attachments(): MorphMany
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
+    }
+
+    /**
      * Scope to filter by due date range
      */
     public function scopeDueDateFrom($query, $date)
@@ -102,21 +114,21 @@ class Transaction extends Model
 
     /**
      * Scope to filter by amount range
+     * Uses HasMoneyAccessors trait for consistent conversion
      */
     public function scopeAmountFrom($query, $amount)
     {
-        // Convert to cents for comparison
-        $amountInCents = $amount * 100;
+        $amountInCents = $this->brlToCents($amount);
         return $query->whereRaw('amount >= ?', [$amountInCents]);
     }
 
     /**
      * Scope to filter by amount range
+     * Uses HasMoneyAccessors trait for consistent conversion
      */
     public function scopeAmountTo($query, $amount)
     {
-        // Convert to cents for comparison
-        $amountInCents = $amount * 100;
+        $amountInCents = $this->brlToCents($amount);
         return $query->whereRaw('amount <= ?', [$amountInCents]);
     }
 }

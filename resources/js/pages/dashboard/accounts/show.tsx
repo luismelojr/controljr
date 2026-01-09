@@ -1,11 +1,12 @@
 import AppHeader from '@/components/dashboard/app-header';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
+import { TagBadge } from '@/components/tags/tag-badge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Account } from '@/types/account';
 import { Head, router } from '@inertiajs/react';
-import { Calendar, CheckCircle2, CreditCard, Edit, FolderOpen, Repeat, TrendingUp, XCircle } from 'lucide-react';
+import { Calendar, CheckCircle2, CreditCard, Edit, FolderOpen, Repeat, Tag, TrendingUp, XCircle } from 'lucide-react';
 
 interface ShowAccountProps {
     account: Account;
@@ -138,6 +139,23 @@ export default function ShowAccount({ account }: ShowAccountProps) {
                                     <p className="font-medium">{account.category?.name}</p>
                                 </div>
                             </div>
+
+                            {/* Tags */}
+                            {account.tags && account.tags.length > 0 && (
+                                <div className="flex items-start gap-3">
+                                    <div className="rounded-lg bg-primary/10 p-2">
+                                        <Tag className="h-5 w-5 text-primary" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-sm text-muted-foreground">Tags</p>
+                                        <div className="flex flex-wrap gap-1">
+                                            {account.tags.map((tag) => (
+                                                <TagBadge key={tag.id} name={tag.name} color={tag.color} />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Tipo de Recorrência */}
                             <div className="flex items-start gap-3">

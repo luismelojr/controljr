@@ -7,6 +7,11 @@ export interface Budget {
     remaining: number;
     percentage: number;
     status: 'green' | 'yellow' | 'red';
+    tags?: Array<{
+        id: number;
+        name: string;
+        color: string;
+    }>;
 }
 
 export interface CreateBudgetForm {

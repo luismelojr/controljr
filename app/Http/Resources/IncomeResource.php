@@ -29,6 +29,7 @@ class IncomeResource extends JsonResource
             'wallet' => new WalletResource($this->whenLoaded('wallet')),
             'wallet_id' => $this->wallet_id,
             'incomeTransactions' => IncomeTransactionResource::collection($this->whenLoaded('incomeTransactions')),
+            'tags' => TagResource::collection($this->whenLoaded('tags')),
             'transactions_count' => $this->when(
                 $this->relationLoaded('incomeTransactions'),
                 fn() => $this->incomeTransactions->count()

@@ -1,6 +1,7 @@
 import { TrendingUp, TrendingDown, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { formatCurrency } from '@/lib/format';
 
 interface StatsCardProps {
     title: string;
@@ -12,13 +13,6 @@ interface StatsCardProps {
 }
 
 export function StatsCard({ title, value, percentageChange, comparedTo = 'Compared to last month', month = 'July 16', className }: StatsCardProps) {
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-        }).format(value);
-    };
-
     const isPositive = percentageChange >= 0;
 
     return (

@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import ExportButton from '@/components/ui/export-button';
+import { formatDate } from '@/lib/format';
 import { IncomeTransaction } from '@/types/income-transaction';
 import { ColumnDef, PaginatedResponse } from '@/types/datatable';
 import { Head, router } from '@inertiajs/react';
@@ -41,10 +42,10 @@ export default function IncomeTransactionsIndex({ incomeTransactions, filters }:
             sortable: true,
             render: (incomeTransaction) => (
                 <div className="space-y-1">
-                    <p className="font-medium">{new Date(incomeTransaction.expected_date + 'T00:00:00').toLocaleDateString('pt-BR')}</p>
+                    <p className="font-medium">{formatDate(incomeTransaction.expected_date)}</p>
                     {incomeTransaction.received_at && (
                         <p className="text-xs text-muted-foreground">
-                            Recebido em {new Date(incomeTransaction.received_at + 'T00:00:00').toLocaleDateString('pt-BR')}
+                            Recebido em {formatDate(incomeTransaction.received_at)}
                         </p>
                     )}
                 </div>

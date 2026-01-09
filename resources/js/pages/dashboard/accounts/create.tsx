@@ -14,13 +14,16 @@ import { Head, router, useForm } from '@inertiajs/react';
 import { Info } from 'lucide-react';
 import { useMemo } from 'react';
 
+import { TagInput, TagOption } from '@/components/tags/tag-input';
+
 interface CreateAccountProps {
     wallets: WalletInterface[];
     categories: Category[];
+    tags: TagOption[];
 }
 
-export default function CreateAccount({ wallets, categories }: CreateAccountProps) {
-    const { data, setData, post, processing, errors } = useForm<AccountFormData>({
+export default function CreateAccount({ wallets, categories, tags }: CreateAccountProps) {
+    const { data, setData, post, processing, errors } = useForm<AccountFormData & { tags: any[] }>({
         wallet_id: '',
         category_id: '',
         name: '',
@@ -30,6 +33,7 @@ export default function CreateAccount({ wallets, categories }: CreateAccountProp
         installments: '',
         paid_installments: '0',
         start_date: new Date().toISOString().split('T')[0],
+        tags: [],
     });
 
     // Wallet selecionado
@@ -97,11 +101,7 @@ export default function CreateAccount({ wallets, categories }: CreateAccountProp
         <DashboardLayout title="Nova Conta">
             <Head title="Nova Conta" />
             <div className="space-y-6">
-                <AppHeader
-                    title="Nova conta"
-                    description="Cadastre um novo compromisso financeiro"
-                    routeBack={route('dashboard.accounts.index')}
-                />
+                <AppHeader title="Nova conta" description="Cadastre um novo compromisso financeiro" routeBack={route('dashboard.accounts.index')} />
 
                 <FormCard>
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -148,10 +148,9 @@ export default function CreateAccount({ wallets, categories }: CreateAccountProp
                             </Alert>
                         )}
 
-                        {/* Categoria */}
                         <TextSelect
-                            label="Categoria"
                             id="category_id"
+                            label="Categoria"
                             placeholder="Selecione a categoria"
                             options={categoryOptions}
                             value={data.category_id}
@@ -159,6 +158,12 @@ export default function CreateAccount({ wallets, categories }: CreateAccountProp
                             error={errors.category_id}
                             required
                         />
+
+                        {/* Tags */}
+                        <div className="space-y-2">
+                            <label className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Tags</label>
+                            <TagInput value={data.tags} onChange={(newTags) => setData('tags', newTags)} suggestions={tags} />
+                        </div>
 
                         {/* Tipo de Recorrência */}
                         <TextSelect
@@ -223,14 +228,22 @@ export default function CreateAccount({ wallets, categories }: CreateAccountProp
 
                         {/* Data de Início */}
                         <TextInput
-                            label={showInstallments && data.paid_installments && parseInt(data.paid_installments.toString()) > 0 ? "Data de Vencimento da Próxima Parcela" : "Data de Início"}
+                            label={
+                                showInstallments && data.paid_installments && parseInt(data.paid_installments.toString()) > 0
+                                    ? 'Data de Vencimento da Próxima Parcela'
+                                    : 'Data de Início'
+                            }
                             type="date"
                             id="start_date"
                             value={data.start_date}
                             onChange={(e) => setData('start_date', e.target.value)}
                             error={errors.start_date}
                             required
-                            helperText={showInstallments && data.paid_installments && parseInt(data.paid_installments.toString()) > 0 ? "Data em que a próxima parcela vence. As demais parcelas vencerão nos meses seguintes." : undefined}
+                            helperText={
+                                showInstallments && data.paid_installments && parseInt(data.paid_installments.toString()) > 0
+                                    ? 'Data em que a próxima parcela vence. As demais parcelas vencerão nos meses seguintes.'
+                                    : undefined
+                            }
                         />
 
                         {/* Info sobre geração automática */}
@@ -239,7 +252,12 @@ export default function CreateAccount({ wallets, categories }: CreateAccountProp
                             <AlertDescription>
                                 As transações serão geradas automaticamente com base no tipo de recorrência selecionado.
                                 {showInstallments && data.paid_installments && parseInt(data.paid_installments.toString()) > 0 && (
-                                    <> Você informou que {data.paid_installments} parcela(s) já foi(ram) paga(s). As {data.installments ? parseInt(data.installments.toString()) - parseInt(data.paid_installments.toString()) : 0} parcela(s) restante(s) serão lançadas a partir da data informada, vencendo mês a mês.</>
+                                    <>
+                                        {' '}
+                                        Você informou que {data.paid_installments} parcela(s) já foi(ram) paga(s). As{' '}
+                                        {data.installments ? parseInt(data.installments.toString()) - parseInt(data.paid_installments.toString()) : 0}{' '}
+                                        parcela(s) restante(s) serão lançadas a partir da data informada, vencendo mês a mês.
+                                    </>
                                 )}
                                 {!showInstallments && <> Para contas recorrentes, sempre manteremos 12 meses futuros.</>}
                             </AlertDescription>

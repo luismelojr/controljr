@@ -7,6 +7,7 @@ use App\Models\Transaction;
 use App\Models\IncomeTransaction;
 use App\Models\Wallet;
 use App\Models\AlertNotification;
+use App\Models\SavingsGoal;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -35,6 +36,7 @@ class DashboardService
 
             'unread_notifications_count' => $this->getUnreadNotificationsCount($userId),
             'unread_notifications' => $this->getUnreadNotifications($userId),
+            'active_goals' => $this->getActiveGoals($userId),
         ];
     }
 
@@ -403,5 +405,19 @@ class DashboardService
         ];
 
         return $icons[$categoryName] ?? 'default';
+    }
+
+    /**
+     * Get active savings goals logic (top 3)
+     */
+    protected function getActiveGoals(string $userId): array
+    {
+        return SavingsGoal::where('user_id', $userId)
+            ->active()
+            ->orderBy('target_date', 'asc') // Closest date first
+            ->orderBy('created_at', 'desc')
+            ->limit(3)
+            ->get()
+            ->toArray(); 
     }
 }

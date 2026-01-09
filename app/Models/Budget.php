@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use App\Traits\HasUuidCustom;
+use App\Traits\HasMoneyAccessors;
+use App\Traits\HasTags;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Budget extends Model
 {
-    use HasFactory, HasUuidCustom, SoftDeletes;
+    use HasFactory, HasUuidCustom, SoftDeletes, HasMoneyAccessors, HasTags;
 
     protected $fillable = [
         'uuid',
@@ -23,10 +26,21 @@ class Budget extends Model
     ];
 
     protected $casts = [
-        'amount' => 'decimal:2',
         'period' => 'date',
         'status' => 'boolean',
     ];
+
+    /**
+     * Interact with the budget's amount.
+     * Uses HasMoneyAccessors trait for consistent money conversion
+     */
+    protected function amount(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $this->centsToBRL($value),
+            set: fn ($value) => $this->brlToCents($value),
+        );
+    }
 
     public function user(): BelongsTo
     {

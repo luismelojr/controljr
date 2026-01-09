@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Domain\Wallets\DTO\CreateWalletData;
 use App\Domain\Wallets\DTO\UpdateWalletData;
 use App\Domain\Wallets\Services\WalletService;
+use App\Exceptions\WalletException;
 use App\Facades\Toast;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Wallet\StoreWalletRequest;
@@ -52,16 +53,38 @@ class WalletsController extends Controller
     {
         $this->authorize('create', Wallet::class);
 
-        $data = CreateWalletData::fromRequest($request);
+        try {
+            $data = CreateWalletData::fromRequest($request);
 
-        $this->walletService->create($data, auth()->user());
+            $currentCount = $request->user()->wallets()->count();
 
-        Toast::create('Carteira criada com sucesso!')
-            ->title('Operação Realizada')
-            ->success()
-            ->flash();
+            if (\App\Http\Middleware\CheckPlanFeature::hasReachedLimit($request, 'max_wallets', $currentCount)) {
+                Toast::create('Você atingiu o limite de carteiras do seu plano.')
+                    ->error()
+                    ->action('Fazer Upgrade', route('dashboard.subscription.plans'))
+                    ->persistent()
+                    ->flash();
 
-        return redirect()->route('dashboard.wallets.index');
+                return back();
+            }
+
+            $this->walletService->create($data, auth()->user());
+
+            Toast::create('Carteira criada com sucesso!')
+                ->title('Operação Realizada')
+                ->success()
+                ->flash();
+
+            return redirect()->route('dashboard.wallets.index');
+        } catch (WalletException $e) {
+            Toast::error('Erro ao criar carteira: '.$e->getMessage());
+
+            return back()->withInput();
+        } catch (\Exception $e) {
+            Toast::error('Erro inesperado: '.$e->getMessage());
+
+            return back()->withInput();
+        }
     }
 
     /**
@@ -83,16 +106,26 @@ class WalletsController extends Controller
     {
         $this->authorize('update', $wallet);
 
-        $data = UpdateWalletData::fromRequest($request);
+        try {
+            $data = UpdateWalletData::fromRequest($request);
 
-        $this->walletService->update($wallet, $data);
+            $this->walletService->update($wallet, $data);
 
-        Toast::create('Carteira atualizada com sucesso!')
-            ->title('Operação Realizada')
-            ->success()
-            ->flash();
+            Toast::create('Carteira atualizada com sucesso!')
+                ->title('Operação Realizada')
+                ->success()
+                ->flash();
 
-        return redirect()->route('dashboard.wallets.index');
+            return redirect()->route('dashboard.wallets.index');
+        } catch (WalletException $e) {
+            Toast::error('Erro ao atualizar carteira: '.$e->getMessage());
+
+            return back()->withInput();
+        } catch (\Exception $e) {
+            Toast::error('Erro inesperado: '.$e->getMessage());
+
+            return back()->withInput();
+        }
     }
 
     /**
@@ -102,13 +135,23 @@ class WalletsController extends Controller
     {
         $this->authorize('delete', $wallet);
 
-        $this->walletService->delete($wallet);
+        try {
+            $this->walletService->delete($wallet);
 
-        Toast::create('Carteira excluída com sucesso!')
-            ->title('Operação Realizada')
-            ->success()
-            ->flash();
+            Toast::create('Carteira excluída com sucesso!')
+                ->title('Operação Realizada')
+                ->success()
+                ->flash();
 
-        return redirect()->route('dashboard.wallets.index');
+            return redirect()->route('dashboard.wallets.index');
+        } catch (WalletException $e) {
+            Toast::error('Erro ao excluir carteira: '.$e->getMessage());
+
+            return back();
+        } catch (\Exception $e) {
+            Toast::error('Erro inesperado: '.$e->getMessage());
+
+            return back();
+        }
     }
 }
