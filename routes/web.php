@@ -134,8 +134,8 @@ Route::middleware('auth')->group(function () {
 
         // Savings Goals routes
         Route::middleware('plan.feature:max_savings_goals')->group(function () {
-             Route::resource('savings-goals', \App\Http\Controllers\Dashboard\SavingsGoalsController::class);
-             Route::post('savings-goals/{savings_goal}/contribute', [\App\Http\Controllers\Dashboard\SavingsGoalsController::class, 'addContribution'])->name('savings-goals.contribute');
+             Route::resource('savings-goals', \App\Http\Controllers\Dashboard\SavingsGoalsController::class)->except(['create', 'edit', 'show']);
+             Route::post('savings-goals/{savingsGoal}/contribute', [\App\Http\Controllers\Dashboard\SavingsGoalsController::class, 'addContribution'])->name('savings-goals.contribute');
         });
 
         // Export routes

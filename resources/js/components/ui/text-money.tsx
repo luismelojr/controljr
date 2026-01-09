@@ -9,12 +9,14 @@ interface TextMoneyProps {
     id: string;
     className?: string;
     onChange?: (value: number) => void;
+    onValueChange?: (value: string) => void; // Para compatibilidade com outros componentes
     value?: number | string;
     placeholder?: string;
     name?: string;
     required?: boolean;
     disabled?: boolean;
     showPrefix?: boolean; // Mostrar R$ ou não
+    autoFocus?: boolean;
 }
 
 export default function TextMoney(props: TextMoneyProps) {
@@ -25,12 +27,14 @@ export default function TextMoney(props: TextMoneyProps) {
         id,
         className,
         onChange,
+        onValueChange,
         value,
         placeholder = 'R$ 0,00',
         name,
         required,
         disabled,
         showPrefix = true,
+        autoFocus,
     } = props;
 
     /**
@@ -72,16 +76,21 @@ export default function TextMoney(props: TextMoneyProps) {
     };
 
     const [displayValue, setDisplayValue] = React.useState(getInitialFormattedValue());
+    const isTypingRef = React.useRef(false);
 
-    // Atualiza o display quando o value prop mudar
+    // Atualiza o display quando o value prop mudar (mas não quando está digitando)
     React.useEffect(() => {
-        setDisplayValue(getInitialFormattedValue());
+        if (!isTypingRef.current) {
+            setDisplayValue(getInitialFormattedValue());
+        }
+        isTypingRef.current = false;
     }, [value]);
 
     /**
      * Manipula mudanças no input
      */
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        isTypingRef.current = true;
         const inputValue = e.target.value;
 
         // Remove tudo exceto dígitos
@@ -90,6 +99,7 @@ export default function TextMoney(props: TextMoneyProps) {
         if (digitsOnly === '') {
             setDisplayValue('');
             onChange?.(0);
+            onValueChange?.('0');
             return;
         }
 
@@ -101,6 +111,7 @@ export default function TextMoney(props: TextMoneyProps) {
 
         setDisplayValue(formattedValue);
         onChange?.(numValue);
+        onValueChange?.(numValue.toString());
     };
 
     /**
@@ -132,6 +143,7 @@ export default function TextMoney(props: TextMoneyProps) {
                     placeholder={placeholder}
                     disabled={disabled}
                     required={required}
+                    autoFocus={autoFocus}
                     className={`${error && '!border-red-500'} w-full outline-none`}
                     autoComplete="off"
                 />

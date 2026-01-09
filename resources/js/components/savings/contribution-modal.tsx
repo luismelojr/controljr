@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import TextMoney from '@/components/ui/text-money';
 import { SavingsGoal } from '@/types';
 import { useForm } from '@inertiajs/react';
 import { useEffect } from 'react';
@@ -29,7 +28,13 @@ export function ContributionModal({ open, onOpenChange, goal }: ContributionModa
 
         if (!goal) return;
 
-        post(route('dashboard.savings-goals.contribute', { savingsGoal: goal.id }), {
+        // Garantir que amount seja um número válido
+        const submitData = {
+            amount: data.amount ? parseFloat(data.amount.toString()) : 0,
+        };
+
+        post(route('dashboard.savings-goals.contribute', { savings_goal: goal.uuid }), {
+            data: submitData,
             onSuccess: () => onOpenChange(false),
         });
     };
@@ -47,18 +52,16 @@ export function ContributionModal({ open, onOpenChange, goal }: ContributionModa
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="grid gap-4 py-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="amount">Valor (R$)</Label>
-                        <Input
+                        <TextMoney
+                            label="Valor"
                             id="amount"
-                            type="number"
-                            step="0.01"
                             value={data.amount}
-                            onChange={(e) => setData('amount', e.target.value)}
-                            placeholder="0,00"
+                            onValueChange={(value) => setData('amount', value || '')}
+                            placeholder="R$ 0,00"
+                            error={errors.amount}
                             required
                             autoFocus
                         />
-                        {errors.amount && <p className="text-sm text-destructive">{errors.amount}</p>}
                     </div>
                 </form>
                 <DialogFooter>

@@ -3,9 +3,10 @@ import { GoalCard } from '@/components/savings/goal-card';
 import { GoalForm } from '@/components/savings/goal-form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { PageProps, SavingsGoal } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
@@ -13,8 +14,10 @@ export default function SavingsGoalsIndex({ goals }: { goals: SavingsGoal[] }) {
     const { auth } = usePage<PageProps>().props;
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isContributionOpen, setIsContributionOpen] = useState(false);
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedGoal, setSelectedGoal] = useState<SavingsGoal | undefined>(undefined);
     const [contributionGoal, setContributionGoal] = useState<SavingsGoal | null>(null);
+    const [goalToDelete, setGoalToDelete] = useState<SavingsGoal | null>(null);
 
     const handleCreate = () => {
         setSelectedGoal(undefined);
@@ -31,20 +34,14 @@ export default function SavingsGoalsIndex({ goals }: { goals: SavingsGoal[] }) {
         setIsContributionOpen(true);
     };
 
-    // We can use the router to delete or pass a handler. GoalCard expects onDelete.
-    // For simplicity, let's implement delete here with confirmation logic if needed,
-    // or just pass a simple delete function using router.delete.
     const handleDelete = (goal: SavingsGoal) => {
-        if (confirm('Tem certeza que deseja excluir esta meta?')) {
-            // In a real app, use a proper confirmation dialog
-            // router.delete(route('dashboard.savings-goals.destroy', { savingsGoal: goal.id }));
-            // But GoalCard doesn't receive router, it receives a function.
-            // We should implement it here.
+        setGoalToDelete(goal);
+        setIsDeleteOpen(true);
+    };
 
-            // To avoid direct dependency on Inertia router inside the component props definition if not needed,
-            // we can import router here.
-            const { router } = require('@inertiajs/react');
-            router.delete(route('dashboard.savings-goals.destroy', { savingsGoal: goal.id }));
+    const confirmDelete = () => {
+        if (goalToDelete) {
+            router.delete(route('dashboard.savings-goals.destroy', { savings_goal: goalToDelete.uuid }));
         }
     };
 
@@ -71,7 +68,7 @@ export default function SavingsGoalsIndex({ goals }: { goals: SavingsGoal[] }) {
 
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {activeGoals.map((goal) => (
-                        <GoalCard key={goal.id} goal={goal} onContribute={handleContribute} onEdit={handleEdit} onDelete={handleDelete} />
+                        <GoalCard key={goal.uuid} goal={goal} onContribute={handleContribute} onEdit={handleEdit} onDelete={handleDelete} />
                     ))}
                     {activeGoals.length === 0 && (
                         <Card className="col-span-full border-dashed p-8 text-center text-muted-foreground">
@@ -91,7 +88,7 @@ export default function SavingsGoalsIndex({ goals }: { goals: SavingsGoal[] }) {
                         <div className="grid gap-6 opacity-75 grayscale transition-all hover:grayscale-0 md:grid-cols-2 lg:grid-cols-3">
                             {completedGoals.map((goal) => (
                                 <GoalCard
-                                    key={goal.id}
+                                    key={goal.uuid}
                                     goal={goal}
                                     onContribute={() => {}} // Can't contribute to completed
                                     onEdit={handleEdit}
@@ -105,6 +102,16 @@ export default function SavingsGoalsIndex({ goals }: { goals: SavingsGoal[] }) {
                 <GoalForm open={isFormOpen} onOpenChange={setIsFormOpen} goal={selectedGoal} />
 
                 <ContributionModal open={isContributionOpen} onOpenChange={setIsContributionOpen} goal={contributionGoal} />
+
+                <ConfirmDeleteDialog
+                    open={isDeleteOpen}
+                    onOpenChange={setIsDeleteOpen}
+                    onConfirm={confirmDelete}
+                    title="Excluir Meta"
+                    description="Esta ação não pode ser desfeita. Isso irá excluir permanentemente a meta"
+                    itemName={goalToDelete?.name}
+                    confirmText="Excluir Meta"
+                />
             </div>
         </DashboardLayout>
     );

@@ -1,8 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { IconPicker } from '@/components/ui/icon-picker';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import TextMoney from '@/components/ui/text-money';
 import { SavingsGoal } from '@/types';
 import { useForm } from '@inertiajs/react';
 import { useEffect } from 'react';
@@ -19,11 +21,18 @@ interface GoalFormProps {
 export function GoalForm({ open, onOpenChange, goal }: GoalFormProps) {
     const isEditing = !!goal;
 
+    // Helper para formatar data para o input type="date" (YYYY-MM-DD)
+    const formatDateForInput = (date: string | null | undefined): string => {
+        if (!date) return '';
+        // Extrai apenas a parte da data (YYYY-MM-DD) de qualquer formato
+        return date.split('T')[0];
+    };
+
     const { data, setData, post, patch, processing, errors, reset, clearErrors } = useForm({
         name: goal?.name ?? '',
         description: goal?.description ?? '',
         target_amount: goal ? (goal.target_amount_cents / 100).toString() : '',
-        target_date: goal?.target_date ?? '',
+        target_date: formatDateForInput(goal?.target_date),
         category_id: goal?.category_id?.toString() ?? '',
         icon: goal?.icon ?? '🎯',
         color: goal?.color ?? '#10B981',
@@ -38,8 +47,8 @@ export function GoalForm({ open, onOpenChange, goal }: GoalFormProps) {
                 setData({
                     name: goal.name,
                     description: goal.description ?? '',
-                    target_amount: (goal.target_amount_cents / 100).toFixed(2),
-                    target_date: goal.target_date ?? '',
+                    target_amount: (goal.target_amount_cents / 100).toString(),
+                    target_date: formatDateForInput(goal.target_date),
                     category_id: goal.category_id?.toString() ?? '',
                     icon: goal.icon,
                     color: goal.color,
@@ -63,12 +72,20 @@ export function GoalForm({ open, onOpenChange, goal }: GoalFormProps) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
+        // Garantir que target_amount seja um número válido
+        const submitData = {
+            ...data,
+            target_amount: data.target_amount ? parseFloat(data.target_amount.toString()) : 0,
+        };
+
         if (isEditing && goal) {
-            patch(route('dashboard.savings-goals.update', { savingsGoal: goal.id }), {
+            patch(route('dashboard.savings-goals.update', { savings_goal: goal.uuid }), {
+                data: submitData,
                 onSuccess: () => onOpenChange(false),
             });
         } else {
             post(route('dashboard.savings-goals.store'), {
+                data: submitData,
                 onSuccess: () => onOpenChange(false),
             });
         }
@@ -97,17 +114,15 @@ export function GoalForm({ open, onOpenChange, goal }: GoalFormProps) {
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="target_amount">Valor Alvo (R$)</Label>
-                        <Input
+                        <TextMoney
+                            label="Valor Alvo"
                             id="target_amount"
-                            type="number"
-                            step="0.01"
                             value={data.target_amount}
-                            onChange={(e) => setData('target_amount', e.target.value)}
-                            placeholder="0,00"
+                            onValueChange={(value) => setData('target_amount', value || '')}
+                            placeholder="R$ 0,00"
+                            error={errors.target_amount}
                             required
                         />
-                        {errors.target_amount && <p className="text-sm text-destructive">{errors.target_amount}</p>}
                     </div>
 
                     <div className="grid gap-2">
@@ -119,7 +134,8 @@ export function GoalForm({ open, onOpenChange, goal }: GoalFormProps) {
                     <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
                             <Label htmlFor="icon">Ícone</Label>
-                            <Input id="icon" value={data.icon} onChange={(e) => setData('icon', e.target.value)} placeholder="🎯" maxLength={2} />
+                            <IconPicker value={data.icon} onChange={(value) => setData('icon', value)} />
+                            {errors.icon && <p className="text-sm text-destructive">{errors.icon}</p>}
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="color">Cor</Label>
@@ -138,11 +154,9 @@ export function GoalForm({ open, onOpenChange, goal }: GoalFormProps) {
                                     pattern="^#[0-9A-Fa-f]{6}$"
                                 />
                             </div>
+                            {errors.color && <p className="text-sm text-destructive">{errors.color}</p>}
                         </div>
                     </div>
-
-                    {errors.color && <p className="text-sm text-destructive">{errors.color}</p>}
-                    {errors.icon && <p className="text-sm text-destructive">{errors.icon}</p>}
 
                     <div className="grid gap-2">
                         <Label htmlFor="description">Descrição (Opcional)</Label>
