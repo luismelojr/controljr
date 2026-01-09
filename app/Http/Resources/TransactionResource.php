@@ -30,6 +30,8 @@ class TransactionResource extends JsonResource
             'wallet' => new WalletResource($this->whenLoaded('wallet')),
             'category' => new CategoryResource($this->whenLoaded('category')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
+            'attachments' => AttachmentResource::collection($this->whenLoaded('attachments')),
+            'id' => $this->id,
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

@@ -1,16 +1,20 @@
+import { AttachmentList } from '@/components/attachments/attachment-list';
+import { AttachmentUploader } from '@/components/attachments/attachment-uploader';
 import AppHeader from '@/components/dashboard/app-header';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { Attachment } from '@/types/attachment';
 import { Transaction } from '@/types/transaction';
 import { Head, router } from '@inertiajs/react';
 import { Calendar, Check, CreditCard, FileText, FolderOpen, Hash, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface ShowTransactionProps {
-    transaction: Transaction;
+    transaction: Transaction & { attachments?: Attachment[] };
 }
 
 export default function ShowTransaction({ transaction }: ShowTransactionProps) {
@@ -205,6 +209,27 @@ export default function ShowTransaction({ transaction }: ShowTransactionProps) {
                         </div>
                     </CardContent>
                 </Card>
+
+                {/* Anexos */}
+                <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Anexos</h3>
+
+                    <AttachmentUploader
+                        attachableType="App\Models\Transaction"
+                        attachableId={transaction.id}
+                        onUploadComplete={() => router.reload()}
+                    />
+
+                    {transaction.attachments && transaction.attachments.length > 0 && (
+                        <>
+                            <Separator />
+                            <AttachmentList
+                                attachments={transaction.attachments}
+                                onDelete={() => router.reload()}
+                            />
+                        </>
+                    )}
+                </div>
 
                 {/* Botão para ver conta completa */}
                 {transaction.account && (

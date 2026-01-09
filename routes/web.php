@@ -138,6 +138,14 @@ Route::middleware('auth')->group(function () {
              Route::post('savings-goals/{savingsGoal}/contribute', [\App\Http\Controllers\Dashboard\SavingsGoalsController::class, 'addContribution'])->name('savings-goals.contribute');
         });
 
+        // Attachment routes
+        Route::middleware('plan.feature:max_attachments')->group(function () {
+            Route::post('attachments', [\App\Http\Controllers\Dashboard\AttachmentsController::class, 'store'])->name('attachments.store');
+            Route::get('attachments/{attachment}/download', [\App\Http\Controllers\Dashboard\AttachmentsController::class, 'download'])->name('attachments.download');
+            Route::delete('attachments/{attachment}', [\App\Http\Controllers\Dashboard\AttachmentsController::class, 'destroy'])->name('attachments.destroy');
+            Route::get('attachments/stats', [\App\Http\Controllers\Dashboard\AttachmentsController::class, 'stats'])->name('attachments.stats');
+        });
+
         // Export routes
         Route::prefix('exports')->as('exports.')->middleware(['plan.feature:export_data'])->group(function () {
             Route::post('/transactions', [\App\Http\Controllers\Dashboard\ExportsController::class, 'transactions'])
