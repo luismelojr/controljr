@@ -21,11 +21,6 @@ beforeEach(function () {
         'slug' => PlanTypeEnum::PREMIUM->value,
         'price_cents' => 1990, // R$ 19,90
     ]);
-
-    $this->familyPlan = SubscriptionPlan::factory()->create([
-        'slug' => PlanTypeEnum::FAMILY->value,
-        'price_cents' => 2990, // R$ 29,90
-    ]);
 });
 
 test('can create free subscription', function () {

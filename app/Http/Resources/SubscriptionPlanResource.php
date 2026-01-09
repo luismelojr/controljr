@@ -28,7 +28,6 @@ class SubscriptionPlanResource extends JsonResource
             'is_active' => $this->is_active,
             'is_free' => $this->isFree(),
             'is_premium' => $this->isPremium(),
-            'is_family' => $this->isFamily(),
             'plan_type' => $this->planType?->label(),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),

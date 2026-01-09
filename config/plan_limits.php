@@ -22,7 +22,6 @@ return [
     | - multi_currency: Support for multiple currencies
     | - api_access: Access to API
     | - priority_support: Priority customer support
-    | - max_team_members: Maximum team members (for family plan)
     |
     */
 
@@ -67,29 +66,6 @@ return [
         'max_attachments' => 100,
         'max_savings_goals' => 20,
         'max_custom_reports' => 50,
-        'max_exports_per_month' => -1, // Unlimited
-        'transactions_history_months' => -1, // Unlimited
-        'ai_predictions' => true,
-    ],
-
-    'family' => [
-        'max_wallets' => -1, // Unlimited
-        'max_categories' => -1, // Unlimited
-        'max_accounts' => -1, // Unlimited
-        'max_transactions_per_month' => -1, // Unlimited
-        'max_budgets' => -1, // Unlimited
-        'max_alerts' => -1, // Unlimited
-        'financial_reports' => true,
-        'data_export' => true,
-        'bank_reconciliation' => true,
-        'multi_currency' => true,
-        'api_access' => true,
-        'priority_support' => true,
-        'max_team_members' => 5,
-        'max_tags' => -1, // Unlimited
-        'max_attachments' => 500,
-        'max_savings_goals' => -1, // Unlimited
-        'max_custom_reports' => -1, // Unlimited
         'max_exports_per_month' => -1, // Unlimited
         'transactions_history_months' => -1, // Unlimited
         'ai_predictions' => true,

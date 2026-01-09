@@ -186,14 +186,6 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user is on family plan
-     */
-    public function isOnFamilyPlan(): bool
-    {
-        return $this->isOnPlan('family');
-    }
-
-    /**
      * Get plan limits for current subscription
      */
     public function getPlanLimits(): array

@@ -53,7 +53,6 @@ export default function SubscriptionPlans({ plans, currentPlan }: Props) {
             attachments: 'Anexos',
             custom_reports: 'Relatórios Customizados',
             ai_predictions: 'Previsões com IA',
-            family_members: 'Membros da Família',
         };
 
         return labels[key] || key;
@@ -87,7 +86,7 @@ export default function SubscriptionPlans({ plans, currentPlan }: Props) {
                     </div>
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-3">
+                <div className="grid gap-6 md:grid-cols-2">
                     {plans.map((plan) => {
                         const isCurrentPlan = plan.slug === currentPlan;
 

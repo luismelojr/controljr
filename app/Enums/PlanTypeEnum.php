@@ -6,7 +6,6 @@ enum PlanTypeEnum: string
 {
     case FREE = 'free';
     case PREMIUM = 'premium';
-    case FAMILY = 'family';
 
     /**
      * Get the Portuguese label for the plan type
@@ -16,7 +15,6 @@ enum PlanTypeEnum: string
         return match ($this) {
             self::FREE => 'Gratuito',
             self::PREMIUM => 'Premium',
-            self::FAMILY => 'Família',
         };
     }
 
@@ -28,7 +26,6 @@ enum PlanTypeEnum: string
         return match ($this) {
             self::FREE => 'Plano gratuito com recursos básicos',
             self::PREMIUM => 'Plano premium com recursos avançados',
-            self::FAMILY => 'Plano familiar para até 5 pessoas',
         };
     }
 

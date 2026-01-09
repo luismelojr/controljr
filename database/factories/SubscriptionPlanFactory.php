@@ -20,9 +20,9 @@ class SubscriptionPlanFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->randomElement(['Gratuito', 'Premium', 'Família']),
+            'name' => $this->faker->randomElement(['Gratuito', 'Premium']),
             'slug' => $this->faker->unique()->slug,
-            'price_cents' => $this->faker->randomElement([0, 1990, 2990]),
+            'price_cents' => $this->faker->randomElement([0, 1990]),
             'billing_period' => 'monthly',
             'features' => [
                 'max_wallets' => $this->faker->numberBetween(2, 10),

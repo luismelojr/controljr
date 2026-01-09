@@ -33,7 +33,6 @@ class SubscriptionPlanSeeder extends Seeder
                     'attachments' => 0,
                     'custom_reports' => 0,
                     'ai_predictions' => false,
-                    'family_members' => 1,
                 ],
             ],
             [
@@ -54,28 +53,6 @@ class SubscriptionPlanSeeder extends Seeder
                     'attachments' => 100,
                     'custom_reports' => 50,
                     'ai_predictions' => true,
-                    'family_members' => 1,
-                ],
-            ],
-            [
-                'name' => 'Família',
-                'slug' => PlanTypeEnum::FAMILY->value,
-                'price_cents' => 2990, // R$ 29,90
-                'billing_period' => 'monthly',
-                'description' => 'Plano familiar para até 5 pessoas com todos os recursos premium',
-                'max_users' => 5,
-                'features' => [
-                    'categories' => -1, // Ilimitado
-                    'wallets' => -1,
-                    'budgets' => -1,
-                    'savings_goals' => -1,
-                    'export_per_month' => -1,
-                    'transactions_history_months' => -1,
-                    'tags' => -1,
-                    'attachments' => 500,
-                    'custom_reports' => -1,
-                    'ai_predictions' => true,
-                    'family_members' => 5,
                 ],
             ],
         ];

@@ -13,8 +13,8 @@ export function SubscriptionAlertCard() {
         return null;
     }
 
-    // Se o usuário já tem uma assinatura ativa premium ou family, não mostra o card
-    if (user.subscription && (user.subscription.plan.is_premium || user.subscription.plan.is_family) && user.subscription.is_active) {
+    // Se o usuário já tem uma assinatura ativa premium, não mostra o card
+    if (user.subscription && user.subscription.plan.is_premium && user.subscription.is_active) {
         return null;
     }
 

@@ -12,7 +12,6 @@ export interface SubscriptionPlan {
     is_active: boolean;
     is_free: boolean;
     is_premium: boolean;
-    is_family: boolean;
     plan_type: string;
     created_at: string;
     updated_at: string;

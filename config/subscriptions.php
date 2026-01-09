@@ -47,12 +47,5 @@ return [
             'export_data' => true,
             'priority_support' => false,
         ],
-        'family' => [
-            'max_transactions' => null, // unlimited
-            'max_budgets' => null, // unlimited
-            'advanced_reports' => true,
-            'export_data' => true,
-            'priority_support' => true,
-        ],
     ],
 ];

@@ -81,14 +81,6 @@ class SubscriptionPlan extends Model
     }
 
     /**
-     * Check if plan is family
-     */
-    public function isFamily(): bool
-    {
-        return $this->slug === PlanTypeEnum::FAMILY->value;
-    }
-
-    /**
      * Get feature limit
      */
     public function getFeatureLimit(string $feature): int|bool
@@ -134,10 +126,5 @@ class SubscriptionPlan extends Model
     public function scopePremium($query)
     {
         return $query->where('slug', PlanTypeEnum::PREMIUM->value);
-    }
-
-    public function scopeFamily($query)
-    {
-        return $query->where('slug', PlanTypeEnum::FAMILY->value);
     }
 }
