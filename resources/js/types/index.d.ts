@@ -40,6 +40,7 @@ export interface User {
     email: string;
     phone: string;
     status: boolean;
+    avatar_url?: string | null;
     subscription?: Subscription | null;
     [key: string]: unknown; // This allows for additional properties...
 }

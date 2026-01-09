@@ -63,4 +63,56 @@ class UserProfileController extends Controller
             substr($cpf, 9, 2)
         );
     }
+    /**
+     * Show the user profile edit page.
+     */
+    public function edit(Request $request): \Inertia\Response
+    {
+        return \Inertia\Inertia::render('dashboard/profile/edit', [
+            'mustVerifyEmail' => $request->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail,
+            'status' => session('status'),
+        ]);
+    }
+
+    /**
+     * Update the user's profile information.
+     */
+    public function update(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,'.$request->user()->id],
+            'avatar' => ['nullable', 'image', 'max:1024'], // 1MB Max
+        ]);
+
+        $user = $request->user();
+
+        $data = [
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ];
+
+        if ($request->hasFile('avatar')) {
+            // Delete old avatar if exists
+            if ($user->avatar_url) {
+                // Assuming 'public' disk for now as per plan, but use Storage facade for abstraction
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->avatar_url);
+            }
+
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $data['avatar_url'] = $path;
+        }
+
+        $user->fill($data);
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
+
+        Toast::success('Perfil atualizado com sucesso!');
+
+        return redirect()->back();
+    }
 }

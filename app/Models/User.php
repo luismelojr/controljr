@@ -28,6 +28,7 @@ class User extends Authenticatable
         'password',
         'phone',
         'status',
+        'avatar_url',
         'current_subscription_id',
     ];
 

@@ -121,6 +121,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('notifications', [\App\Http\Controllers\Dashboard\NotificationsController::class, 'deleteAllRead'])->name('notifications.delete-all-read');
 
         // User Profile routes
+        Route::get('profile', [\App\Http\Controllers\Dashboard\UserProfileController::class, 'edit'])->name('profile.edit');
+        Route::post('profile', [\App\Http\Controllers\Dashboard\UserProfileController::class, 'update'])->name('profile.update');
         Route::post('profile/cpf', [\App\Http\Controllers\Dashboard\UserProfileController::class, 'updateCpf'])->name('profile.cpf.update');
         Route::get('profile/cpf/check', [\App\Http\Controllers\Dashboard\UserProfileController::class, 'hasCpf'])->name('profile.cpf.check');
 

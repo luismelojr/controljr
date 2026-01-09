@@ -90,6 +90,7 @@ export function AppSidebar() {
                 { title: 'Conciliação', icon: FileCheck, url: route('dashboard.reconciliation.index') },
                 { title: 'Alertas', icon: CircleAlert, url: route('dashboard.alerts.index') },
                 { title: 'Minha Assinatura', icon: CreditCard, url: route('dashboard.subscription.index') },
+                { title: 'Meu Perfil', icon: Users, url: route('dashboard.profile.edit') },
             ],
         },
     ];
